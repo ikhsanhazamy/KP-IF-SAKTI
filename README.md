@@ -1,4 +1,4 @@
-# KP Fullstack Scaffold
+# KP 
 
 This workspace contains two main folders:
 
