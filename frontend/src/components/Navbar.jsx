@@ -71,7 +71,7 @@ function Navbar() {
 </div>
 
         {/* RIGHT */}
-        <button className="w-[200px] h-[40px] bg-[#1f7a4d] text-white rounded-[12px] text-sm font-medium hover:bg-[#17633f] transition flex items-center justify-center">
+        <button className="w-[200px] h-[40px] bg-[#1f7a4d] text-white rounded-[12px] text-sm font-medium hover:bg-[#17633f] transition">
           Dashboard Login
         </button>
 
