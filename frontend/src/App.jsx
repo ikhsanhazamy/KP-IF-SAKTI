@@ -1,10 +1,14 @@
-import React from 'react'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
 
-export default function App() {
+function App() {
   return (
-    <div className="app">
-      <h1>KP Frontend (Vite + React)</h1>
-      <p>Berhasil membuat scaffold dasar.</p>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
+
+export default App;
