@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,28 +9,36 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 </head>
 
-<body class="bg-[#F5F5F5] font-[Poppins]">
+<body class="bg-[#F5F5F5] font-[Poppins] overflow-hidden">
 
-    <div class="flex min-h-screen">
+    <div class="flex h-screen">
 
         <!-- SIDEBAR -->
-        @include('partials.sidebar')
+        <aside class="w-[260px] shrink-0 bg-white border-r h-screen">
 
-        <!-- MAIN -->
-        <div class="flex-1 flex flex-col">
+            @include('partials.sidebar')
+
+        </aside>
+
+        <!-- RIGHT AREA -->
+        <div class="flex-1 flex flex-col h-screen overflow-hidden">
 
             <!-- HEADER -->
-            @include('partials.header')
+            <div class="shrink-0">
+
+                @include('partials.header')
+
+            </div>
 
             <!-- CONTENT -->
-            <main class="p-8">
+            <main class="flex-1 overflow-y-auto p-8">
 
                 @yield('content')
 
