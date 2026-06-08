@@ -189,7 +189,7 @@
                     </p>
 
                     <h3 class="text-xl font-semibold">
-                        {{ $pac->ketua }}
+                        {{ $pac->ketua_pac }}
                     </h3>
 
                 </div>
@@ -217,8 +217,12 @@
 
                     data-nama="{{ $pac->nama_pac }}"
                     data-kecamatan="{{ $pac->kecamatan }}"
-                    data-ketua="{{ $pac->ketua }}"
+                    data-ketua="{{ $pac->ketua_pac }}"
                     data-telepon="{{ $pac->telepon }}"
+                    data-nomor-sk="{{ $pac->nomor_sk }}"
+                    data-jumlah-anggota="{{ $pac->jumlah_anggota }}"
+                    data-pertumbuhan="+8%"
+                    data-total-kegiatan="{{ $pac->total_kegiatan }}"
 
                     onclick="openDetailPACModal(this)"
 
@@ -236,8 +240,18 @@
                     data-id="{{ $pac->id }}"
                     data-nama="{{ $pac->nama_pac }}"
                     data-kecamatan="{{ $pac->kecamatan }}"
-                    data-ketua="{{ $pac->ketua }}"
+                    data-status="{{ $pac->status }}"
+                    data-tanggal-berdiri="{{ $pac->tanggal_berdiri }}"
+                    data-alamat="{{ $pac->alamat }}"
+                    data-desa="{{ $pac->desa }}"
+                    data-kode-pos="{{ $pac->kode_pos }}"
+                    data-ketua="{{ $pac->ketua_pac }}"
                     data-telepon="{{ $pac->telepon }}"
+                    data-email="{{ $pac->email }}"
+                    data-nomor-sk="{{ $pac->nomor_sk }}"
+                    data-jumlah-anggota="{{ $pac->jumlah_anggota }}"
+                    data-total-kegiatan="{{ $pac->total_kegiatan }}"
+                    data-deskripsi="{{ $pac->deskripsi }}"
 
                     onclick="openEditPACModal(this)"
 
@@ -360,6 +374,10 @@
         const kecamatan = button.dataset.kecamatan;
         const ketua = button.dataset.ketua;
         const telepon = button.dataset.telepon;
+        const nomorSK = button.dataset.nomorSk;
+        const jumlahAnggota = button.dataset.jumlahAnggota;
+        const pertumbuhan = button.dataset.pertumbuhan;
+        const totalKegiatan = button.dataset.totalKegiatan;
 
         document
             .getElementById('modalDetailPAC')
@@ -373,6 +391,10 @@
         document.getElementById('detailKecamatan').innerText = kecamatan;
         document.getElementById('detailKetua').innerText = ketua;
         document.getElementById('detailKontak').innerText = telepon;
+        document.getElementById('detailNomorSK').innerText = nomorSK || '-';
+        document.getElementById('detailJumlahAnggota').innerText = jumlahAnggota || '0';
+        document.getElementById('detailPertumbuhan').innerText = pertumbuhan || '+0%';
+        document.getElementById('detailTotalKegiatan').innerText = totalKegiatan || '0';
     }
 
     function closeDetailPACModal()
@@ -398,8 +420,18 @@
         const id = button.dataset.id;
         const nama = button.dataset.nama;
         const kecamatan = button.dataset.kecamatan;
+        const status = button.dataset.status;
+        const tanggalBerdiri = button.dataset.tanggalBerdiri;
+        const alamat = button.dataset.alamat;
+        const desa = button.dataset.desa;
+        const kodePos = button.dataset.kodePos;
         const ketua = button.dataset.ketua;
         const telepon = button.dataset.telepon;
+        const email = button.dataset.email;
+        const nomorSK = button.dataset.nomorSk;
+        const jumlahAnggota = button.dataset.jumlahAnggota;
+        const totalKegiatan = button.dataset.totalKegiatan;
+        const deskripsi = button.dataset.deskripsi;
 
         document
             .getElementById('modalEditPAC')
@@ -409,10 +441,20 @@
             .getElementById('modalEditPAC')
             .classList.add('flex');
 
-        document.getElementById('editNamaPAC').value = nama;
-        document.getElementById('editKecamatan').value = kecamatan;
-        document.getElementById('editKetua').value = ketua;
-        document.getElementById('editTelepon').value = telepon;
+        document.getElementById('editNamaPAC').value = nama || '';
+        document.getElementById('editKecamatan').value = kecamatan || '';
+        document.getElementById('editStatus').value = status || 'aktif';
+        document.getElementById('editTanggalBerdiri').value = tanggalBerdiri || '';
+        document.getElementById('editAlamat').value = alamat || '';
+        document.getElementById('editDesa').value = desa || '';
+        document.getElementById('editKodePos').value = kodePos || '';
+        document.getElementById('editKetua').value = ketua || '';
+        document.getElementById('editTelepon').value = telepon || '';
+        document.getElementById('editEmail').value = email || '';
+        document.getElementById('editNomorSK').value = nomorSK || '';
+        document.getElementById('editJumlahAnggota').value = jumlahAnggota || 0;
+        document.getElementById('editTotalKegiatan').value = totalKegiatan || 0;
+        document.getElementById('editDeskripsi').value = deskripsi || '';
 
         document
             .getElementById('formEditPAC')

@@ -20,6 +20,10 @@ return new class extends Migration
 
             $table->string('profesi');
 
+            $table->string('telepon')->nullable();
+
+            $table->string('pendidikan');
+
             $table->enum('status', [
                 'aktif',
                 'tidak_aktif'

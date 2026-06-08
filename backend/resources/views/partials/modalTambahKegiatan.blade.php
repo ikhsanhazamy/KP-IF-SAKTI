@@ -15,13 +15,14 @@
                 ×
             </button>
 
-            <h2 class="text-4xl font-bold mb-8">
+            <h2 id="kegiatanModalTitle" class="text-4xl font-bold mb-8">
                 Tambah Kegiatan Baru
             </h2>
 
-            <form action="/kegiatan/store" method="POST">
+            <form id="kegiatanForm" action="/kegiatan/store" method="POST">
 
                 @csrf
+                <input type="hidden" name="_method" id="kegiatanMethod" value="POST">
 
                 <div class="space-y-5">
 
@@ -33,6 +34,7 @@
                         </label>
 
                         <input
+                            id="judul"
                             type="text"
                             name="judul"
                             placeholder="Masukkan judul kegiatan"
@@ -51,6 +53,7 @@
                             </label>
 
                             <input
+                                id="tanggal"
                                 type="date"
                                 name="tanggal"
                                 class="w-full border rounded-2xl px-5 py-4"
@@ -65,6 +68,7 @@
                             </label>
 
                             <input
+                                id="waktu"
                                 type="time"
                                 name="waktu"
                                 class="w-full border rounded-2xl px-5 py-4"
@@ -82,6 +86,7 @@
                         </label>
 
                         <input
+                            id="lokasi"
                             type="text"
                             name="lokasi"
                             placeholder="Masukkan lokasi kegiatan"
@@ -100,6 +105,7 @@
                             </label>
 
                             <input
+                                id="kategori"
                                 type="text"
                                 name="kategori"
                                 placeholder="Seminar, Workshop, dll"
@@ -115,6 +121,7 @@
                             </label>
 
                             <input
+                                id="peserta"
                                 type="number"
                                 name="peserta"
                                 placeholder="100"
@@ -133,6 +140,7 @@
                         </label>
 
                         <select
+                            id="status"
                             name="status"
                             class="w-full border rounded-2xl px-5 py-4"
                         >
@@ -161,6 +169,7 @@
                         </label>
 
                         <textarea
+                            id="deskripsi"
                             name="deskripsi"
                             rows="4"
                             placeholder="Masukkan deskripsi kegiatan"
@@ -181,6 +190,7 @@
                         </button>
 
                         <button
+                            id="kegiatanSubmitButton"
                             type="submit"
                             class="bg-[#15633D] text-white rounded-2xl py-4"
                         >

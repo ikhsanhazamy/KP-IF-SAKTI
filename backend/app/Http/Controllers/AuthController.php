@@ -20,7 +20,7 @@ class AuthController extends Controller
         {
             $request->session()->regenerate();
 
-            return redirect('/anggota');
+            return redirect('/dashboard');
         }
 
         return back()->withErrors([

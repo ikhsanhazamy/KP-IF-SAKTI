@@ -50,58 +50,62 @@
 
     </div>
 
-    <!-- CARD -->
-    <div class="grid grid-cols-4 gap-5">
+    <!-- CARD STATISTIK -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 
-        <div class="bg-white border border-gray-200 rounded-3xl p-7">
+    <!-- TOTAL ANGGOTA -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
 
-            <h2 class="text-5xl font-bold text-[#1E1E1E]">
-                {{ $anggota->count() }}
-            </h2>
+        <h2 class="text-[32px] font-bold text-[#1D1D1D]">
+            {{ $anggota->total() }}
+        </h2>
 
-            <p class="text-[#717182] mt-2 text-xl">
-                Total Anggota
-            </p>
-
-        </div>
-
-        <div class="bg-white border border-gray-200 rounded-3xl p-7">
-
-            <h2 class="text-5xl font-bold text-[#15633D]">
-                {{ $anggota->where('status', 'aktif')->count() }}
-            </h2>
-
-            <p class="text-[#717182] mt-2 text-xl">
-                Anggota Aktif
-            </p>
-
-        </div>
-
-        <div class="bg-white border border-gray-200 rounded-3xl p-7">
-
-            <h2 class="text-5xl font-bold text-[#15633D]">
-                0
-            </h2>
-
-            <p class="text-[#717182] mt-2 text-xl">
-                Anggota Baru (Bulan Ini)
-            </p>
-
-        </div>
-
-        <div class="bg-white border border-gray-200 rounded-3xl p-7">
-
-            <h2 class="text-5xl font-bold text-[#1E1E1E]">
-                98%
-            </h2>
-
-            <p class="text-[#717182] mt-2 text-xl">
-                Tingkat Verifikasi
-            </p>
-
-        </div>
+        <p class="text-[#717182] text-[14px] mt-2">
+            Total Anggota
+        </p>
 
     </div>
+
+    <!-- AKTIF -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+
+        <h2 class="text-[32px] font-bold text-[#4FA36C]">
+            {{ $anggota->where('status','aktif')->count() }}
+        </h2>
+
+        <p class="text-[#717182] text-[14px] mt-2">
+            Anggota Aktif
+        </p>
+
+    </div>
+
+    <!-- BARU BULAN INI -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+
+        <h2 class="text-[32px] font-bold text-[#15633D]">
+            {{ $anggotaBaru }}
+        </h2>
+
+        <p class="text-[#717182] text-[14px] mt-2">
+            Anggota Baru (Bulan Ini)
+        </p>
+
+    </div>
+
+    <!-- VERIFIKASI -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+
+        <h2 class="text-[32px] font-bold text-[#1D1D1D]">
+            100%
+        </h2>
+
+        <p class="text-[#717182] text-[14px] mt-2">
+            Tingkat Verifikasi
+        </p>
+
+    </div>
+
+</div>
 
     <!-- SEARCH -->
     <div class="bg-white border border-gray-200 rounded-3xl p-5 flex items-center justify-between gap-5">
@@ -285,7 +289,17 @@
                             </button>
 
                             <!-- EDIT -->
-                            <button>
+                            <button
+                                onclick="openEditModalFromButton(this)"
+                                data-id="{{ $item->id }}"
+                                data-nama="{{ $item->nama }}"
+                                data-email="{{ $item->email }}"
+                                data-telepon="{{ $item->telepon }}"
+                                data-pac="{{ $item->pac }}"
+                                data-profesi="{{ $item->profesi }}"
+                                data-tanggal="{{ $item->tanggal_bergabung }}"
+                                data-status="{{ $item->status }}"
+                            >
 
                                 <img
                                     src="{{ asset('backend/icons/edit.svg') }}"
@@ -295,7 +309,11 @@
                             </button>
 
                             <!-- DELETE -->
-                            <button>
+                            <button
+                                onclick="openDeleteModalFromButton(this)"
+                                data-id="{{ $item->id }}"
+                                data-nama="{{ $item->nama }}"
+                            >
 
                                 <img
                                     src="{{ asset('backend/icons/delete.svg') }}"
@@ -353,8 +371,7 @@
 
 </div>
 
-@include('partials.modalTambahAnggota')
-@include('partials.modalDetailAnggota')
+
 
 <!-- SCRIPT -->
 <script>
@@ -446,6 +463,74 @@
             .add('hidden');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | EDIT / DELETE
+    |--------------------------------------------------------------------------
+    */
+
+    function openEditModal(id, nama, email, telepon, pac, profesi, tanggal, status)
+    {
+        document.getElementById('editNama').value = nama;
+        document.getElementById('editEmail').value = email;
+        document.getElementById('editTelepon').value = telepon;
+        document.getElementById('editPac').value = pac;
+        document.getElementById('editProfesi').value = profesi;
+        document.getElementById('editTanggal').value = tanggal;
+        document.getElementById('editStatus').value = status;
+
+        document.getElementById('formEditAnggota').action = `/anggota/update/${id}`;
+
+        document.getElementById('modalEdit').classList.remove('hidden');
+        document.getElementById('modalEdit').classList.add('flex');
+    }
+
+    function closeEditModal()
+    {
+        document.getElementById('modalEdit').classList.remove('flex');
+        document.getElementById('modalEdit').classList.add('hidden');
+    }
+
+    function openDeleteModal(id, nama)
+    {
+        document.getElementById('hapusText').innerText = `Hapus anggota "${nama}"? Tindakan ini tidak bisa dibatalkan.`;
+        document.getElementById('formDeleteAnggota').action = `/anggota/delete/${id}`;
+
+        document.getElementById('modalHapus').classList.remove('hidden');
+        document.getElementById('modalHapus').classList.add('flex');
+    }
+
+    function closeDeleteModal()
+    {
+        document.getElementById('modalHapus').classList.remove('flex');
+        document.getElementById('modalHapus').classList.add('hidden');
+    }
+
+    function openEditModalFromButton(button) {
+        const id = button.dataset.id;
+        const nama = button.dataset.nama;
+        const email = button.dataset.email;
+        const telepon = button.dataset.telepon;
+        const pac = button.dataset.pac;
+        const profesi = button.dataset.profesi;
+        const tanggal = button.dataset.tanggal;
+        const status = button.dataset.status;
+
+        openEditModal(id, nama, email, telepon, pac, profesi, tanggal, status);
+    }
+
+    function openDeleteModalFromButton(button) {
+        const id = button.dataset.id;
+        const nama = button.dataset.nama;
+
+        openDeleteModal(id, nama);
+    }
+
 </script>
+
+@include('partials.modalTambahAnggota')
+@include('partials.modalDetailAnggota')
+@include('partials.modalEditAnggota')
+@include('partials.modalHapusAnggota')
 
 @endsection

@@ -12,11 +12,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        href=https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800
         rel="stylesheet">
 </head>
 
-<body class="bg-[#F5F5F5] font-[Poppins] overflow-hidden">
+<body class="bg-[#F5F5F5] font-[Plus Jakarta Sans] overflow-hidden">
 
     <div class="flex h-screen">
 

@@ -25,6 +25,8 @@ class PAC extends Model
 
         'jumlah_anggota',
         'deskripsi',
+        'nomor_sk',
+        'total_kegiatan',
 
     ];
 }

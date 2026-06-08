@@ -202,25 +202,26 @@
 
                         <div class="flex justify-end gap-4">
 
-                            <button>
-
-                                <img
-                                    src="{{ asset('backend/icons/edit.svg') }}"
-                                    class="w-5 h-5"
-                                    alt=""
-                                >
-
+                            <button type="button" onclick="openEditKegiatanModal({{ $item->id }})" class="flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-200 text-[#4B5563] hover:bg-gray-100 transition" aria-label="Edit kegiatan">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 20h9" />
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" />
+                                </svg>
                             </button>
 
-                            <button>
-
-                                <img
-                                    src="{{ asset('backend/icons/delete.svg') }}"
-                                    class="w-5 h-5"
-                                    alt=""
-                                >
-
-                            </button>
+                            <form action="/kegiatan/delete/{{ $item->id }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kegiatan ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="flex h-11 w-11 items-center justify-center rounded-2xl border border-red-100 bg-red-50 text-red-600 hover:bg-red-100 transition" aria-label="Hapus kegiatan">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M3 6h18" />
+                                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                        <path d="M10 11v6" />
+                                        <path d="M14 11v6" />
+                                    </svg>
+                                </button>
+                            </form>
 
                         </div>
 
@@ -256,6 +257,7 @@
 
     function openTambahKegiatanModal()
     {
+        resetKegiatanModal();
         document
             .getElementById('modalTambahKegiatan')
             .classList
@@ -267,8 +269,51 @@
             .add('flex');
     }
 
+    function openEditKegiatanModal(id)
+    {
+        fetch(`/kegiatan/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response not ok');
+                }
+
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('kegiatanModalTitle').textContent = 'Edit Kegiatan';
+                document.getElementById('kegiatanSubmitButton').textContent = 'Update';
+
+                const form = document.getElementById('kegiatanForm');
+                form.action = `/kegiatan/update/${id}`;
+                document.getElementById('kegiatanMethod').value = 'PUT';
+
+                document.getElementById('judul').value = data.judul || '';
+                document.getElementById('tanggal').value = data.tanggal || '';
+                document.getElementById('waktu').value = data.waktu || '';
+                document.getElementById('lokasi').value = data.lokasi || '';
+                document.getElementById('kategori').value = data.kategori || '';
+                document.getElementById('peserta').value = data.peserta || '';
+                document.getElementById('status').value = data.status || 'upcoming';
+                document.getElementById('deskripsi').value = data.deskripsi || '';
+
+                document
+                    .getElementById('modalTambahKegiatan')
+                    .classList
+                    .remove('hidden');
+
+                document
+                    .getElementById('modalTambahKegiatan')
+                    .classList
+                    .add('flex');
+            })
+            .catch(() => {
+                alert('Gagal memuat data kegiatan. Silakan coba lagi.');
+            });
+    }
+
     function closeTambahKegiatanModal()
     {
+        resetKegiatanModal();
         document
             .getElementById('modalTambahKegiatan')
             .classList
@@ -278,6 +323,25 @@
             .getElementById('modalTambahKegiatan')
             .classList
             .add('hidden');
+    }
+
+    function resetKegiatanModal()
+    {
+        document.getElementById('kegiatanModalTitle').textContent = 'Tambah Kegiatan Baru';
+        document.getElementById('kegiatanSubmitButton').textContent = 'Simpan';
+
+        const form = document.getElementById('kegiatanForm');
+        form.action = '/kegiatan/store';
+        document.getElementById('kegiatanMethod').value = 'POST';
+
+        document.getElementById('judul').value = '';
+        document.getElementById('tanggal').value = '';
+        document.getElementById('waktu').value = '';
+        document.getElementById('lokasi').value = '';
+        document.getElementById('kategori').value = '';
+        document.getElementById('peserta').value = '';
+        document.getElementById('status').value = 'upcoming';
+        document.getElementById('deskripsi').value = '';
     }
 
 </script>

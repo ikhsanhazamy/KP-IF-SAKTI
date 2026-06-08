@@ -20,7 +20,7 @@
         </div>
 
         <!-- TOP REPORT CARDS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
             <!-- CARD -->
             <div class="bg-white border border-gray-200 rounded-3xl p-7">
@@ -140,42 +140,8 @@
 
             </div>
 
-            <!-- CARD -->
-            <div class="bg-white border border-gray-200 rounded-3xl p-7">
-
-                <div class="w-14 h-14 rounded-2xl bg-[#EDF7F0] flex items-center justify-center mb-5">
-
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         class="w-7 h-7 text-[#15633D]"
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke="currentColor">
-
-                        <path stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M13 7h8m0 0v8m0-8L10 18l-5-5-7 7"/>
-
-                    </svg>
-
-                </div>
-
-                <h2 class="text-2xl font-bold">
-                    Laporan Keuangan
-                </h2>
-
-                <p class="text-gray-500 mt-3">
-                    Laporan pemasukan dan pengeluaran organisasi
-                </p>
-
-                <button class="mt-7 w-full border border-gray-200 rounded-2xl py-3 hover:bg-gray-50 transition">
-                    Generate
-                </button>
-
-            </div>
-
         </div>
-
+           
         <!-- CHART SECTION -->
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
@@ -324,35 +290,35 @@
 
         </div>
 
-        <!-- EXPORT -->
+       <!-- EXPORT DATA -->
         <div class="bg-white border border-gray-200 rounded-3xl p-7">
 
             <h2 class="text-2xl font-bold mb-6">
                 Export Data
             </h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-                <a href="/laporan/export/pdf"
-                   class="border border-gray-200 rounded-2xl py-4 flex items-center justify-center hover:bg-gray-50 transition">
+            <a
+                href="/laporan/export/pdf"
+                class="border border-gray-200 rounded-2xl py-4 flex items-center justify-center hover:bg-gray-50 transition"
+            >
+                Export PDF
+            </a>
 
-                    Export ke PDF
+            <a
+                href="/laporan/export/excel"
+                class="border border-gray-200 rounded-2xl py-4 flex items-center justify-center hover:bg-gray-50 transition"
+            >
+                Export Excel
+            </a>
 
-                </a>
-
-                <button class="border border-gray-200 rounded-2xl py-4 hover:bg-gray-50 transition">
-
-                    Export ke Excel
-
-                </button>
-
-                <button class="border border-gray-200 rounded-2xl py-4 hover:bg-gray-50 transition">
-
-                    Export ke CSV
-
-                </button>
-
-            </div>
+            <a
+                href="/laporan/export/csv"
+                class="border border-gray-200 rounded-2xl py-4 flex items-center justify-center hover:bg-gray-50 transition"
+            >
+                Export CSV
+            </a>
 
         </div>
 

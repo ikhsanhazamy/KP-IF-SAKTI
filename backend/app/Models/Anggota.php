@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Anggota extends Model
 {
     protected $fillable = [
-
-        'nama',
-        'email',
-        'pac',
-        'profesi',
-        'status',
-        'tanggal_bergabung'
+    'nama',
+    'email',
+    'telepon',
+    'pac',
+    'profesi',
+    'tanggal_bergabung',
+    'status',
+    'pendidikan',
 
     ];
 }

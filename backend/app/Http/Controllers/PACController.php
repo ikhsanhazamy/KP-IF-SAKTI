@@ -68,17 +68,19 @@ class PACController extends Controller
             'desa' => $request->desa,
             'kode_pos' => $request->kode_pos,
 
-            'ketua' => $request->ketua,
+            'ketua_pac' => $request->ketua,
             'telepon' => $request->telepon,
             'email' => $request->email,
 
             'jumlah_anggota' => $request->jumlah_anggota ?? 0,
 
             'deskripsi' => $request->deskripsi,
+            'nomor_sk' => $request->nomor_sk,
+            'total_kegiatan' => $request->total_kegiatan ?? 0,
 
         ]);
 
-        return redirect('/data-pac')
+        return redirect()->route('pac.index')
             ->with('success', 'PAC berhasil ditambahkan');
     }
 
@@ -106,27 +108,23 @@ class PACController extends Controller
         $pac = PAC::findOrFail($id);
 
         $pac->update([
-
             'nama_pac' => $request->nama_pac,
             'kecamatan' => $request->kecamatan,
             'status' => $request->status,
             'tanggal_berdiri' => $request->tanggal_berdiri,
-
             'alamat' => $request->alamat,
             'desa' => $request->desa,
             'kode_pos' => $request->kode_pos,
-
-            'ketua' => $request->ketua,
+            'ketua_pac' => $request->ketua,
             'telepon' => $request->telepon,
             'email' => $request->email,
-
             'jumlah_anggota' => $request->jumlah_anggota,
-
+            'nomor_sk' => $request->nomor_sk,
+            'total_kegiatan' => $request->total_kegiatan,
             'deskripsi' => $request->deskripsi,
-
         ]);
 
-        return redirect('/data-pac')
+        return redirect()->route('pac.index')
             ->with('success', 'PAC berhasil diupdate');
     }
 
@@ -142,7 +140,7 @@ class PACController extends Controller
 
         $pac->delete();
 
-        return redirect('/data-pac')
+        return redirect()->route('pac.index')
             ->with('success', 'PAC berhasil dihapus');
     }
 
