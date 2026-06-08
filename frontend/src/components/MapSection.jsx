@@ -1,6 +1,7 @@
 import PacIcon from "../assets/icons/pac.svg";
 import AnggotaIcon from "../assets/icons/anggota.svg";
 import PertumbuhanIcon from "../assets/icons/pertumbuhan.svg";
+import Location from "../assets/icons/Location.svg";
 
 function MapSection() {
   return (
@@ -94,7 +95,7 @@ function MapSection() {
 
           <div className="bg-white rounded-xl p-5 border border-gray-200 h-[170px] flex flex-col justify-between">
             <div className="w-10 h-10 bg-[#eef3f0] rounded-lg flex items-center justify-center">
-              📍
+              <img src={Location} className="w-14 h-14" />
             </div>
             <div>
               <p className="text-xl font-semibold text-gray-900">15</p>

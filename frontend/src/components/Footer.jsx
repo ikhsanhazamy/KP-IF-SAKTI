@@ -88,7 +88,7 @@ function Footer() {
           </div>
         </div>
 
-        {/* COPYRIGHT */}
+        
         <p className="text-sm opacity-80">
           © 2026 Fatayat NU Sukabumi. All rights reserved.
         </p>
