@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   app:
-    image: php:8.1-fpm
+    image: php:8.2-fpm
     working_dir: /var/www/html
     volumes:
       - ./backend:/var/www/html
