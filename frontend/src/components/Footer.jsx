@@ -28,9 +28,9 @@ function Footer() {
           </p>
 
           <div className="text-sm opacity-80 space-y-2">
-            <p>📍 Jl. Raya Sukabumi No.123, Kecamatan Cibadak, Kabupaten Sukabumi</p>
-            <p>📞 +62 266 123456</p>
-            <p>✉️ info@fatayatsukabumi.or.id</p>
+            <p>Jl. Raya Sukabumi No.123, Kecamatan Cibadak, Kabupaten Sukabumi</p>
+            <p>+62 266 123456</p>
+            <p>info@fatayatsukabumi.or.id</p>
           </div>
         </div>
 
@@ -88,7 +88,7 @@ function Footer() {
           </div>
         </div>
 
-        
+
         <p className="text-sm opacity-80">
           © 2026 Fatayat NU Sukabumi. All rights reserved.
         </p>
