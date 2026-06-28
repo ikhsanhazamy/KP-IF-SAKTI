@@ -51,32 +51,32 @@ function PacSection() {
   ];
 
   return (
-    <section className="bg-[#f6f8f7] px-20 py-20">
+    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-20">
 
       {/* HEADER */}
-      <div className="text-center mb-14">
+      <div className="text-center mb-10 sm:mb-14">
         <div className="inline-flex items-center gap-2 bg-[#eef3f0] text-[#1f7a4d] px-4 py-1 rounded-full text-sm">
           Informasi PAC
         </div>
 
-        <h2 className="text-3xl font-semibold mt-4 text-gray-900">
+        <h2 className="text-2xl sm:text-3xl font-semibold mt-4 text-gray-900">
           Daftar Pimpinan Anak Cabang
         </h2>
 
-        <p className="text-gray-500 mt-2 max-w-xl mx-auto">
+        <p className="text-gray-500 mt-2 max-w-xl mx-auto text-sm sm:text-base">
           Informasi lengkap mengenai PAC Fatayat NU di seluruh wilayah Kabupaten Sukabumi
         </p>
       </div>
 
-      {/* GRID WRAPPER (KUNCI PRESISI) */}
+      {/* GRID WRAPPER */}
       <div className="max-w-[1215px] mx-auto">
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {data.map((item, i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl p-6 border border-gray-200 w-[389px] h-[266px] flex flex-col justify-between shadow-sm hover:shadow-md transition"
+              className="bg-white rounded-2xl p-6 border border-gray-200 flex flex-col justify-between shadow-sm hover:shadow-md transition"
             >
 
               {/* HEADER CARD */}
@@ -102,19 +102,19 @@ function PacSection() {
               </div>
 
               {/* STATS */}
-              <div className="flex justify-between mt-4">
+              <div className="flex justify-between mt-4 gap-2">
 
-                <div className="bg-[#f3f5f4] rounded-xl w-[105px] h-[90px] flex flex-col items-center justify-center">
+                <div className="bg-[#f3f5f4] rounded-xl flex-1 h-[80px] sm:h-[90px] flex flex-col items-center justify-center">
                   <p className="text-base font-semibold">{item.anggota}</p>
                   <p className="text-xs text-gray-400">Anggota</p>
                 </div>
 
-                <div className="bg-[#f3f5f4] rounded-xl w-[105px] h-[90px] flex flex-col items-center justify-center">
+                <div className="bg-[#f3f5f4] rounded-xl flex-1 h-[80px] sm:h-[90px] flex flex-col items-center justify-center">
                   <p className="text-base font-semibold">{item.kegiatan}</p>
                   <p className="text-xs text-gray-400">Kegiatan</p>
                 </div>
 
-                <div className="bg-[#f3f5f4] rounded-xl w-[105px] h-[90px] flex flex-col items-center justify-center">
+                <div className="bg-[#f3f5f4] rounded-xl flex-1 h-[80px] sm:h-[90px] flex flex-col items-center justify-center">
                   <p
                     className={`text-base font-semibold ${
                       item.growth.includes("-")
@@ -130,7 +130,7 @@ function PacSection() {
               </div>
 
               {/* BUTTON */}
-              <button className="w-full h-[42px] border border-gray-200 rounded-xl text-sm hover:bg-gray-50 transition">
+              <button className="w-full h-[42px] border border-gray-200 rounded-xl text-sm hover:bg-gray-50 transition mt-4">
                 Lihat Detail
               </button>
 

@@ -5,20 +5,20 @@ import PacIcon from "../assets/icons/pac.svg";
 
 function Stats() {
   return (
-    <section className="bg-[#DDEEE34D] px-20 py-20">
+    <section className="bg-[#DDEEE34D] px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-20">
 
       {/* HEADER */}
       <div className="text-center max-w-2xl mx-auto">
-        <h2 className="text-3xl font-semibold text-gray-900">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900">
           Statistik Organisasi
         </h2>
-        <p className="text-gray-500 mt-3">
+        <p className="text-gray-500 mt-3 text-sm sm:text-base">
           Data terkini mengenai perkembangan dan aktivitas organisasi Fatayat NU Sukabumi
         </p>
       </div>
 
       {/* GRID */}
-      <div className="grid grid-cols-3 gap-6 mt-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
 
         {/* CARD 1 */}
         <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">

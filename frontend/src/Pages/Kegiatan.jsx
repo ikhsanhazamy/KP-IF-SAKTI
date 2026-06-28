@@ -86,7 +86,6 @@ function Kegiatan() {
         return res.json();
       })
       .then((data) => {
-        // Format data dari backend ke struktur yang dibutuhkan frontend
         const formattedData = data.map((item) => ({
           title: item.judul,
           desc: item.deskripsi,
@@ -100,7 +99,6 @@ function Kegiatan() {
       })
       .catch((err) => {
         console.error(err);
-        // Fallback filter lokal menggunakan mock data jika server offline
         const filteredMock = mockKegiatan.filter((item) => {
           const matchesSearch =
             item.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -120,29 +118,29 @@ function Kegiatan() {
       <Navbar />
 
       {/* HERO */}
-      <section className="px-20 pt-24 pb-14 border-b border-[#E5E7EB]">
+      <section className="px-4 sm:px-8 lg:px-20 pt-14 sm:pt-20 lg:pt-24 pb-10 sm:pb-14 border-b border-[#E5E7EB]">
 
         {/* TITLE */}
         <div className="text-center">
 
-          <h1 className="text-[64px] font-semibold text-[#1F2937]">
+          <h1 className="text-[36px] sm:text-[48px] lg:text-[64px] font-semibold text-[#1F2937] leading-tight">
             Kegiatan & Program
           </h1>
 
-          <p className="text-[20px] text-[#9CA3AF] leading-[1.8] mt-5 max-w-[760px] mx-auto">
+          <p className="text-base sm:text-lg lg:text-[20px] text-[#9CA3AF] leading-[1.8] mt-4 sm:mt-5 max-w-[760px] mx-auto">
             Ikuti berbagai kegiatan, program, dan aktivitas Fatayat NU Sukabumi untuk pengembangan diri dan kontribusi sosial
           </p>
 
         </div>
 
         {/* SEARCH */}
-        <div className="max-w-[1280px] mx-auto mt-20">
+        <div className="max-w-[1280px] mx-auto mt-10 sm:mt-16 lg:mt-20">
 
-          <div className="w-full h-[58px] bg-white border border-[#E5E7EB] rounded-[18px] px-6 flex items-center">
+          <div className="w-full h-[52px] sm:h-[58px] bg-white border border-[#E5E7EB] rounded-[18px] px-4 sm:px-6 flex items-center">
 
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5 text-[#9CA3AF]"
+              className="w-5 h-5 text-[#9CA3AF] flex-shrink-0"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -160,19 +158,19 @@ function Kegiatan() {
               placeholder="Cari kegiatan..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="ml-4 w-full bg-transparent outline-none text-[16px] text-[#374151] placeholder:text-[#B0B7C3]"
+              className="ml-4 w-full bg-transparent outline-none text-[15px] sm:text-[16px] text-[#374151] placeholder:text-[#B0B7C3]"
             />
 
           </div>
 
           {/* CATEGORY */}
-          <div className="flex items-center gap-3 mt-8 flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-3 mt-6 sm:mt-8 flex-wrap">
 
             {categories.map((item, i) => (
               <button
                 key={i}
                 onClick={() => setSelectedCategory(item)}
-                className={`h-[42px] px-6 rounded-[14px] text-[15px] transition duration-200 ${
+                className={`h-[38px] sm:h-[42px] px-4 sm:px-6 rounded-[14px] text-[13px] sm:text-[15px] transition duration-200 ${
                   selectedCategory === item
                     ? "bg-[#1f7a4d] text-white"
                     : "bg-white border border-[#E5E7EB] text-[#6B7280] hover:border-[#1f7a4d] hover:text-[#1f7a4d]"
@@ -189,7 +187,7 @@ function Kegiatan() {
       </section>
 
       {/* GRID */}
-      <section className="px-20 py-24">
+      <section className="px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-24">
 
         <div className="max-w-[1280px] mx-auto">
           {loading ? (
@@ -199,7 +197,7 @@ function Kegiatan() {
               Tidak ada kegiatan yang ditemukan.
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {kegiatanList.map((item, i) => (
                 <div
                   key={i}
@@ -223,18 +221,18 @@ function Kegiatan() {
                   </div>
 
                   {/* CONTENT */}
-                  <div className="p-6">
+                  <div className="p-5 sm:p-6">
 
-                    <h3 className="text-[22px] leading-[1.5] font-semibold text-[#111827] line-clamp-2">
+                    <h3 className="text-[18px] sm:text-[22px] leading-[1.5] font-semibold text-[#111827] line-clamp-2">
                       {item.title}
                     </h3>
 
-                    <p className="text-[#9CA3AF] text-[15px] leading-[1.8] mt-5 min-h-[72px] line-clamp-3">
+                    <p className="text-[#9CA3AF] text-[14px] sm:text-[15px] leading-[1.8] mt-4 sm:mt-5 min-h-[60px] sm:min-h-[72px] line-clamp-3">
                       {item.desc}
                     </p>
 
                     {/* INFO */}
-                    <div className="mt-6 flex flex-col gap-3 text-[#9CA3AF] text-sm">
+                    <div className="mt-4 sm:mt-6 flex flex-col gap-2 sm:gap-3 text-[#9CA3AF] text-sm">
 
                       <div className="flex items-center gap-2">
                         📅 {item.date}
@@ -247,7 +245,7 @@ function Kegiatan() {
                     </div>
 
                     {/* BUTTON */}
-                    <button className="w-full h-[50px] border border-[#E5E7EB] rounded-[16px] mt-8 text-[#111827] hover:bg-[#1f7a4d] hover:text-white transition duration-300">
+                    <button className="w-full h-[46px] sm:h-[50px] border border-[#E5E7EB] rounded-[16px] mt-6 sm:mt-8 text-[#111827] hover:bg-[#1f7a4d] hover:text-white transition duration-300">
                       Lihat Detail
                     </button>
 

@@ -28,46 +28,44 @@ function ValueSection() {
   ];
 
   return (
-     <section className="bg-[#f6f8f7] px-20 py-24">
+    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-16 sm:py-20 lg:py-24">
 
       {/* TITLE */}
-      <div className="text-center mb-14">
+      <div className="text-center mb-10 sm:mb-14">
 
-        <h2 className="text-[48px] font-semibold text-gray-900">
+        <h2 className="text-[32px] sm:text-[40px] lg:text-[48px] font-semibold text-gray-900">
           Nilai-Nilai Organisasi
         </h2>
 
       </div>
 
       {/* GRID */}
-      <div className="max-w-[1280px] mx-auto grid grid-cols-4 gap-8">
+      <div className="max-w-[1280px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
 
         {values.map((item, i) => (
-         <div
-  key={i}
-  className="bg-white border border-[#E7E7E7] rounded-[28px] w-[292px] h-[184px] px-6 pt-6"
->
+          <div
+            key={i}
+            className="bg-white border border-[#E7E7E7] rounded-[28px] px-6 pt-6 pb-8 min-h-[160px]"
+          >
 
-  {/* ICON */}
-  <div className="w-[52px] h-[52px] rounded-[16px] bg-[#eef3f0] flex items-center justify-center mb-5">
+            {/* ICON */}
+            <div className="w-[52px] h-[52px] rounded-[16px] bg-[#eef3f0] flex items-center justify-center mb-5">
+              <img
+                src={item.icon}
+                alt={item.title}
+                className="w-[50px] h-[50px]"
+              />
+            </div>
 
-    <img
-      src={item.icon}
-      alt={item.title}
-      className="w-[50px] h-[50px]"
-    />
+            {/* TITLE */}
+            <h3 className="text-[18px] font-semibold text-[#111827] mb-3 leading-none">
+              {item.title}
+            </h3>
 
-  </div>
-
-  {/* TITLE */}
-  <h3 className="text-[18px] font-semibold text-[#111827] mb-3 leading-none">
-    {item.title}
-  </h3>
-
-  {/* DESC */}
-  <p className="text-[15px] text-[#9CA3AF] leading-[1.5] max-w-[210px]">
-    {item.desc}
-  </p>
+            {/* DESC */}
+            <p className="text-[15px] text-[#9CA3AF] leading-[1.5]">
+              {item.desc}
+            </p>
 
           </div>
         ))}

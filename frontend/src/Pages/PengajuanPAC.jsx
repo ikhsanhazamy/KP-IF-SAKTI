@@ -73,17 +73,17 @@ function PengajuanPAC() {
     <div className="bg-[#f6f8f7] min-h-screen">
       <Navbar />
 
-      <section className="px-20 py-24">
+      <section className="px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-24">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-10 sm:mb-12">
             <div className="inline-flex items-center gap-2 bg-[#eef3f0] text-[#1f7a4d] px-4 py-1 rounded-full text-sm font-medium">
               ✍️ Formulir Pendaftaran
             </div>
-            <h1 className="text-4xl font-semibold text-gray-900 mt-4">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 mt-4">
               Pengajuan Data PAC Baru
             </h1>
-            <p className="text-gray-500 mt-3 leading-relaxed">
+            <p className="text-gray-500 mt-3 leading-relaxed text-sm sm:text-base">
               Ajukan pembentukan atau pendaftaran Pimpinan Anak Cabang (PAC) baru untuk divalidasi oleh admin Fatayat NU Sukabumi.
             </p>
           </div>
@@ -103,14 +103,14 @@ function PengajuanPAC() {
           )}
 
           {/* Form Card */}
-          <div className="bg-white rounded-3xl p-10 border border-gray-200 shadow-sm">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-gray-200 shadow-sm">
             <form onSubmit={handleSubmit} className="space-y-6">
               
-              <h2 className="text-xl font-semibold text-gray-800 border-b border-gray-100 pb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 border-b border-gray-100 pb-4">
                 Informasi PAC & Organisasi
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Nama PAC <span className="text-red-500">*</span>
@@ -171,11 +171,11 @@ function PengajuanPAC() {
                 </div>
               </div>
 
-              <h2 className="text-xl font-semibold text-gray-800 border-b border-gray-100 pt-6 pb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 border-b border-gray-100 pt-4 sm:pt-6 pb-4">
                 Kontak & Alamat Sekretariat
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     No. Telepon / WhatsApp <span className="text-red-500">*</span>
@@ -262,11 +262,11 @@ function PengajuanPAC() {
                 />
               </div>
 
-              <div className="pt-6">
+              <div className="pt-4 sm:pt-6">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-[54px] bg-[#1f7a4d] hover:bg-[#17633f] text-white font-semibold rounded-2xl shadow-md hover:shadow-lg transition duration-200 flex items-center justify-center disabled:opacity-50"
+                  className="w-full h-[52px] sm:h-[54px] bg-[#1f7a4d] hover:bg-[#17633f] text-white font-semibold rounded-2xl shadow-md hover:shadow-lg transition duration-200 flex items-center justify-center disabled:opacity-50"
                 >
                   {loading ? "Mengirim Pengajuan..." : "Kirim Pengajuan PAC"}
                 </button>

@@ -1,7 +1,7 @@
 function Footer() {
   return (
     <footer
-      className="text-white px-20 py-16"
+      className="text-white px-4 sm:px-8 lg:px-20 py-12 sm:py-16"
       style={{
         background:
           "linear-gradient(135deg, #0F5E3A 0%, #1A6741 7.14%, #237148 14.29%, #2C7B4F 21.43%, #358556 28.57%, #3E8F5D 35.71%, #469965 42.86%, #4FA36C 50%, #469965 57.14%, #3E8F5D 64.29%, #358556 71.43%, #2C7B4F 78.57%, #237148 85.71%, #1A6741 92.86%, #0F5E3A 100%)"
@@ -9,10 +9,10 @@ function Footer() {
     >
 
       {/* TOP */}
-      <div className="max-w-[1215px] mx-auto grid grid-cols-4 gap-10">
+      <div className="max-w-[1215px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10">
 
         {/* LEFT */}
-        <div>
+        <div className="sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold">
               FN
@@ -70,7 +70,7 @@ function Footer() {
       </div>
 
       {/* DIVIDER */}
-      <div className="max-w-[1215px] mx-auto border-t border-white/20 mt-12 pt-6 flex items-center justify-between">
+      <div className="max-w-[1215px] mx-auto border-t border-white/20 mt-10 sm:mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
 
         {/* SOCIAL */}
         <div className="flex gap-3">
@@ -88,8 +88,7 @@ function Footer() {
           </div>
         </div>
 
-
-        <p className="text-sm opacity-80">
+        <p className="text-sm opacity-80 text-center sm:text-right">
           © 2026 Fatayat NU Sukabumi. All rights reserved.
         </p>
 

@@ -11,9 +11,11 @@ export default defineConfig({
   },
   root: '.',
   server: {
+    host: '0.0.0.0',
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        // Di Docker pakai nama service "app", di luar Docker pakai localhost
+        target: process.env.VITE_API_TARGET || 'http://app:8000',
         changeOrigin: true,
         secure: false,
       },

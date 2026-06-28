@@ -18,26 +18,26 @@ function TestimoniSection() {
   ];
 
   return (
-    <section className="bg-[#f6f8f7] px-20 py-20">
+    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-20">
 
       {/* HEADER */}
-      <div className="text-center mb-14">
+      <div className="text-center mb-10 sm:mb-14">
         <div className="inline-flex items-center gap-2 bg-[#eef3f0] text-[#1f7a4d] px-4 py-1 rounded-full text-sm">
           💬 Testimoni
         </div>
 
-        <h2 className="text-3xl font-semibold mt-4 text-gray-900">
+        <h2 className="text-2xl sm:text-3xl font-semibold mt-4 text-gray-900">
           Apa Kata Mereka
         </h2>
 
-        <p className="text-gray-500 mt-2 max-w-xl mx-auto">
+        <p className="text-gray-500 mt-2 max-w-xl mx-auto text-sm sm:text-base">
           Pengalaman pengurus dan anggota dalam menggunakan platform manajemen organisasi kami
         </p>
       </div>
 
       {/* GRID */}
       <div className="max-w-[1215px] mx-auto">
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {data.map((item, i) => (
             <div
@@ -52,12 +52,12 @@ function TestimoniSection() {
                 </div>
 
                 <div className="w-8 h-8 bg-[#eef3f0] rounded-full flex items-center justify-center text-green-700">
-                  ”
+                  "
                 </div>
               </div>
 
               {/* TEXT */}
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm text-gray-600 leading-relaxed flex-1">
                 "{item.text}"
               </p>
 
@@ -65,7 +65,7 @@ function TestimoniSection() {
               <div className="flex items-center gap-3 mt-6">
 
                 {/* AVATAR */}
-                <div className="w-10 h-10 bg-gray-200 rounded-full" />
+                <div className="w-10 h-10 bg-gray-200 rounded-full flex-shrink-0" />
 
                 <div>
                   <p className="text-sm font-semibold text-gray-900">
