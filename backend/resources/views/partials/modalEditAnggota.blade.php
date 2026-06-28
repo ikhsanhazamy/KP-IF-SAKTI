@@ -1,228 +1,90 @@
-<div
-    id="modalEdit"
-    class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50 overflow-y-auto p-6"
->
-
-    <div class="bg-white w-full max-w-3xl rounded-3xl p-8 my-10">
-
-        <!-- HEADER -->
-        <div class="flex items-center justify-between mb-8">
-
+<div id="modalEdit" class="fixed inset-0 z-[100] hidden items-start justify-center overflow-y-auto bg-black/40 p-4 sm:p-6">
+    <div class="my-auto max-h-[calc(100vh-2rem)] w-full max-w-3xl overflow-y-auto rounded-3xl bg-white p-6 sm:p-8">
+        <div class="mb-8 flex items-center justify-between">
             <div>
-
-                <h2 class="text-3xl font-bold text-[#1E1E1E]">
-                    Edit Anggota
-                </h2>
-
-                <p class="text-gray-500 mt-2">
-                    Perbarui data anggota Fatayat NU
-                </p>
-
+                <h2 class="text-3xl font-bold text-[#1E1E1E]">Edit Anggota</h2>
+                <p class="mt-2 text-gray-500">Perbarui data anggota Fatayat NU</p>
             </div>
-
-            <button
-                onclick="closeEditModal()"
-                class="text-3xl text-gray-400 hover:text-black transition"
-            >
-                ✕
+            <button type="button" onclick="closeEditModal()" class="text-3xl text-gray-400 hover:text-black">
+                &times;
             </button>
-
         </div>
 
-        <!-- FORM -->
-        <form
-            id="formEditAnggota"
-            method="POST"
-            class="space-y-6"
-        >
-
+        <form id="formEditAnggota" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
 
-            <!-- NAMA -->
             <div>
-
-                <label class="block text-lg font-medium mb-3">
-                    Nama Lengkap
-                </label>
-
-                <input
-                    type="text"
-                    name="nama"
-                    id="editNama"
-                    class="w-full border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-[#15633D]/10"
-                    required
-                >
-
+                <label class="mb-3 block text-lg font-medium">Nama Lengkap</label>
+                <input type="text" name="nama" id="editNama" class="w-full rounded-2xl border border-gray-200 px-5 py-4" required>
             </div>
 
-            <!-- EMAIL -->
-            <div>
-
-                <label class="block text-lg font-medium mb-3">
-                    Email
-                </label>
-
-                <input
-                    type="email"
-                    name="email"
-                    id="editEmail"
-                    class="w-full border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-[#15633D]/10"
-                    required
-                >
-
-            </div>
-
-            <!-- TELEPON -->
-            <div>
-
-                <label class="block text-lg font-medium mb-3">
-                    Nomor Telepon
-                </label>
-
-                <input
-                    type="text"
-                    name="telepon"
-                    id="editTelepon"
-                    class="w-full border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-[#15633D]/10"
-                    required
-                >
-
-            </div>
-
-            <!-- GRID -->
-            <div class="grid grid-cols-2 gap-6">
-
-                <!-- PAC -->
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-
-                    <label class="block text-lg font-medium mb-3">
-                        PAC
-                    </label>
-
-                    <input
-                        type="text"
-                        name="pac"
-                        id="editPac"
-                        class="w-full border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-[#15633D]/10"
-                        required
-                    >
-
+                    <label class="mb-3 block text-lg font-medium">Email</label>
+                    <input type="email" name="email" id="editEmail" class="w-full rounded-2xl border border-gray-200 px-5 py-4" required>
                 </div>
-
-                <!-- PROFESI -->
                 <div>
-
-                    <label class="block text-lg font-medium mb-3">
-                        Profesi
-                    </label>
-
-                    <input
-                        type="text"
-                        name="profesi"
-                        id="editProfesi"
-                        class="w-full border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-[#15633D]/10"
-                        required
-                    >
-
+                    <label class="mb-3 block text-lg font-medium">Nomor Telepon</label>
+                    <input type="text" name="telepon" id="editTelepon" class="w-full rounded-2xl border border-gray-200 px-5 py-4" required>
                 </div>
-
             </div>
 
-            <!-- PENDIDIKAN -->
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
+                    <label class="mb-3 block text-lg font-medium">PAC</label>
+                    <input type="text" name="pac" id="editPac" class="w-full rounded-2xl border border-gray-200 px-5 py-4" required>
+                </div>
+                <div>
+                    <label class="mb-3 block text-lg font-medium">Profesi</label>
+                    <input type="text" name="profesi" id="editProfesi" class="w-full rounded-2xl border border-gray-200 px-5 py-4" required>
+                </div>
+            </div>
+
             <div>
-
-                <label class="block text-lg font-medium mb-3">
-                    Pendidikan
-                </label>
-
-                <select
-                    name="pendidikan"
-                    id="editPendidikan"
-                    class="w-full border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-[#15633D]/10"
-                    required
-                >
+                <label class="mb-3 block text-lg font-medium">Pendidikan</label>
+                <select name="pendidikan" id="editPendidikan" class="w-full rounded-2xl border border-gray-200 px-5 py-4" required>
                     <option value="">Pilih Pendidikan</option>
-                    <option value="SD">SD</option>
-                    <option value="SMP">SMP</option>
-                    <option value="SMA">SMA</option>
-                    <option value="D3">D3</option>
-                    <option value="S1">S1</option>
-                    <option value="S2">S2</option>
-                    <option value="S3">S3</option>
+                    @foreach(['SD', 'SMP', 'SMA', 'D3', 'S1', 'S2', 'S3'] as $pendidikan)
+                        <option value="{{ $pendidikan }}">{{ $pendidikan }}</option>
+                    @endforeach
                 </select>
-
             </div>
 
-            <!-- GRID -->
-            <div class="grid grid-cols-2 gap-6">
-
-                <!-- TANGGAL -->
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-
-                    <label class="block text-lg font-medium mb-3">
-                        Tanggal Bergabung
-                    </label>
-
+                    <label class="mb-3 block text-lg font-medium">Tanggal Lahir</label>
                     <input
                         type="date"
-                        name="tanggal_bergabung"
-                        id="editTanggal"
-                        class="w-full border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-[#15633D]/10"
+                        name="tanggal_lahir"
+                        id="editTanggalLahir"
+                        max="{{ now()->toDateString() }}"
+                        class="w-full rounded-2xl border border-gray-200 px-5 py-4"
                         required
                     >
-
                 </div>
-
-                <!-- STATUS -->
                 <div>
-
-                    <label class="block text-lg font-medium mb-3">
-                        Status
-                    </label>
-
-                    <select
-                        name="status"
-                        id="editStatus"
-                        class="w-full border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-[#15633D]/10"
-                    >
-
-                        <option value="aktif">
-                            Aktif
-                        </option>
-
-                        <option value="tidak_aktif">
-                            Tidak Aktif
-                        </option>
-
-                    </select>
-
+                    <label class="mb-3 block text-lg font-medium">Tanggal Bergabung</label>
+                    <input type="date" name="tanggal_bergabung" id="editTanggal" class="w-full rounded-2xl border border-gray-200 px-5 py-4" required>
                 </div>
-
             </div>
 
-            <!-- BUTTON -->
-            <div class="flex justify-end gap-4 pt-4">
+            <div>
+                <label class="mb-3 block text-lg font-medium">Status</label>
+                <select name="status" id="editStatus" class="w-full rounded-2xl border border-gray-200 px-5 py-4" required>
+                    <option value="aktif">Aktif</option>
+                    <option value="tidak_aktif">Tidak Aktif</option>
+                </select>
+            </div>
 
-                <button
-                    type="button"
-                    onclick="closeEditModal()"
-                    class="px-8 py-4 rounded-2xl border border-gray-200 hover:bg-gray-50 transition"
-                >
+            <div class="flex justify-end gap-4 pt-4">
+                <button type="button" onclick="closeEditModal()" class="rounded-2xl border border-gray-200 px-8 py-4 hover:bg-gray-50">
                     Batal
                 </button>
-
-                <button
-                    type="submit"
-                    class="bg-[#15633D] hover:bg-[#0F5E3A] text-white px-8 py-4 rounded-2xl transition"
-                >
+                <button type="submit" class="rounded-2xl bg-[#15633D] px-8 py-4 text-white hover:bg-[#0F5E3A]">
                     Simpan Perubahan
                 </button>
-
             </div>
-
         </form>
-
     </div>
-
 </div>

@@ -20,27 +20,46 @@
         <div class="flex items-center gap-4">
 
             <!-- EXPORT -->
-            <button
-                class="flex items-center gap-3 border border-gray-200 bg-white px-7 py-4 rounded-2xl text-xl font-medium hover:bg-gray-50 transition">
-
-                <img
-                    src="{{ asset('backend/icons/export.svg') }}"
-                    class="w-6 h-6"
-                    alt="Export">
-
+            <a
+                href="/laporan/export/excel"
+                class="flex items-center gap-3 border border-gray-200 bg-white px-7 py-4 rounded-2xl text-xl font-medium hover:bg-gray-50 transition"
+            >
+                <svg
+                    class="h-7 w-7"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M12 3v11"></path>
+                    <path d="m7.5 9.5 4.5 4.5 4.5-4.5"></path>
+                    <path d="M4 16v2.5A2.5 2.5 0 0 0 6.5 21h11a2.5 2.5 0 0 0 2.5-2.5V16"></path>
+                </svg>
                 Export
-
-            </button>
+            </a>
 
             <!-- TAMBAH -->
             <button
                 onclick="openTambahModal()"
                 class="flex items-center gap-3 bg-[#15633D] hover:bg-[#0F5E3A] text-white px-7 py-4 rounded-2xl text-xl font-medium transition">
 
-                <img
-                    src="{{ asset('backend/icons/tambah.svg') }}"
-                    class="w-6 h-6"
-                    alt="Tambah">
+                <svg
+                    class="h-7 w-7"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="9" cy="7" r="3"></circle>
+                    <path d="M3.5 20v-1.5A4.5 4.5 0 0 1 8 14h2a4.5 4.5 0 0 1 4.5 4.5V20"></path>
+                    <path d="M18 8v6M15 11h6"></path>
+                </svg>
 
                 Tambah Anggota
 
@@ -139,7 +158,7 @@
 
             <a
                 href="/anggota"
-                class="px-7 py-4 rounded-2xl text-xl border transition
+                class="whitespace-nowrap px-7 py-4 rounded-2xl text-xl border transition
                 {{ !request('status') ? 'bg-[#15633D] text-white border-[#15633D]' : 'bg-white text-[#1E1E1E] border-gray-200' }}">
 
                 Semua
@@ -239,13 +258,13 @@
 
                         @if($item->status == 'aktif')
 
-                            <span class="bg-[#EDF7F0] text-[#15633D] px-5 py-2 rounded-full text-sm font-medium">
+                            <span class="inline-flex whitespace-nowrap bg-[#EDF7F0] text-[#15633D] px-5 py-2 rounded-full text-sm font-medium">
                                 Aktif
                             </span>
 
                         @else
 
-                            <span class="bg-[#F1F1F3] text-[#717182] px-5 py-2 rounded-full text-sm font-medium">
+                            <span class="inline-flex whitespace-nowrap bg-[#F1F1F3] text-[#717182] px-5 py-2 rounded-full text-sm font-medium">
                                 Tidak Aktif
                             </span>
 
@@ -429,14 +448,14 @@
             statusElement.innerText = 'Aktif';
 
             statusElement.className =
-                'bg-[#EDF7F0] text-[#15633D] px-5 py-2 rounded-full text-sm font-medium';
+                'inline-flex whitespace-nowrap bg-[#EDF7F0] text-[#15633D] px-5 py-2 rounded-full text-sm font-medium';
         }
         else
         {
             statusElement.innerText = 'Tidak Aktif';
 
             statusElement.className =
-                'bg-[#F1F1F3] text-[#717182] px-5 py-2 rounded-full text-sm font-medium';
+                'inline-flex whitespace-nowrap bg-[#F1F1F3] text-[#717182] px-5 py-2 rounded-full text-sm font-medium';
         }
 
         document

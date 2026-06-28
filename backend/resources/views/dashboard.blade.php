@@ -2,23 +2,26 @@
 
 @section('content')
 
-<div class="space-y-6">
+<div class="mx-auto max-w-[1600px] space-y-7">
 
     <div>
 
-        <h1 class="text-[30px] font-bold text-[#1D1D1D]">
+        <h1 class="text-[30px] font-bold tracking-[-0.03em] text-[#202321] sm:text-[34px]">
             Dashboard Overview
         </h1>
 
-        <p class="text-[#717182] mt-2 text-[16px]">
+        <p class="mt-2 text-[15px] text-[#747887] sm:text-base">
             Selamat datang di dashboard Fatayat NU Sukabumi
+            <span class="hidden sm:inline">
+                - Update terakhir: {{ $lastUpdated->locale('id')->translatedFormat('d F Y') }}
+            </span>
         </p>
 
     </div>
 
     @include('dashboard.cards')
 
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
 
         @include('dashboard.pendidikan-chart')
 
@@ -26,13 +29,14 @@
 
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
 
         @include('dashboard.aktivitas')
 
-        @include('dashboard.status-pac')
-
-        @include('dashboard.top-pac')
+        <div class="space-y-6">
+            @include('dashboard.status-pac')
+            @include('dashboard.top-pac')
+        </div>
 
     </div>
 

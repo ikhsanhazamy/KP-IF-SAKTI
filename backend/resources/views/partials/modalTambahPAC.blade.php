@@ -143,8 +143,9 @@
                                 </div>
                                 <input
                                     type="text"
-                                    name="ketua"
+                                    name="ketua_pac"
                                     class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
+                                    required
                                 >
                             </div>
 

@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anggota;
 use App\Models\PAC;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class PACController extends Controller
 {
@@ -15,22 +19,61 @@ class PACController extends Controller
 
     public function index()
     {
-        $pacs = PAC::latest()->paginate(9);
-
+        $pacs = PAC::orderBy('id')->paginate(9);
         $totalPAC = PAC::count();
-
         $pacAktif = PAC::where('status', 'aktif')->count();
-
         $totalAnggota = PAC::sum('jumlah_anggota');
-
         $totalKecamatan = PAC::distinct('kecamatan')->count();
+        $chartPACs = PAC::orderByDesc('jumlah_anggota')->get();
+
+        $currentMonth = now();
+        $previousMonth = now()->subMonthNoOverflow();
+        $anggota = Anggota::query()
+            ->select('pac', 'tanggal_bergabung')
+            ->get();
+
+        $pacs->setCollection(
+            $pacs->getCollection()->map(function (PAC $pac) use (
+                $anggota,
+                $currentMonth,
+                $previousMonth
+            ) {
+                $pacAnggota = $anggota->filter(function (Anggota $item) use ($pac) {
+                    $anggotaPAC = $this->normalizePACName($item->pac);
+                    $namaPAC = $this->normalizePACName($pac->nama_pac);
+                    $kecamatan = $this->normalizePACName($pac->kecamatan);
+
+                    return $anggotaPAC === $namaPAC
+                        || $anggotaPAC === $kecamatan
+                        || Str::contains($anggotaPAC, $kecamatan);
+                });
+
+                $anggotaBulanIni = $pacAnggota->filter(
+                    fn (Anggota $item) => Carbon::parse($item->tanggal_bergabung)
+                        ->isSameMonth($currentMonth)
+                )->count();
+
+                $anggotaBulanLalu = $pacAnggota->filter(
+                    fn (Anggota $item) => Carbon::parse($item->tanggal_bergabung)
+                        ->isSameMonth($previousMonth)
+                )->count();
+
+                $pac->growth = $this->percentageGrowth(
+                    $anggotaBulanIni,
+                    $anggotaBulanLalu
+                );
+
+                return $pac;
+            })
+        );
 
         return view('dataPAC', compact(
             'pacs',
             'totalPAC',
             'pacAktif',
             'totalAnggota',
-            'totalKecamatan'
+            'totalKecamatan',
+            'chartPACs'
         ));
     }
 
@@ -42,45 +85,17 @@ class PACController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate($this->rules());
+        $validated['jumlah_anggota'] ??= 0;
+        $validated['total_kegiatan'] ??= 0;
 
-            'nama_pac' => 'required',
-            'kecamatan' => 'required',
-            'status' => 'required',
-            'tanggal_berdiri' => 'required',
+        $pac = PAC::create($validated);
+        $page = (int) ceil(PAC::count() / 9);
+        $url = $page > 1
+            ? route('pac.index', ['page' => $page])
+            : route('pac.index');
 
-            'alamat' => 'required',
-            'desa' => 'required',
-
-            'ketua' => 'required',
-            'telepon' => 'required',
-
-        ]);
-
-        PAC::create([
-
-            'nama_pac' => $request->nama_pac,
-            'kecamatan' => $request->kecamatan,
-            'status' => $request->status,
-            'tanggal_berdiri' => $request->tanggal_berdiri,
-
-            'alamat' => $request->alamat,
-            'desa' => $request->desa,
-            'kode_pos' => $request->kode_pos,
-
-            'ketua_pac' => $request->ketua,
-            'telepon' => $request->telepon,
-            'email' => $request->email,
-
-            'jumlah_anggota' => $request->jumlah_anggota ?? 0,
-
-            'deskripsi' => $request->deskripsi,
-            'nomor_sk' => $request->nomor_sk,
-            'total_kegiatan' => $request->total_kegiatan ?? 0,
-
-        ]);
-
-        return redirect()->route('pac.index')
+        return redirect()->to($url.'#pac-'.$pac->id)
             ->with('success', 'PAC berhasil ditambahkan');
     }
 
@@ -103,26 +118,15 @@ class PACController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function update(Request $request,int $id)
+    public function update(Request $request, int $id)
     {
         $pac = PAC::findOrFail($id);
 
-        $pac->update([
-            'nama_pac' => $request->nama_pac,
-            'kecamatan' => $request->kecamatan,
-            'status' => $request->status,
-            'tanggal_berdiri' => $request->tanggal_berdiri,
-            'alamat' => $request->alamat,
-            'desa' => $request->desa,
-            'kode_pos' => $request->kode_pos,
-            'ketua_pac' => $request->ketua,
-            'telepon' => $request->telepon,
-            'email' => $request->email,
-            'jumlah_anggota' => $request->jumlah_anggota,
-            'nomor_sk' => $request->nomor_sk,
-            'total_kegiatan' => $request->total_kegiatan,
-            'deskripsi' => $request->deskripsi,
-        ]);
+        $validated = $request->validate($this->rules());
+        $validated['jumlah_anggota'] ??= 0;
+        $validated['total_kegiatan'] ??= 0;
+
+        $pac->update($validated);
 
         return redirect()->route('pac.index')
             ->with('success', 'PAC berhasil diupdate');
@@ -144,4 +148,42 @@ class PACController extends Controller
             ->with('success', 'PAC berhasil dihapus');
     }
 
+    private function normalizePACName(?string $name): string
+    {
+        return Str::of($name ?? '')
+            ->lower()
+            ->replace(['pac', 'kabupaten', 'kab.', 'kab'], '')
+            ->replaceMatches('/[^a-z0-9]+/', ' ')
+            ->squish()
+            ->toString();
+    }
+
+    private function percentageGrowth(int $current, int $previous): int
+    {
+        if ($previous === 0) {
+            return $current > 0 ? 100 : 0;
+        }
+
+        return (int) round((($current - $previous) / $previous) * 100);
+    }
+
+    private function rules(): array
+    {
+        return [
+            'nama_pac' => ['required', 'string', 'max:255'],
+            'kecamatan' => ['required', 'string', 'max:255'],
+            'status' => ['required', Rule::in(['aktif', 'tidak_aktif'])],
+            'tanggal_berdiri' => ['required', 'date'],
+            'alamat' => ['required', 'string'],
+            'desa' => ['required', 'string', 'max:255'],
+            'kode_pos' => ['nullable', 'string', 'max:20'],
+            'ketua_pac' => ['required', 'string', 'max:255'],
+            'telepon' => ['required', 'string', 'max:30'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'jumlah_anggota' => ['nullable', 'integer', 'min:0'],
+            'nomor_sk' => ['nullable', 'string', 'max:255'],
+            'total_kegiatan' => ['nullable', 'integer', 'min:0'],
+            'deskripsi' => ['nullable', 'string'],
+        ];
+    }
 }

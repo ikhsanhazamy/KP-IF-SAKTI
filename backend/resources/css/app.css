@@ -7,8 +7,17 @@
 
 @theme {
     --font-sans:
-        'Poppins',
+        'Plus Jakarta Sans',
         ui-sans-serif,
         system-ui,
         sans-serif;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #cfd8d2 transparent;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
 }

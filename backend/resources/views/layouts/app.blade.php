@@ -12,36 +12,24 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
     <link
-        href=https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
 </head>
 
-<body class="bg-[#F5F5F5] font-[Plus Jakarta Sans] overflow-hidden">
+<body class="bg-[#F4F7F5] font-sans text-[#202321] overflow-hidden">
 
     <div class="flex h-screen">
 
-        <!-- SIDEBAR -->
-        <aside class="w-[260px] shrink-0 bg-white border-r h-screen">
+        @include('partials.sidebar')
 
-            @include('partials.sidebar')
+        <div class="flex min-w-0 flex-1 flex-col h-screen overflow-hidden">
 
-        </aside>
-
-        <!-- RIGHT AREA -->
-        <div class="flex-1 flex flex-col h-screen overflow-hidden">
-
-            <!-- HEADER -->
             <div class="shrink-0">
-
                 @include('partials.header')
-
             </div>
 
-            <!-- CONTENT -->
-            <main class="flex-1 overflow-y-auto p-8">
-
+            <main class="min-w-0 flex-1 overflow-y-auto px-5 py-6 sm:px-7 lg:px-8 lg:py-7">
                 @yield('content')
-
             </main>
 
         </div>

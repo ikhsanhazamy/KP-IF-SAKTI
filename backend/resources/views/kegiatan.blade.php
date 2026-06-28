@@ -131,7 +131,7 @@
 
                 @forelse($kegiatan as $item)
 
-                <tr class="border-t border-gray-100 hover:bg-gray-50 transition">
+                <tr id="kegiatan-{{ $item->id }}" class="scroll-mt-6 border-t border-gray-100 hover:bg-gray-50 transition">
 
                     <td class="px-8 py-6">
 
@@ -202,7 +202,13 @@
 
                         <div class="flex justify-end gap-4">
 
-                            <button type="button" onclick="openEditKegiatanModal({{ $item->id }})" class="flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-200 text-[#4B5563] hover:bg-gray-100 transition" aria-label="Edit kegiatan">
+                            <button
+                                type="button"
+                                data-id="{{ $item->id }}"
+                                onclick="openEditKegiatanModal(this.dataset.id)"
+                                class="flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-200 text-[#4B5563] hover:bg-gray-100 transition"
+                                aria-label="Edit kegiatan"
+                            >
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M12 20h9" />
                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" />

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HeaderController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\PACController;
 use App\Http\Controllers\KegiatanController;
@@ -36,6 +37,12 @@ Route::post('/logout', [AuthController::class, 'logout'])
 */
 
 Route::middleware('auth')->group(function () {
+
+    Route::get('/header/search', [HeaderController::class, 'search'])
+        ->name('header.search');
+
+    Route::get('/header/notifications', [HeaderController::class, 'notifications'])
+        ->name('header.notifications');
 
     /*
     |--------------------------------------------------------------------------
@@ -124,6 +131,9 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/', [LaporanController::class, 'index']);
 
+        Route::get('/generate/{type}', [LaporanController::class, 'generate'])
+            ->whereIn('type', ['anggota', 'pac', 'kegiatan']);
+
         Route::get('/export/pdf', [LaporanController::class, 'exportPDF']);
 
         Route::get('/export/excel', [LaporanController::class, 'exportExcel']);
@@ -151,10 +161,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/pengaturan/update-password',[PengaturanController::class, 'updatePassword'])->name('pengaturan.password.update');
 
+    Route::post('/pengaturan/keamanan/two-factor',[PengaturanController::class, 'updateTwoFactor'])->name('pengaturan.two-factor.update');
+
     Route::post('/pengaturan/update',[PengaturanController::class, 'update'])->name('pengaturan.update');
     
-    Route::post('/pengaturan/keamanan',[PengaturanController::class, 'updatePassword'])->name('pengaturan.keamanan.update');
-
     Route::get('/pengaturan/notifikasi', [PengaturanController::class, 'notifikasi']);
 
     Route::post('/pengaturan/notifikasi',[PengaturanController::class, 'updateNotifikasi'])->name('pengaturan.notifikasi.update');
