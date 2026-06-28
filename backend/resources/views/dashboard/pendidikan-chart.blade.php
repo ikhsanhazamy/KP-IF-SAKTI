@@ -1,10 +1,10 @@
-<div class="bg-white rounded-2xl border p-6">
+<div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
 
-    <h2 class="font-semibold text-lg mb-4">
-        Pendidikan Anggota
+    <h2 class="font-bold text-gray-900 text-[16px] mb-6">
+        Pendidikan
     </h2>
 
-    <div class="h-[350px]">
+    <div class="h-[280px] relative">
 
         <canvas id="pendidikanChart"></canvas>
 

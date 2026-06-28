@@ -101,9 +101,11 @@ function Navbar() {
         </div>
 
         {/* RIGHT */}
-        <button className="w-[200px] h-[40px] bg-[#1f7a4d] text-white rounded-[12px] text-sm font-medium hover:bg-[#17633f] hover:shadow-lg transition-all duration-200">
-          Admin Login
-        </button>
+        <a href="http://localhost:8000/login" target="_blank" rel="noopener noreferrer">
+          <button className="w-[200px] h-[40px] bg-[#1f7a4d] text-white rounded-[12px] text-sm font-medium hover:bg-[#17633f] hover:shadow-lg transition-all duration-200">
+            Admin Login
+          </button>
+        </a>
 
       </div>
     </nav>

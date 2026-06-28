@@ -1,251 +1,217 @@
 <div
     id="modalEditPAC"
-    class="fixed inset-0 bg-black/50 hidden items-start justify-center z-50 p-6 overflow-y-auto"
+    class="fixed inset-0 hidden items-center justify-center z-50 bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
 >
-    <div class="relative w-full max-w-[896px] rounded-[16px] bg-white shadow-2xl">
-        <div class="flex flex-col">
-            <div class="flex items-center justify-between border-b border-[#E5E7EB] px-8 py-6">
-                <div class="space-y-1">
-                    <h2 class="text-[24px] font-bold leading-8 text-[#1D1D1D]">
-                        Edit PAC
-                    </h2>
-                    <p class="text-sm text-[#717182]">
-                        Update informasi PAC yang dipilih
-                    </p>
-                </div>
+    <div class="relative w-full max-w-[640px] rounded-2xl bg-white shadow-2xl border border-gray-100/80 overflow-hidden transform scale-95 transition-all duration-300">
+        
+        <!-- CLOSE -->
+        <button
+            onclick="closeEditPACModal()"
+            class="absolute top-5 right-5 w-8 h-8 rounded-full border border-gray-100 bg-white flex items-center justify-center text-gray-400 hover:text-gray-600 shadow-sm hover:shadow transition cursor-pointer"
+            type="button"
+        >
+            &times;
+        </button>
 
-                <button
-                    onclick="closeEditPACModal()"
-                    class="flex h-10 w-10 items-center justify-center rounded-[12px] text-[24px] text-[#1D1D1D] hover:bg-[#F5F7F8]"
-                    type="button"
-                >
-                    ×
-                </button>
-            </div>
-
-            <form id="formEditPAC" method="POST" class="flex flex-col">
-
-                @csrf
-                @method('PUT')
-
-                <div class="space-y-8 px-8 pt-6 pb-6 max-h-[calc(100vh-300px)] overflow-y-auto">
-
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="text-[18px] font-semibold text-[#1D1D1D]">Informasi Dasar PAC</h3>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
-                                    <span>Nama PAC</span>
-                                    <span class="text-[#D4183D]">*</span>
-                                </div>
-                                <input
-                                    type="text"
-                                    name="nama_pac"
-                                    id="editNamaPAC"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                            </div>
-
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
-                                    <span>Kecamatan</span>
-                                    <span class="text-[#D4183D]">*</span>
-                                </div>
-                                <input
-                                    type="text"
-                                    name="kecamatan"
-                                    id="editKecamatan"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                            </div>
-
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
-                                    <span>Status</span>
-                                    <span class="text-[#D4183D]">*</span>
-                                </div>
-                                <select
-                                    name="status"
-                                    id="editStatus"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                                    <option value="aktif">Aktif</option>
-                                    <option value="tidak_aktif">Tidak Aktif</option>
-                                </select>
-                            </div>
-
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
-                                    <span>Tanggal Berdiri</span>
-                                    <span class="text-[#D4183D]">*</span>
-                                </div>
-                                <input
-                                    type="date"
-                                    name="tanggal_berdiri"
-                                    id="editTanggalBerdiri"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="text-[18px] font-semibold text-[#1D1D1D]">Alamat Lengkap</h3>
-                        </div>
-
-                        <div class="space-y-6">
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
-                                    <span>Alamat Jalan</span>
-                                    <span class="text-[#D4183D]">*</span>
-                                </div>
-                                <input
-                                    type="text"
-                                    name="alamat"
-                                    id="editAlamat"
-                                    placeholder="Contoh: Jl. Raya Cibadak No.123"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
-                                        <span>Desa/Kelurahan</span>
-                                        <span class="text-[#D4183D]">*</span>
-                                    </div>
-                                    <input
-                                        type="text"
-                                        name="desa"
-                                        id="editDesa"
-                                        class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                    >
-                                </div>
-                                <div class="space-y-2">
-                                    <div class="text-sm font-medium text-[#1D1D1D]">Kode Pos</div>
-                                    <input
-                                        type="text"
-                                        name="kode_pos"
-                                        id="editKodePos"
-                                        class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                    >
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="text-[18px] font-semibold text-[#1D1D1D]">Informasi Ketua PAC</h3>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
-                                    <span>Nama Ketua</span>
-                                    <span class="text-[#D4183D]">*</span>
-                                </div>
-                                <input
-                                    type="text"
-                                    name="ketua"
-                                    id="editKetua"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                            </div>
-
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
-                                    <span>No. Telepon</span>
-                                    <span class="text-[#D4183D]">*</span>
-                                </div>
-                                <input
-                                    type="text"
-                                    name="telepon"
-                                    id="editTelepon"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                            </div>
-
-                            <div class="space-y-2">
-                                <div class="text-sm font-medium text-[#1D1D1D]">Email</div>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    id="editEmail"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                            </div>
-
-                            <div class="space-y-2">
-                                <div class="text-sm font-medium text-[#1D1D1D]">Jumlah Anggota</div>
-                                <input
-                                    type="number"
-                                    name="jumlah_anggota"
-                                    id="editJumlahAnggota"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                            </div>
-
-                            <div class="space-y-2">
-                                <div class="text-sm font-medium text-[#1D1D1D]">Nomor SK</div>
-                                <input
-                                    type="text"
-                                    name="nomor_sk"
-                                    id="editNomorSK"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                            </div>
-
-                            <div class="space-y-2">
-                                <div class="text-sm font-medium text-[#1D1D1D]">Total Kegiatan</div>
-                                <input
-                                    type="number"
-                                    name="total_kegiatan"
-                                    id="editTotalKegiatan"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <div class="text-sm font-medium text-[#1D1D1D]">Deskripsi/Keterangan</div>
-                        <textarea
-                            name="deskripsi"
-                            id="editDeskripsi"
-                            rows="5"
-                            class="h-[114px] w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 py-3 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A] resize-none"
-                        ></textarea>
-                    </div>
-
-                </div>
-
-                <div class="border-t border-[#E5E7EB] bg-white px-8 py-6">
-                    <div class="grid grid-cols-2 gap-4">
-                        <button
-                            type="button"
-                            onclick="closeEditPACModal()"
-                            class="flex h-12 items-center justify-center rounded-[12px] border border-[#E5E7EB] text-sm font-medium text-[#1D1D1D]"
-                        >
-                            Batal
-                        </button>
-                        <button
-                            type="submit"
-                            class="flex h-12 items-center justify-center rounded-[12px] bg-[#0F5E3A] text-sm font-medium text-white transition hover:bg-[#15633D]"
-                        >
-                            Simpan Perubahan
-                        </button>
-                    </div>
-                </div>
-
-            </form>
-
+        <div class="px-6 py-5 border-b border-gray-50">
+            <h2 class="text-[18px] font-bold text-gray-900 leading-tight">
+                Edit PAC
+            </h2>
+            <p class="text-xs text-gray-400 mt-1 font-medium">
+                Perbarui data kepengurusan Pimpinan Anak Cabang
+            </p>
         </div>
 
-    </div>
+        <form id="formEditPAC" method="POST" class="flex flex-col m-0">
+            @csrf
+            @method('PUT')
 
+            <div class="px-6 py-4 max-h-[calc(100vh-220px)] overflow-y-auto space-y-5">
+
+                <!-- SECTION 1 -->
+                <div>
+                    <h3 class="text-[12px] font-bold text-[#0F5E3A] uppercase tracking-wider border-b border-gray-50 pb-1.5 mb-3.5">
+                        Informasi Dasar PAC
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[13px] font-semibold text-gray-700 mb-1">Nama PAC *</label>
+                            <input
+                                type="text"
+                                name="nama_pac"
+                                id="editNamaPAC"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                                required
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-semibold text-gray-700 mb-1">Kecamatan *</label>
+                            <input
+                                type="text"
+                                name="kecamatan"
+                                id="editKecamatan"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                                required
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-semibold text-gray-700 mb-1">Status *</label>
+                            <select
+                                name="status"
+                                id="editStatus"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150 bg-white"
+                            >
+                                <option value="aktif">Aktif</option>
+                                <option value="tidak_aktif">Tidak Aktif</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-semibold text-gray-700 mb-1">Tanggal Berdiri *</label>
+                            <input
+                                type="date"
+                                name="tanggal_berdiri"
+                                id="editTanggalBerdiri"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2 -->
+                <div>
+                    <h3 class="text-[12px] font-bold text-[#0F5E3A] uppercase tracking-wider border-b border-gray-50 pb-1.5 mb-3.5">
+                        Alamat Lengkap
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[13px] font-semibold text-gray-700 mb-1">Alamat Jalan *</label>
+                            <input
+                                type="text"
+                                name="alamat"
+                                id="editAlamat"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                                required
+                            >
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[13px] font-semibold text-gray-700 mb-1">Desa/Kelurahan *</label>
+                                <input
+                                    type="text"
+                                    name="desa"
+                                    id="editDesa"
+                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                                    required
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-[13px] font-semibold text-gray-700 mb-1">Kode Pos</label>
+                                <input
+                                    type="text"
+                                    name="kode_pos"
+                                    id="editKodePos"
+                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3 -->
+                <div>
+                    <h3 class="text-[12px] font-bold text-[#0F5E3A] uppercase tracking-wider border-b border-gray-50 pb-1.5 mb-3.5">
+                        Informasi Ketua PAC
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[13px] font-semibold text-gray-700 mb-1">Nama Ketua *</label>
+                            <input
+                                type="text"
+                                name="ketua"
+                                id="editKetua"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                                required
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-semibold text-gray-700 mb-1">No. Telepon *</label>
+                            <input
+                                type="text"
+                                name="telepon"
+                                id="editTelepon"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                                required
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-semibold text-gray-700 mb-1">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                id="editEmail"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-semibold text-gray-700 mb-1">Nomor SK</label>
+                            <input
+                                type="text"
+                                name="nomor_sk"
+                                id="editNomorSK"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-semibold text-gray-700 mb-1">Jumlah Anggota</label>
+                            <input
+                                type="number"
+                                name="jumlah_anggota"
+                                id="editJumlahAnggota"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-semibold text-gray-700 mb-1">Total Kegiatan</label>
+                            <input
+                                type="number"
+                                name="total_kegiatan"
+                                id="editTotalKegiatan"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div>
+                    <label class="block text-[13px] font-semibold text-gray-700 mb-1">Deskripsi/Keterangan</label>
+                    <textarea
+                        name="deskripsi"
+                        id="editDeskripsi"
+                        rows="3"
+                        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150 resize-none"
+                    ></textarea>
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="px-6 py-4 border-t border-gray-50 flex justify-end gap-3 bg-gray-50/50">
+                <button
+                    type="button"
+                    onclick="closeEditPACModal()"
+                    class="px-5 py-2.5 border border-gray-200 hover:bg-gray-50 transition text-gray-600 rounded-xl font-semibold text-[13px] cursor-pointer"
+                >
+                    Batal
+                </button>
+                <button
+                    type="submit"
+                    class="px-5 py-2.5 bg-[#0F5E3A] hover:bg-[#0b4e30] hover:shadow-md transition text-white rounded-xl font-bold text-[13px] cursor-pointer"
+                >
+                    Simpan Perubahan
+                </button>
+            </div>
+        </form>
+    </div>
 </div>

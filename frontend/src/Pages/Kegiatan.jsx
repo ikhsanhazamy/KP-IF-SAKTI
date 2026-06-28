@@ -5,6 +5,8 @@ import foto1 from "../assets/images/foto1.jpg";
 import foto2 from "../assets/images/foto2.jpg";
 import foto3 from "../assets/images/foto3.jpg";
 
+import { useState, useEffect } from "react";
+
 function Kegiatan() {
   const categories = [
     "Semua",
@@ -16,7 +18,7 @@ function Kegiatan() {
     "Kajian"
   ];
 
-  const kegiatan = [
+  const mockKegiatan = [
     {
       title: "Seminar Pemberdayaan Perempuan dan Kewirausahaan",
       desc: "Seminar nasional tentang pemberdayaan perempuan melalui kewirausahaan dan UMKM.",
@@ -67,6 +69,51 @@ function Kegiatan() {
     }
   ];
 
+  const [kegiatanList, setKegiatanList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Semua");
+
+  useEffect(() => {
+    setLoading(true);
+    const queryParams = new URLSearchParams();
+    if (search) queryParams.append("search", search);
+    if (selectedCategory) queryParams.append("category", selectedCategory);
+
+    fetch(`/api/kegiatan?${queryParams.toString()}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Gagal mengambil data kegiatan");
+        return res.json();
+      })
+      .then((data) => {
+        // Format data dari backend ke struktur yang dibutuhkan frontend
+        const formattedData = data.map((item) => ({
+          title: item.judul,
+          desc: item.deskripsi,
+          date: item.tanggal,
+          peserta: `${item.peserta} peserta`,
+          category: item.kategori,
+          image: item.kategori === "Seminar" ? foto1 : item.kategori === "Sosial" ? foto2 : foto3
+        }));
+        setKegiatanList(formattedData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        // Fallback filter lokal menggunakan mock data jika server offline
+        const filteredMock = mockKegiatan.filter((item) => {
+          const matchesSearch =
+            item.title.toLowerCase().includes(search.toLowerCase()) ||
+            item.desc.toLowerCase().includes(search.toLowerCase());
+          const matchesCategory =
+            selectedCategory === "Semua" || item.category === selectedCategory;
+          return matchesSearch && matchesCategory;
+        });
+        setKegiatanList(filteredMock);
+        setLoading(false);
+      });
+  }, [search, selectedCategory]);
+
   return (
     <div className="bg-[#f6f8f7] min-h-screen">
 
@@ -111,6 +158,8 @@ function Kegiatan() {
             <input
               type="text"
               placeholder="Cari kegiatan..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="ml-4 w-full bg-transparent outline-none text-[16px] text-[#374151] placeholder:text-[#B0B7C3]"
             />
 
@@ -122,8 +171,9 @@ function Kegiatan() {
             {categories.map((item, i) => (
               <button
                 key={i}
+                onClick={() => setSelectedCategory(item)}
                 className={`h-[42px] px-6 rounded-[14px] text-[15px] transition duration-200 ${
-                  i === 0
+                  selectedCategory === item
                     ? "bg-[#1f7a4d] text-white"
                     : "bg-white border border-[#E5E7EB] text-[#6B7280] hover:border-[#1f7a4d] hover:text-[#1f7a4d]"
                 }`}
@@ -141,64 +191,72 @@ function Kegiatan() {
       {/* GRID */}
       <section className="px-20 py-24">
 
-        <div className="max-w-[1280px] mx-auto grid grid-cols-3 gap-8">
-
-          {kegiatan.map((item, i) => (
-            <div
-              key={i}
-              className="bg-white border border-[#E5E7EB] rounded-[24px] overflow-hidden will-change-transform"
-            >
-
-              {/* IMAGE */}
-              <div className="relative">
-
-                <img
-                  loading="lazy"
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-[190px] object-cover"
-                />
-
-                <div className="absolute top-4 left-4 bg-white text-[#1f7a4d] text-xs px-3 py-1 rounded-full shadow-sm">
-                  {item.category}
-                </div>
-
-              </div>
-
-              {/* CONTENT */}
-              <div className="p-6">
-
-                <h3 className="text-[22px] leading-[1.5] font-semibold text-[#111827]">
-                  {item.title}
-                </h3>
-
-                <p className="text-[#9CA3AF] text-[15px] leading-[1.8] mt-5 min-h-[72px]">
-                  {item.desc}
-                </p>
-
-                {/* INFO */}
-                <div className="mt-6 flex flex-col gap-3 text-[#9CA3AF] text-sm">
-
-                  <div className="flex items-center gap-2">
-                    📅 {item.date}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    👥 {item.peserta}
-                  </div>
-
-                </div>
-
-                {/* BUTTON */}
-                <button className="w-full h-[50px] border border-[#E5E7EB] rounded-[16px] mt-8 text-[#111827] hover:bg-[#1f7a4d] hover:text-white transition duration-300">
-                  Lihat Detail
-                </button>
-
-              </div>
-
+        <div className="max-w-[1280px] mx-auto">
+          {loading ? (
+            <div className="text-center py-20 text-gray-500">Memuat kegiatan...</div>
+          ) : kegiatanList.length === 0 ? (
+            <div className="text-center py-20 text-gray-400 bg-white rounded-3xl border border-gray-200">
+              Tidak ada kegiatan yang ditemukan.
             </div>
-          ))}
+          ) : (
+            <div className="grid grid-cols-3 gap-8">
+              {kegiatanList.map((item, i) => (
+                <div
+                  key={i}
+                  className="bg-white border border-[#E5E7EB] rounded-[24px] overflow-hidden will-change-transform shadow-sm hover:shadow-md transition duration-300"
+                >
 
+                  {/* IMAGE */}
+                  <div className="relative">
+
+                    <img
+                      loading="lazy"
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-[190px] object-cover"
+                    />
+
+                    <div className="absolute top-4 left-4 bg-white text-[#1f7a4d] text-xs px-3 py-1 rounded-full shadow-sm font-medium">
+                      {item.category}
+                    </div>
+
+                  </div>
+
+                  {/* CONTENT */}
+                  <div className="p-6">
+
+                    <h3 className="text-[22px] leading-[1.5] font-semibold text-[#111827] line-clamp-2">
+                      {item.title}
+                    </h3>
+
+                    <p className="text-[#9CA3AF] text-[15px] leading-[1.8] mt-5 min-h-[72px] line-clamp-3">
+                      {item.desc}
+                    </p>
+
+                    {/* INFO */}
+                    <div className="mt-6 flex flex-col gap-3 text-[#9CA3AF] text-sm">
+
+                      <div className="flex items-center gap-2">
+                        📅 {item.date}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        👥 {item.peserta}
+                      </div>
+
+                    </div>
+
+                    {/* BUTTON */}
+                    <button className="w-full h-[50px] border border-[#E5E7EB] rounded-[16px] mt-8 text-[#111827] hover:bg-[#1f7a4d] hover:text-white transition duration-300">
+                      Lihat Detail
+                    </button>
+
+                  </div>
+
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
       </section>

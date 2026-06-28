@@ -2,7 +2,7 @@ import image1 from "../assets/images/image1.jpeg";
 
 function Hero() {
   return (
-    <section className="bg-[#DDEEE34D] px-20 py-20 flex items-center justify-between">
+    <section className="bg-gradient-to-r from-primary-500 to-primary-600 px-20 py-20 flex items-center justify-between text-white">
 
       {/* LEFT */}
       <div className="max-w-2xl">
@@ -27,7 +27,7 @@ function Hero() {
         {/* BUTTON */}
         <div className="flex gap-4 mt-8">
           <button className="bg-[#1f7a4d] text-white px-6 py-3 rounded-xl font-medium hover:bg-[#17633f] transition">
-            Mulai Sekarang →
+            Mulai Sekarang
           </button>
           <button className="bg-white border border-gray-200 px-6 py-3 rounded-xl font-medium hover:bg-[#0F5E3A1A] transition">
             Pelajari Lebih Lanjut
@@ -71,7 +71,7 @@ function Hero() {
 
     {/* ICON */}
     <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-      <span className="text-[#1f7a4d] text-lg">↗</span>
+        <span className="text-white text-lg"></span>
     </div>
 
     {/* TEXT */}

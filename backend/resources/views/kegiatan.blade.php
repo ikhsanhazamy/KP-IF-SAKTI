@@ -5,248 +5,160 @@
 <div class="space-y-8">
 
     <!-- HEADER -->
-    <div class="flex items-start justify-between">
-
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-
-            <h1 class="text-5xl font-bold text-[#1E1E1E]">
+            <h1 class="text-[26px] font-bold text-gray-900 tracking-tight">
                 Manajemen Kegiatan
             </h1>
-
-            <p class="text-[#717182] mt-3 text-xl">
+            <p class="text-[#717182] mt-1 text-[14px] font-medium">
                 Kelola kegiatan dan program Fatayat NU Sukabumi
             </p>
-
         </div>
-
-        <!-- BUTTON -->
         <button
             onclick="openTambahKegiatanModal()"
-            class="flex items-center gap-3 bg-[#15633D] hover:bg-[#0F5E3A] text-white px-7 py-4 rounded-2xl text-xl font-medium transition"
+            class="bg-[#0F5E3A] hover:bg-[#0b4e30] transition text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
         >
-
-            <span class="text-2xl leading-none">+</span>
-
+            <span class="text-lg leading-none">+</span>
             <span>Tambah Kegiatan</span>
-
         </button>
-
     </div>
 
     <!-- STAT -->
-    <div class="grid grid-cols-4 gap-5">
-
-        <div class="bg-white border border-gray-200 rounded-3xl p-7">
-
-            <h2 class="text-5xl font-bold">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between h-[116px]">
+            <h2 class="text-2xl font-bold text-gray-900 leading-none">
                 {{ $kegiatan->count() }}
             </h2>
-
-            <p class="text-[#717182] mt-2 text-xl">
+            <p class="text-xs text-gray-400 font-medium">
                 Total Kegiatan
             </p>
-
         </div>
 
-        <div class="bg-white border border-gray-200 rounded-3xl p-7">
-
-            <h2 class="text-5xl font-bold text-blue-600">
+        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between h-[116px]">
+            <h2 class="text-2xl font-bold text-blue-600 leading-none">
                 {{ $kegiatan->where('status', 'upcoming')->count() }}
             </h2>
-
-            <p class="text-[#717182] mt-2 text-xl">
+            <p class="text-xs text-gray-400 font-medium">
                 Upcoming
             </p>
-
         </div>
 
-        <div class="bg-white border border-gray-200 rounded-3xl p-7">
-
-            <h2 class="text-5xl font-bold text-green-600">
+        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between h-[116px]">
+            <h2 class="text-2xl font-bold text-[#0F5E3A] leading-none">
                 {{ $kegiatan->where('status', 'ongoing')->count() }}
             </h2>
-
-            <p class="text-[#717182] mt-2 text-xl">
+            <p class="text-xs text-gray-400 font-medium">
                 Ongoing
             </p>
-
         </div>
 
-        <div class="bg-white border border-gray-200 rounded-3xl p-7">
-
-            <h2 class="text-5xl font-bold text-gray-500">
+        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between h-[116px]">
+            <h2 class="text-2xl font-bold text-gray-400 leading-none">
                 {{ $kegiatan->where('status', 'completed')->count() }}
             </h2>
-
-            <p class="text-[#717182] mt-2 text-xl">
+            <p class="text-xs text-gray-400 font-medium">
                 Completed
             </p>
-
         </div>
-
     </div>
 
     <!-- TABLE -->
-    <div class="bg-white border border-gray-200 rounded-3xl overflow-hidden">
-
-        <table class="w-full">
-
-            <thead class="bg-[#FAFAFA]">
-
-                <tr class="text-left">
-
-                    <th class="px-8 py-6 font-semibold">
-                        Kegiatan
-                    </th>
-
-                    <th class="px-8 py-6 font-semibold">
-                        Tanggal
-                    </th>
-
-                    <th class="px-8 py-6 font-semibold">
-                        Lokasi
-                    </th>
-
-                    <th class="px-8 py-6 font-semibold">
-                        Kategori
-                    </th>
-
-                    <th class="px-8 py-6 font-semibold">
-                        Peserta
-                    </th>
-
-                    <th class="px-8 py-6 font-semibold">
-                        Status
-                    </th>
-
-                    <th class="px-8 py-6 font-semibold text-right">
-                        Aksi
-                    </th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                @forelse($kegiatan as $item)
-
-                <tr class="border-t border-gray-100 hover:bg-gray-50 transition">
-
-                    <td class="px-8 py-6">
-
-                        <h3 class="font-semibold text-lg">
-                            {{ $item->judul }}
-                        </h3>
-
-                        <p class="text-sm text-[#717182] mt-1">
-                            {{ $item->deskripsi }}
-                        </p>
-
-                    </td>
-
-                    <td class="px-8 py-6 text-[#717182]">
-
-                        {{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}
-                        <br>
-
-                        {{ $item->waktu }}
-
-                    </td>
-
-                    <td class="px-8 py-6 text-[#717182]">
-                        {{ $item->lokasi }}
-                    </td>
-
-                    <td class="px-8 py-6">
-
-                        <span class="bg-[#EDF7F0] text-[#15633D] px-4 py-2 rounded-full text-sm">
-
-                            {{ $item->kategori }}
-
-                        </span>
-
-                    </td>
-
-                    <td class="px-8 py-6 text-[#717182]">
-
-                        {{ $item->peserta }}
-
-                    </td>
-
-                    <td class="px-8 py-6">
-
-                        @if($item->status == 'upcoming')
-
-                            <span class="bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm">
-                                Upcoming
+    <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50/70 border-b border-gray-100">
+                    <tr class="text-left">
+                        <th class="px-6 py-4.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Kegiatan</th>
+                        <th class="px-6 py-4.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tanggal & Waktu</th>
+                        <th class="px-6 py-4.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Lokasi</th>
+                        <th class="px-6 py-4.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Kategori</th>
+                        <th class="px-6 py-4.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Peserta</th>
+                        <th class="px-6 py-4.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($kegiatan as $item)
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="px-6 py-4 text-[13px]">
+                            <h3 class="font-bold text-gray-900">
+                                {{ $item->judul }}
+                            </h3>
+                            <p class="text-xs text-gray-400 mt-0.5 line-clamp-1">
+                                {{ $item->deskripsi }}
+                            </p>
+                        </td>
+                        <td class="px-6 py-4 text-[13px] text-gray-500">
+                            {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d M Y') }}
+                            <div class="text-xs text-gray-400 mt-0.5">{{ $item->waktu }} WIB</div>
+                        </td>
+                        <td class="px-6 py-4 text-[13px] text-gray-500">
+                            {{ $item->lokasi }}
+                        </td>
+                        <td class="px-6 py-4 text-[13px]">
+                            <span class="inline-flex items-center bg-[#eef3f0] text-[#0F5E3A] px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+                                {{ $item->kategori }}
                             </span>
-
-                        @elseif($item->status == 'ongoing')
-
-                            <span class="bg-green-100 text-green-600 px-4 py-2 rounded-full text-sm">
-                                Ongoing
-                            </span>
-
-                        @else
-
-                            <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-sm">
-                                Completed
-                            </span>
-
-                        @endif
-
-                    </td>
-
-                    <td class="px-8 py-6">
-
-                        <div class="flex justify-end gap-4">
-
-                            <button type="button" onclick="openEditKegiatanModal({{ $item->id }})" class="flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-200 text-[#4B5563] hover:bg-gray-100 transition" aria-label="Edit kegiatan">
-                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <path d="M12 20h9" />
-                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" />
-                                </svg>
-                            </button>
-
-                            <form action="/kegiatan/delete/{{ $item->id }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kegiatan ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="flex h-11 w-11 items-center justify-center rounded-2xl border border-red-100 bg-red-50 text-red-600 hover:bg-red-100 transition" aria-label="Hapus kegiatan">
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                        <path d="M3 6h18" />
-                                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                                        <path d="M10 11v6" />
-                                        <path d="M14 11v6" />
+                        </td>
+                        <td class="px-6 py-4 text-[13px] text-gray-500 font-semibold">
+                            {{ $item->peserta }} Orang
+                        </td>
+                        <td class="px-6 py-4 text-[13px]">
+                            @if($item->status == 'upcoming')
+                                <span class="inline-flex items-center bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+                                    Upcoming
+                                </span>
+                            @elseif($item->status == 'ongoing')
+                                <span class="inline-flex items-center bg-[#eef3f0] text-[#0F5E3A] px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+                                    Ongoing
+                                </span>
+                            @else
+                                <span class="inline-flex items-center bg-gray-100 text-gray-400 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+                                    Completed
+                                </span>
+                            @endif
+                        </td>
+                        <!-- AKSI -->
+                        <td class="px-6 py-4 text-center">
+                            <div class="inline-flex justify-center gap-2">
+                                <!-- EDIT -->
+                                <button
+                                    type="button"
+                                    onclick="openEditKegiatanModal({{ $item->id }})"
+                                    class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-500 hover:text-blue-700 flex items-center justify-center transition cursor-pointer"
+                                    title="Edit Kegiatan"
+                                >
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
                                 </button>
-                            </form>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-                @empty
-
-                <tr>
-
-                    <td colspan="7" class="text-center py-16 text-gray-400">
-
-                        Belum ada data kegiatan
-
-                    </td>
-
-                </tr>
-
-                @endforelse
-
-            </tbody>
-
-        </table>
-
+                                <!-- DELETE -->
+                                <form action="/kegiatan/delete/{{ $item->id }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kegiatan ini?')" class="m-0">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button
+                                        type="submit"
+                                        class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-700 flex items-center justify-center transition cursor-pointer"
+                                        title="Hapus Kegiatan"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="text-center py-10 text-[13px] text-gray-400">
+                            Belum ada data kegiatan.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>

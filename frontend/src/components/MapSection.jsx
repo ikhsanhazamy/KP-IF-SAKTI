@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import PacIcon from "../assets/icons/pac.svg";
 import AnggotaIcon from "../assets/icons/anggota.svg";
 import PertumbuhanIcon from "../assets/icons/pertumbuhan.svg";
@@ -5,6 +6,28 @@ import Location from "../assets/icons/Location.svg";
 import { PopupExample } from "./PopupExample";
 
 function MapSection() {
+  const [stats, setStats] = useState({
+    total_pac: 7,
+    pac_aktif: 6,
+    total_anggota: 9,
+    total_kecamatan: 7
+  });
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((res) => {
+        if (!res.ok) throw new Error("Gagal mengambil statistik");
+        return res.json();
+      })
+      .then((data) => {
+        setStats(data);
+      })
+      .catch((err) => {
+        console.error(err);
+        // Fallback tetap menggunakan default state
+      });
+  }, []);
+
   return (
     <section className="bg-[#DDEEE34D] px-20 py-20">
 
@@ -68,7 +91,7 @@ function MapSection() {
               <img src={PacIcon} className="w-14 h-14" />
             </div>
             <div>
-              <p className="text-2xl font-semibold text-gray-900">47</p>
+              <p className="text-2xl font-semibold text-gray-900">{stats.total_pac}</p>
               <p className="text-sm text-gray-400">Total PAC</p>
             </div>
           </div>
@@ -79,7 +102,7 @@ function MapSection() {
               <img src={PertumbuhanIcon} className="w-14 h-14" />
             </div>
             <div>
-              <p className="text-xl font-semibold text-gray-900">45</p>
+              <p className="text-xl font-semibold text-gray-900">{stats.pac_aktif}</p>
               <p className="text-sm text-gray-400">PAC Aktif</p>
             </div>
           </div>
@@ -89,7 +112,7 @@ function MapSection() {
               <img src={AnggotaIcon} className="w-14 h-14" />
             </div>
             <div>
-              <p className="text-xl font-semibold text-gray-900">2,847</p>
+              <p className="text-xl font-semibold text-gray-900">{stats.total_anggota.toLocaleString()}</p>
               <p className="text-sm text-gray-400">Total Anggota</p>
             </div>
           </div>
@@ -99,7 +122,7 @@ function MapSection() {
               <img src={Location} className="w-14 h-14" />
             </div>
             <div>
-              <p className="text-xl font-semibold text-gray-900">15</p>
+              <p className="text-xl font-semibold text-gray-900">{stats.total_kecamatan}</p>
               <p className="text-sm text-gray-400">Kecamatan</p>
             </div>
           </div>
@@ -107,8 +130,8 @@ function MapSection() {
           {/* GREEN CARD */}
           <div className="bg-[#1f7a4d] text-white rounded-xl p-5 h-[106px] flex flex-col justify-center">
             <p className="font-semibold">Jangkauan Wilayah</p>
-            <p className="text-sm mt-1 text-green-100">
-              Fatayat NU Sukabumi hadir di 15 kecamatan dengan 47 PAC aktif melayani ribuan anggota.
+            <p className="text-xs mt-1 text-green-100">
+              Fatayat NU Sukabumi hadir di {stats.total_kecamatan} kecamatan dengan {stats.pac_aktif} PAC aktif melayani ribuan anggota.
             </p>
           </div>
 

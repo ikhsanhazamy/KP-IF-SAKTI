@@ -165,4 +165,29 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/restore/database',[PengaturanController::class, 'restoreDatabase'])->name('restore.database');
 
+    /*
+    |--------------------------------------------------------------------------
+    | NOTIFICATIONS AJAX
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/notifications/read-all', function() {
+        $notifications = session()->get('notifications', []);
+        foreach ($notifications as &$notif) {
+            $notif['read'] = true;
+        }
+        session()->put('notifications', $notifications);
+        return response()->json(['success' => true]);
+    });
+
+    Route::post('/notifications/read/{id}', function($id) {
+        $notifications = session()->get('notifications', []);
+        foreach ($notifications as &$notif) {
+            if ($notif['id'] == $id) {
+                $notif['read'] = true;
+            }
+        }
+        session()->put('notifications', $notifications);
+        return response()->json(['success' => true]);
+    });
+
 });

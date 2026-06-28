@@ -10,7 +10,7 @@ function MembershipSection() {
       {/* HEADER */}
       <div className="text-center mb-16">
         <div className="inline-flex items-center gap-2 bg-[#eef3f0] text-[#1f7a4d] px-4 py-1 rounded-full text-sm">
-          👥 Manajemen Anggota
+          Manajemen Anggota
         </div>
 
         <h2 className="text-3xl font-semibold mt-4 text-gray-900">

@@ -21,7 +21,7 @@ function Stats() {
       <div className="grid grid-cols-3 gap-6 mt-12">
 
         {/* CARD 1 */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
+        <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
           <div className="flex justify-between items-start mb-6">
             <div className="w-12 h-12 bg-[#eef3f0] rounded-xl flex items-center justify-center">
               <img src={AnggotaIcon} className="w-14 h-14" />
@@ -39,7 +39,7 @@ function Stats() {
         </div>
 
         {/* CARD 2 */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
+        <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
           <div className="flex justify-between items-start mb-6">
             <div className="w-12 h-12 bg-[#eef3f0] rounded-xl flex items-center justify-center">
               <img src={PacIcon} className="w-14 h-14" />
@@ -57,7 +57,7 @@ function Stats() {
         </div>
 
         {/* CARD 3 */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
+        <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
           <div className="flex justify-between items-start mb-6">
             <div className="w-12 h-12 bg-[#eef3f0] rounded-xl flex items-center justify-center">
               <img src={PertumbuhanIcon} className="w-14 h-14" />
@@ -75,7 +75,7 @@ function Stats() {
         </div>
 
         {/* CARD 4 */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
+        <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
           <div className="flex justify-between items-start mb-6">
             <div className="w-12 h-12 bg-[#eef3f0] rounded-xl flex items-center justify-center">
               <img src={PacIcon} className="w-14 h-14" />
@@ -93,7 +93,7 @@ function Stats() {
         </div>
 
         {/* CARD 5 */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
+        <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
           <div className="flex justify-between items-start mb-6">
             <div className="w-12 h-12 bg-[#eef3f0] rounded-xl flex items-center justify-center">
               <img src={PertumbuhanIcon} className="w-14 h-14" />
@@ -111,7 +111,7 @@ function Stats() {
         </div>
 
         {/* CARD 6 */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
+        <div className="bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition">
           <div className="flex justify-between items-start mb-6">
             <div className="w-12 h-12 bg-[#eef3f0] rounded-xl flex items-center justify-center">
               <img src={VerifikasiIcon} className="w-14 h-14" />

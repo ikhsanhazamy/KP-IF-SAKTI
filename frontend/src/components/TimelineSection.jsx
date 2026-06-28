@@ -39,7 +39,7 @@ function TimelineSection() {
       <div className="text-center mb-20">
 
         <div className="inline-flex items-center gap-2 bg-[#eef3f0] text-[#1f7a4d] px-4 py-1 rounded-full text-sm">
-          🕘 Sejarah
+          Sejarah
         </div>
 
         <h2 className="text-[48px] font-semibold text-gray-900 mt-5">
@@ -84,7 +84,7 @@ function TimelineSection() {
 
                 {/* TEXT */}
                 <div
-                  className={`${
+                  className={`bg-white/30 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 hover:shadow-sm transition ${
                     item.side === "left"
                       ? "text-right"
                       : "text-left"

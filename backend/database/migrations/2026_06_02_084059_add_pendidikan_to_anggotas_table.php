@@ -11,13 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('anggotas', function (Blueprint $table) {
-
-            $table->string('pendidikan')
-                ->nullable()
-                ->after('profesi');
-
-        });
+        //
     }
 
     /**
@@ -25,10 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('anggotas', function (Blueprint $table) {
-
-            $table->dropColumn('pendidikan');
-
-        });
+        //
     }
 };

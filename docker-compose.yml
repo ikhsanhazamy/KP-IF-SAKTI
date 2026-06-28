@@ -1,22 +1,19 @@
-version: '3.8'
 services:
   app:
-    image: php:8.2-fpm
+    image: php:8.2-cli
     working_dir: /var/www/html
     volumes:
       - ./backend:/var/www/html
     ports:
-      - "9000:9000"
-  db:
-    image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: kp_db
-    ports:
-      - "3306:3306"
+      - "8000:8000"
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
   node:
-    image: node:18
+    image: node:22-alpine
     working_dir: /workspace
     volumes:
       - ./frontend:/workspace
-    command: tail -f /dev/null
+      - /workspace/node_modules
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"

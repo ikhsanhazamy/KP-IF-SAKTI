@@ -16,16 +16,12 @@
         rel="stylesheet">
 </head>
 
-<body class="bg-[#F5F5F5] font-[Plus Jakarta Sans] overflow-hidden">
+<body class="bg-[#f6f8f7] font-sans overflow-hidden">
 
     <div class="flex h-screen">
 
         <!-- SIDEBAR -->
-        <aside class="w-[260px] shrink-0 bg-white border-r h-screen">
-
-            @include('partials.sidebar')
-
-        </aside>
+        @include('partials.sidebar')
 
         <!-- RIGHT AREA -->
         <div class="flex-1 flex flex-col h-screen overflow-hidden">
