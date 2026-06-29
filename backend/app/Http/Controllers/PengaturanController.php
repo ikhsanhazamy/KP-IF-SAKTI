@@ -121,15 +121,41 @@ class PengaturanController extends Controller
     }
 
     public function backupDatabase()
-   {
-        $filename = 'backup_' . now()->format('Y_m_d_H_i_s') . '.sql';
-
+    {
         $backupDir = storage_path('app/backups');
 
         if (!file_exists($backupDir)) {
             mkdir($backupDir, 0755, true);
         }
 
+        $driver = config('database.default');
+
+        if ($driver === 'sqlite') {
+            // SQLite: cukup salin file .sqlite langsung
+            $sourcePath = database_path('database.sqlite');
+
+            if (!file_exists($sourcePath)) {
+                return back()->with(
+                    'error',
+                    'File database SQLite tidak ditemukan'
+                );
+            }
+
+            $filename = 'backup_' . now()->format('Y_m_d_H_i_s') . '.sqlite';
+            $filePath = $backupDir . '/' . $filename;
+
+            if (!copy($sourcePath, $filePath)) {
+                return back()->with(
+                    'error',
+                    'Backup database gagal: tidak dapat menyalin file SQLite'
+                );
+            }
+
+            return response()->download($filePath)->deleteFileAfterSend(true);
+        }
+
+        // MySQL / MariaDB: gunakan mysqldump
+        $filename = 'backup_' . now()->format('Y_m_d_H_i_s') . '.sql';
         $filePath = $backupDir . '/' . $filename;
 
         $command = sprintf(
@@ -153,7 +179,7 @@ class PengaturanController extends Controller
             );
         }
 
-        return response()->download($filePath);
+        return response()->download($filePath)->deleteFileAfterSend(true);
     }
     
     public function updatePassword(Request $request)
