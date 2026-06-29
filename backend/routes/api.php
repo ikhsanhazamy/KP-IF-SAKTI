@@ -31,6 +31,12 @@ Route::get('/kegiatan', function (Request $request) {
     return response()->json($query->latest()->get());
 });
 
+// GET DETAIL KEGIATAN (single, with PAC relation)
+Route::get('/kegiatan/{id}', function ($id) {
+    $kegiatan = Kegiatan::with('pac:id,nama_pac,kecamatan')->findOrFail($id);
+    return response()->json($kegiatan);
+});
+
 // GET ALL PAC
 Route::get('/pac', function () {
     return response()->json(PAC::latest()->get());

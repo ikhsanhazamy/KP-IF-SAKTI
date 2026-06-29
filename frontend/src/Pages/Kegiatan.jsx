@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { Link, useNavigate } from "react-router-dom";
 
 import foto1 from "../assets/images/foto1.jpg";
 import foto2 from "../assets/images/foto2.jpg";
@@ -8,6 +9,8 @@ import foto3 from "../assets/images/foto3.jpg";
 import { useState, useEffect } from "react";
 
 function Kegiatan() {
+  const navigate = useNavigate();
+
   const formatTanggal = (tanggal) => {
     return new Date(tanggal).toLocaleDateString('id-ID', {
       day: 'numeric', month: 'long', year: 'numeric'
@@ -26,6 +29,7 @@ function Kegiatan() {
 
   const mockKegiatan = [
     {
+      id: null,
       title: "Seminar Pemberdayaan Perempuan dan Kewirausahaan",
       desc: "Seminar nasional tentang pemberdayaan perempuan melalui kewirausahaan dan UMKM.",
       date: "15 Mei 2026",
@@ -34,6 +38,7 @@ function Kegiatan() {
       image: foto1
     },
     {
+      id: null,
       title: "Bakti Sosial dan Santunan Anak Yatim",
       desc: "Kegiatan sosial rutin memberikan santunan dan bantuan kepada anak yatim di wilayah Sukabumi.",
       date: "8 Mei 2026",
@@ -42,6 +47,7 @@ function Kegiatan() {
       image: foto2
     },
     {
+      id: null,
       title: "Pelatihan Kaderisasi dan Leadership",
       desc: "Program pelatihan intensif untuk kader muda Fatayat NU dalam kepemimpinan dan manajemen.",
       date: "1 Mei 2026",
@@ -50,6 +56,7 @@ function Kegiatan() {
       image: foto3
     },
     {
+      id: null,
       title: "Rapat Koordinasi PAC Se-Sukabumi",
       desc: "Rapat koordinasi rutin seluruh pengurus PAC untuk evaluasi program dan perencanaan kegiatan.",
       date: "22 April 2026",
@@ -58,6 +65,7 @@ function Kegiatan() {
       image: foto3
     },
     {
+      id: null,
       title: "Workshop Manajemen Organisasi Modern",
       desc: "Workshop tentang manajemen organisasi modern dengan teknologi digital untuk efisiensi kerja.",
       date: "10 April 2026",
@@ -66,6 +74,7 @@ function Kegiatan() {
       image: foto1
     },
     {
+      id: null,
       title: "Kajian Rutin Keislaman dan Keputrian",
       desc: "Kajian rutin bulanan tentang keislaman dan keputrian dengan ustadzah berpengalaman.",
       date: "3 April 2026",
@@ -93,6 +102,7 @@ function Kegiatan() {
       })
       .then((data) => {
         const formattedData = data.map((item) => ({
+          id: item.id,
           title: item.judul,
           desc: item.deskripsi,
           date: formatTanggal(item.tanggal),
@@ -206,8 +216,9 @@ function Kegiatan() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {kegiatanList.map((item, i) => (
                 <div
-                  key={i}
-                  className="bg-white border border-[#E5E7EB] rounded-[24px] overflow-hidden will-change-transform shadow-sm hover:shadow-md transition duration-300"
+                  key={item.id || i}
+                  onClick={() => item.id && navigate(`/kegiatan/${item.id}`)}
+                  className={`bg-white border border-[#E5E7EB] rounded-[24px] overflow-hidden will-change-transform shadow-sm hover:shadow-md transition duration-300 ${item.id ? 'cursor-pointer hover:-translate-y-1' : ''}`}
                 >
 
                   {/* IMAGE */}
@@ -251,9 +262,19 @@ function Kegiatan() {
                     </div>
 
                     {/* BUTTON */}
-                    <button className="w-full h-[46px] sm:h-[50px] border border-[#E5E7EB] rounded-[16px] mt-6 sm:mt-8 text-[#111827] hover:bg-[#1f7a4d] hover:text-white transition duration-300">
-                      Lihat Detail
-                    </button>
+                    {item.id ? (
+                      <Link
+                        to={`/kegiatan/${item.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-full h-[46px] sm:h-[50px] border border-[#E5E7EB] rounded-[16px] mt-6 sm:mt-8 text-[#111827] hover:bg-[#1f7a4d] hover:text-white hover:border-[#1f7a4d] transition duration-300 flex items-center justify-center"
+                      >
+                        Lihat Detail
+                      </Link>
+                    ) : (
+                      <button className="w-full h-[46px] sm:h-[50px] border border-[#E5E7EB] rounded-[16px] mt-6 sm:mt-8 text-[#111827] hover:bg-[#1f7a4d] hover:text-white transition duration-300">
+                        Lihat Detail
+                      </button>
+                    )}
 
                   </div>
 
