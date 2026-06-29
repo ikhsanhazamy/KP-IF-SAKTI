@@ -7,6 +7,7 @@ use App\Models\Pengaturan;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class PengaturanController extends Controller
 {
