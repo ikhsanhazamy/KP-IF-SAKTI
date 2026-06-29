@@ -46,8 +46,102 @@ function KegiatanDetail() {
     return foto3;
   };
 
+  const mockKegiatanDetails = {
+    "1": {
+      id: 1,
+      judul: "Seminar Pemberdayaan Perempuan dan Kewirausahaan",
+      deskripsi: "Seminar nasional tentang pemberdayaan perempuan melalui kewirausahaan dan UMKM. Kegiatan ini bertujuan untuk membekali para kader Fatayat NU dengan keterampilan wirausaha dan pemahaman pasar digital guna meningkatkan perekonomian keluarga.",
+      tanggal: "2026-05-15",
+      waktu: "09:00:00",
+      lokasi: "Gedung PCNU Kabupaten Sukabumi",
+      peserta: 150,
+      kategori: "Seminar",
+      status: "completed",
+      pac: {
+        nama_pac: "PAC Cibadak",
+        kecamatan: "Cibadak"
+      }
+    },
+    "2": {
+      id: 2,
+      judul: "Bakti Sosial dan Santunan Anak Yatim",
+      deskripsi: "Kegiatan sosial rutin memberikan santunan dan bantuan sembako kepada anak yatim dan dhuafa di wilayah Sukabumi sebagai wujud kepedulian sosial Fatayat NU.",
+      tanggal: "2026-05-08",
+      waktu: "13:00:00",
+      lokasi: "Yayasan Al-Yusufiyah, Cicurug",
+      peserta: 85,
+      kategori: "Sosial",
+      status: "completed",
+      pac: {
+        nama_pac: "PAC Cicurug",
+        kecamatan: "Cicurug"
+      }
+    },
+    "3": {
+      id: 3,
+      judul: "Pelatihan Kaderisasi dan Leadership",
+      deskripsi: "Program pelatihan kepemimpinan intensif untuk kader muda Fatayat NU guna melatih kepemimpinan, manajemen organisasi modern, serta kecakapan komunikasi publik.",
+      tanggal: "2026-05-01",
+      waktu: "08:00:00",
+      lokasi: "Aula Balai Diklat Keagamaan Sukabumi",
+      peserta: 120,
+      kategori: "Pelatihan",
+      status: "completed",
+      pac: {
+        nama_pac: "PAC Parungkuda",
+        kecamatan: "Parungkuda"
+      }
+    },
+    "4": {
+      id: 4,
+      judul: "Rapat Koordinasi PAC Se-Sukabumi",
+      deskripsi: "Rapat koordinasi rutin seluruh pengurus Pimpinan Anak Cabang (PAC) se-Kabupaten Sukabumi untuk melakukan evaluasi tengah tahun program kerja serta penyelarasan rencana program masa depan.",
+      tanggal: "2026-04-22",
+      waktu: "10:00:00",
+      lokasi: "Kantor Sekretariat Fatayat NU Sukabumi",
+      peserta: 95,
+      kategori: "Rapat",
+      status: "completed",
+      pac: {
+        nama_pac: "PC Fatayat NU",
+        kecamatan: "Cisaat"
+      }
+    },
+    "5": {
+      id: 5,
+      judul: "Workshop Manajemen Organisasi Modern",
+      deskripsi: "Workshop tentang manajemen organisasi berbasis digital dan pemanfaatan sistem cloud database untuk efisiensi administrasi internal organisasi Fatayat NU.",
+      tanggal: "2026-04-10",
+      waktu: "09:00:00",
+      lokasi: "Aula PCNU Sukabumi",
+      peserta: 75,
+      kategori: "Workshop",
+      status: "completed",
+      pac: {
+        nama_pac: "PAC Cibadak",
+        kecamatan: "Cibadak"
+      }
+    },
+    "6": {
+      id: 6,
+      judul: "Kajian Rutin Keislaman dan Keputrian",
+      deskripsi: "Kajian rutin bulanan membahas problematika fiqih kewanitaan kontemporer, hak-hak perempuan dalam Islam, serta penguatan pemahaman ahlussunnah wal jamaah an-nahdliyah.",
+      tanggal: "2026-04-03",
+      waktu: "15:30:00",
+      lokasi: "Masjid Agung Sukabumi",
+      peserta: 200,
+      kategori: "Kajian",
+      status: "completed",
+      pac: {
+        nama_pac: "PAC Cicurug",
+        kecamatan: "Cicurug"
+      }
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
+    setError(false);
     fetch(`/api/kegiatan/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Kegiatan tidak ditemukan");
@@ -59,7 +153,12 @@ function KegiatanDetail() {
       })
       .catch((err) => {
         console.error(err);
-        setError(true);
+        if (mockKegiatanDetails[id]) {
+          setData(mockKegiatanDetails[id]);
+          setError(false);
+        } else {
+          setError(true);
+        }
         setLoading(false);
       });
   }, [id]);

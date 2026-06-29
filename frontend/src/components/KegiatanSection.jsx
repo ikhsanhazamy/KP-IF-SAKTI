@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Calendar, Users, ArrowRight } from "lucide-react";
 
 import foto1 from "../assets/images/foto1.jpg";
 import foto2 from "../assets/images/foto2.jpg";
@@ -16,7 +17,7 @@ function KegiatanSection() {
 
   const mockData = [
     {
-      id: null,
+      id: 1,
       title: "Seminar Pemberdayaan Perempuan dan Kewirausahaan",
       date: "15 Mei 2026",
       peserta: "150 peserta",
@@ -24,7 +25,7 @@ function KegiatanSection() {
       tag: "Seminar"
     },
     {
-      id: null,
+      id: 2,
       title: "Bakti Sosial dan Santunan Anak Yatim",
       date: "8 Mei 2026",
       peserta: "85 peserta",
@@ -32,7 +33,7 @@ function KegiatanSection() {
       tag: "Sosial"
     },
     {
-      id: null,
+      id: 3,
       title: "Pelatihan Kaderisasi dan Leadership",
       date: "1 Mei 2026",
       peserta: "120 peserta",
@@ -40,25 +41,28 @@ function KegiatanSection() {
       tag: "Pelatihan"
     },
     {
-      id: null,
+      id: 4,
       title: "Rapat Koordinasi PAC Se-Sukabumi",
       date: "22 April 2026",
       peserta: "95 peserta",
-      img: foto3
+      img: foto3,
+      tag: "Rapat"
     },
     {
-      id: null,
+      id: 5,
       title: "Workshop Manajemen Organisasi Modern",
       date: "10 April 2026",
       peserta: "75 peserta",
-      img: foto1
+      img: foto1,
+      tag: "Workshop"
     },
     {
-      id: null,
+      id: 6,
       title: "Kajian Rutin Keislaman dan Keputrian",
       date: "3 April 2026",
       peserta: "200 peserta",
-      img: foto2
+      img: foto2,
+      tag: "Kajian"
     }
   ];
 
@@ -83,24 +87,23 @@ function KegiatanSection() {
       })
       .catch((err) => {
         console.error(err);
-        // Fallback: tetap menggunakan mockData
       });
   }, []);
 
   return (
-    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-20">
+    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16">
 
       {/* HEADER */}
-      <div className="text-center mb-10 sm:mb-14">
-        <div className="inline-flex items-center gap-2 bg-[#eef3f0] text-[#1f7a4d] px-4 py-1 rounded-full text-sm">
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center gap-2 bg-white border border-[#0F5E3A]/10 text-[#0F5E3A] px-4 py-1.5 rounded-full text-sm font-semibold shadow-xs">
           Berita & Kegiatan
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-semibold mt-4 text-gray-900">
+        <h2 className="text-3xl font-bold mt-4 text-gray-900 tracking-tight">
           Kegiatan & Dokumentasi
         </h2>
 
-        <p className="text-gray-500 mt-2 max-w-xl mx-auto text-sm sm:text-base">
+        <p className="text-gray-500 mt-2 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
           Update terbaru mengenai kegiatan, program, dan aktivitas organisasi Fatayat NU Sukabumi
         </p>
       </div>
@@ -113,54 +116,66 @@ function KegiatanSection() {
             <div
               key={item.id || i}
               onClick={() => item.id && navigate(`/kegiatan/${item.id}`)}
-              className={`bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition duration-300 ${item.id ? 'cursor-pointer hover:-translate-y-1' : ''}`}
+              className={`bg-white rounded-[24px] overflow-hidden border border-gray-150 shadow-xs hover:shadow-md transition duration-300 ${item.id ? 'cursor-pointer hover:-translate-y-1' : ''} flex flex-col justify-between`}
             >
 
               {/* IMAGE */}
-              <div className="relative h-[180px] overflow-hidden">
+              <div className="relative h-[200px] overflow-hidden">
                 <img
                   src={item.img}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                  alt={item.title}
                 />
 
                 {/* OVERLAY HIJAU */}
-                <div className="absolute inset-0 bg-gradient-to-t from-green-900/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-green-950/30 to-transparent pointer-events-none" />
 
                 {/* TAG */}
                 {item.tag && (
-                  <span className="absolute top-3 left-3 bg-white/90 text-green-700 text-xs px-3 py-1 rounded-full">
+                  <span className="absolute top-4 left-4 bg-white/95 backdrop-blur-xs text-[#0F5E3A] text-xs font-bold px-3.5 py-1.5 rounded-full shadow-xs">
                     {item.tag}
                   </span>
                 )}
               </div>
 
               {/* CONTENT */}
-              <div className="p-5">
+              <div className="p-6 flex flex-col justify-between flex-1">
+                <div>
+                  <h3 className="font-bold text-gray-900 text-base leading-snug tracking-tight hover:text-[#0F5E3A] transition duration-200">
+                    {item.title}
+                  </h3>
 
-                <h3 className="font-semibold text-gray-900 text-sm leading-snug">
-                  {item.title}
-                </h3>
-
-                {/* META */}
-                <div className="mt-3 text-xs text-gray-400 space-y-1">
-                  <p>📅 {item.date}</p>
-                  <p>👥 {item.peserta}</p>
+                  {/* META */}
+                  <div className="mt-4 text-xs font-semibold text-gray-400 space-y-2">
+                    <p className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                      {item.date}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                      {item.peserta}
+                    </p>
+                  </div>
                 </div>
 
                 {/* BUTTON */}
-                {item.id ? (
-                  <Link
-                    to={`/kegiatan/${item.id}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="mt-4 w-full h-[38px] border border-gray-200 rounded-xl text-sm hover:bg-[#1f7a4d] hover:text-white hover:border-[#1f7a4d] transition duration-200 flex items-center justify-center"
-                  >
-                    Selengkapnya →
-                  </Link>
-                ) : (
-                  <button className="mt-4 w-full h-[38px] border border-gray-200 rounded-xl text-sm hover:bg-gray-50 transition">
-                    Selengkapnya →
-                  </button>
-                )}
+                <div className="mt-6">
+                  {item.id ? (
+                    <Link
+                      to={`/kegiatan/${item.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-full h-[40px] border border-gray-200 rounded-xl text-sm font-semibold hover:bg-[#0F5E3A] hover:text-white hover:border-[#0F5E3A] transition duration-200 flex items-center justify-center gap-1.5 text-gray-700 shadow-2xs cursor-pointer"
+                    >
+                      Selengkapnya
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  ) : (
+                    <button className="w-full h-[40px] border border-gray-200 rounded-xl text-sm font-semibold hover:bg-[#0F5E3A] hover:text-white hover:border-[#0F5E3A] transition duration-200 flex items-center justify-center gap-1.5 text-gray-700 shadow-2xs cursor-pointer">
+                      Selengkapnya
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
 
               </div>
 
@@ -174,7 +189,7 @@ function KegiatanSection() {
       <div className="flex justify-center mt-12">
         <Link
           to="/kegiatan"
-          className="bg-[#1f7a4d] text-white px-6 py-3 rounded-xl shadow hover:bg-[#17633d] transition"
+          className="bg-[#0F5E3A] text-white px-7 py-3.5 rounded-xl font-bold shadow-md hover:bg-[#126A42] transition cursor-pointer flex items-center gap-2"
         >
           Lihat Semua Kegiatan
         </Link>

@@ -29,7 +29,7 @@ function Kegiatan() {
 
   const mockKegiatan = [
     {
-      id: null,
+      id: 1,
       title: "Seminar Pemberdayaan Perempuan dan Kewirausahaan",
       desc: "Seminar nasional tentang pemberdayaan perempuan melalui kewirausahaan dan UMKM.",
       date: "15 Mei 2026",
@@ -38,7 +38,7 @@ function Kegiatan() {
       image: foto1
     },
     {
-      id: null,
+      id: 2,
       title: "Bakti Sosial dan Santunan Anak Yatim",
       desc: "Kegiatan sosial rutin memberikan santunan dan bantuan kepada anak yatim di wilayah Sukabumi.",
       date: "8 Mei 2026",
@@ -47,7 +47,7 @@ function Kegiatan() {
       image: foto2
     },
     {
-      id: null,
+      id: 3,
       title: "Pelatihan Kaderisasi dan Leadership",
       desc: "Program pelatihan intensif untuk kader muda Fatayat NU dalam kepemimpinan dan manajemen.",
       date: "1 Mei 2026",
@@ -56,7 +56,7 @@ function Kegiatan() {
       image: foto3
     },
     {
-      id: null,
+      id: 4,
       title: "Rapat Koordinasi PAC Se-Sukabumi",
       desc: "Rapat koordinasi rutin seluruh pengurus PAC untuk evaluasi program dan perencanaan kegiatan.",
       date: "22 April 2026",
@@ -65,7 +65,7 @@ function Kegiatan() {
       image: foto3
     },
     {
-      id: null,
+      id: 5,
       title: "Workshop Manajemen Organisasi Modern",
       desc: "Workshop tentang manajemen organisasi modern dengan teknologi digital untuk efisiensi kerja.",
       date: "10 April 2026",
@@ -74,7 +74,7 @@ function Kegiatan() {
       image: foto1
     },
     {
-      id: null,
+      id: 6,
       title: "Kajian Rutin Keislaman dan Keputrian",
       desc: "Kajian rutin bulanan tentang keislaman dan keputrian dengan ustadzah berpengalaman.",
       date: "3 April 2026",

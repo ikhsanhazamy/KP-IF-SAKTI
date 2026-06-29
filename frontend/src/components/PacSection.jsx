@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
+import { Users, Calendar, TrendingUp, TrendingDown, MapPin } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 function PacSection() {
+  const navigate = useNavigate();
   const mockData = [
     {
       name: "PAC Cibadak",
@@ -73,24 +76,23 @@ function PacSection() {
       })
       .catch((err) => {
         console.error(err);
-        // Fallback: tetap menggunakan mockData
       });
   }, []);
 
   return (
-    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-20">
+    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16">
 
       {/* HEADER */}
-      <div className="text-center mb-10 sm:mb-14">
-        <div className="inline-flex items-center gap-2 bg-[#eef3f0] text-[#1f7a4d] px-4 py-1 rounded-full text-sm">
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center gap-2 bg-white border border-[#0F5E3A]/10 text-[#0F5E3A] px-4 py-1.5 rounded-full text-sm font-semibold shadow-xs">
           Informasi PAC
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-semibold mt-4 text-gray-900">
+        <h2 className="text-3xl font-bold mt-4 text-gray-900 tracking-tight">
           Daftar Pimpinan Anak Cabang
         </h2>
 
-        <p className="text-gray-500 mt-2 max-w-xl mx-auto text-sm sm:text-base">
+        <p className="text-gray-500 mt-2 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
           Informasi lengkap mengenai PAC Fatayat NU di seluruh wilayah Kabupaten Sukabumi
         </p>
       </div>
@@ -103,25 +105,26 @@ function PacSection() {
           {data.map((item, i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl p-6 border border-gray-200 flex flex-col justify-between shadow-sm hover:shadow-md transition"
+              className="bg-white rounded-[24px] p-6 border border-gray-150 flex flex-col justify-between shadow-xs hover:shadow-md transition duration-300"
             >
 
               {/* HEADER CARD */}
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start gap-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-bold text-gray-900 text-lg tracking-tight">
                     {item.name}
                   </h3>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-xs text-gray-400 font-semibold mt-1 flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
                     {item.kec}
                   </p>
                 </div>
 
                 <span
-                  className={`text-xs px-3 py-1 rounded-full ${
+                  className={`text-xs px-3 py-1.5 rounded-full font-bold shadow-2xs ${
                     item.aktif
-                      ? "bg-green-100 text-green-700"
-                      : "bg-gray-200 text-gray-500"
+                      ? "bg-[#E6F3EC] text-[#0F5E3A]"
+                      : "bg-gray-100 text-gray-500"
                   }`}
                 >
                   {item.aktif ? "Aktif" : "Tidak Aktif"}
@@ -129,21 +132,31 @@ function PacSection() {
               </div>
 
               {/* STATS */}
-              <div className="flex justify-between mt-4 gap-2">
+              <div className="flex justify-between mt-6 gap-3">
 
-                <div className="bg-[#f3f5f4] rounded-xl flex-1 h-[80px] sm:h-[90px] flex flex-col items-center justify-center">
-                  <p className="text-base font-semibold">{item.anggota}</p>
-                  <p className="text-xs text-gray-400">Anggota</p>
+                {/* ANGGOTA BOX */}
+                <div className="bg-[#f6f8f7] rounded-2xl flex-1 h-[90px] flex flex-col items-center justify-center border border-gray-100 hover:bg-white hover:border-gray-200 transition duration-200">
+                  <Users className="w-4 h-4 text-[#0F5E3A] mb-1" />
+                  <p className="text-base font-black text-gray-900 leading-none">{item.anggota}</p>
+                  <p className="text-[10px] text-gray-400 font-bold mt-1.5 uppercase tracking-wider">Anggota</p>
                 </div>
 
-                <div className="bg-[#f3f5f4] rounded-xl flex-1 h-[80px] sm:h-[90px] flex flex-col items-center justify-center">
-                  <p className="text-base font-semibold">{item.kegiatan}</p>
-                  <p className="text-xs text-gray-400">Kegiatan</p>
+                {/* KEGIATAN BOX */}
+                <div className="bg-[#f6f8f7] rounded-2xl flex-1 h-[90px] flex flex-col items-center justify-center border border-gray-100 hover:bg-white hover:border-gray-200 transition duration-200">
+                  <Calendar className="w-4 h-4 text-[#0F5E3A] mb-1" />
+                  <p className="text-base font-black text-gray-900 leading-none">{item.kegiatan}</p>
+                  <p className="text-[10px] text-gray-400 font-bold mt-1.5 uppercase tracking-wider">Kegiatan</p>
                 </div>
 
-                <div className="bg-[#f3f5f4] rounded-xl flex-1 h-[80px] sm:h-[90px] flex flex-col items-center justify-center">
+                {/* GROWTH BOX */}
+                <div className="bg-[#f6f8f7] rounded-2xl flex-1 h-[90px] flex flex-col items-center justify-center border border-gray-100 hover:bg-white hover:border-gray-200 transition duration-200">
+                  {item.growth.includes("-") ? (
+                    <TrendingDown className="w-4 h-4 text-red-500 mb-1" />
+                  ) : (
+                    <TrendingUp className="w-4 h-4 text-green-600 mb-1" />
+                  )}
                   <p
-                    className={`text-base font-semibold ${
+                    className={`text-base font-black leading-none ${
                       item.growth.includes("-")
                         ? "text-red-500"
                         : "text-green-600"
@@ -151,13 +164,16 @@ function PacSection() {
                   >
                     {item.growth}
                   </p>
-                  <p className="text-xs text-gray-400">Growth</p>
+                  <p className="text-[10px] text-gray-400 font-bold mt-1.5 uppercase tracking-wider">Growth</p>
                 </div>
 
               </div>
 
               {/* BUTTON */}
-              <button className="w-full h-[42px] border border-gray-200 rounded-xl text-sm hover:bg-gray-50 transition mt-4">
+              <button
+                onClick={() => navigate(`/data-pac?search=${item.name.replace("PAC ", "")}`)}
+                className="w-full h-[42px] border border-gray-200 rounded-xl text-sm font-semibold hover:bg-[#0F5E3A] hover:text-white hover:border-[#0F5E3A] transition mt-6 cursor-pointer text-gray-700 flex items-center justify-center shadow-2xs"
+              >
                 Lihat Detail
               </button>
 
@@ -170,9 +186,12 @@ function PacSection() {
 
       {/* BUTTON BAWAH */}
       <div className="flex justify-center mt-12">
-        <button className="bg-[#1f7a4d] text-white px-6 py-3 rounded-xl shadow hover:bg-[#17633d] transition">
+        <Link
+          to="/data-pac"
+          className="bg-[#0F5E3A] text-white px-7 py-3.5 rounded-xl font-bold shadow-md hover:bg-[#126A42] transition cursor-pointer flex items-center justify-center"
+        >
           Lihat Semua PAC
-        </button>
+        </Link>
       </div>
 
     </section>

@@ -1,3 +1,5 @@
+import { MessageSquare } from "lucide-react";
+
 function TestimoniSection() {
   const data = [
     {
@@ -18,19 +20,20 @@ function TestimoniSection() {
   ];
 
   return (
-    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-20">
+    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16">
 
       {/* HEADER */}
-      <div className="text-center mb-10 sm:mb-14">
-        <div className="inline-flex items-center gap-2 bg-[#eef3f0] text-[#1f7a4d] px-4 py-1 rounded-full text-sm">
-          💬 Testimoni
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center gap-2 bg-white border border-[#0F5E3A]/10 text-[#0F5E3A] px-4 py-1.5 rounded-full text-sm font-semibold shadow-xs">
+          <MessageSquare className="w-4 h-4" />
+          Testimoni
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-semibold mt-4 text-gray-900">
+        <h2 className="text-3xl font-bold mt-4 text-gray-900 tracking-tight">
           Apa Kata Mereka
         </h2>
 
-        <p className="text-gray-500 mt-2 max-w-xl mx-auto text-sm sm:text-base">
+        <p className="text-gray-500 mt-2 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
           Pengalaman pengurus dan anggota dalam menggunakan platform manajemen organisasi kami
         </p>
       </div>
@@ -42,40 +45,46 @@ function TestimoniSection() {
           {data.map((item, i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col justify-between"
+              className="bg-white rounded-[24px] p-6 sm:p-8 border border-gray-150 shadow-xs hover:shadow-md transition duration-300 flex flex-col justify-between"
             >
 
-              {/* STAR */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-green-600 text-sm">
-                  ★★★★★
+              <div>
+                {/* STAR & QUOTE */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="text-[#0F5E3A] text-sm flex gap-0.5">
+                    {"★".repeat(5)}
+                  </div>
+
+                  <div className="w-9 h-9 bg-[#E6F3EC] rounded-full flex items-center justify-center">
+                    <span className="text-[#0F5E3A] font-serif text-2xl font-black leading-none -mt-1">“</span>
+                  </div>
                 </div>
 
-                <div className="w-8 h-8 bg-[#eef3f0] rounded-full flex items-center justify-center text-green-700">
-                  "
-                </div>
+                {/* TEXT */}
+                <p className="text-sm text-gray-600 leading-relaxed font-semibold italic">
+                  "{item.text}"
+                </p>
               </div>
 
-              {/* TEXT */}
-              <p className="text-sm text-gray-600 leading-relaxed flex-1">
-                "{item.text}"
-              </p>
+              {/* USER PROFILE WITH DIVIDER */}
+              <div>
+                <div className="border-t border-gray-100 mt-6 pt-6 flex items-center gap-3">
 
-              {/* USER */}
-              <div className="flex items-center gap-3 mt-6">
+                  {/* AVATAR FROM INITIALS */}
+                  <div className="w-10 h-10 rounded-full flex-shrink-0 bg-[#E6F3EC] text-[#0F5E3A] text-xs font-bold flex items-center justify-center border border-[#0F5E3A]/10 shadow-2xs">
+                    {item.name.replace(/^(Hj\.|Dra\.)\s*/i, "").split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+                  </div>
 
-                {/* AVATAR */}
-                <div className="w-10 h-10 bg-gray-200 rounded-full flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">
+                      {item.name}
+                    </p>
+                    <p className="text-xs text-gray-400 font-semibold mt-0.5">
+                      {item.role}
+                    </p>
+                  </div>
 
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">
-                    {item.name}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {item.role}
-                  </p>
                 </div>
-
               </div>
 
             </div>
