@@ -171,17 +171,32 @@ class AnggotaController extends Controller
     {
         $anggota = Anggota::findOrFail($id);
 
+        // Bug 4 Fix: Validasi input — same rules as store(), with unique email excluding current record
+        $request->validate([
+            'nama'              => 'required|string|max:255',
+            'email'             => 'required|email|unique:anggotas,email,' . $id,
+            'pac'               => 'required|string',
+            'profesi'           => 'required|string',
+            'pendidikan'        => 'required|string',
+            'status'            => 'required|in:aktif,tidak_aktif',
+            'tanggal_bergabung' => 'required|date',
+        ]);
+
+        // Bug 5 Fix: Sinkronisasi jumlah_anggota PAC jika PAC berubah
+        if ($anggota->pac !== $request->pac) {
+            PAC::where('nama_pac', $anggota->pac)->decrement('jumlah_anggota');
+            PAC::where('nama_pac', $request->pac)->increment('jumlah_anggota');
+        }
+
         $anggota->update([
-
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'pac' => $request->pac,
-            'profesi' => $request->profesi,
-            'telepon' => $request->telepon,
-            'pendidikan' => $request->pendidikan,
+            'nama'              => $request->nama,
+            'email'             => $request->email,
+            'pac'               => $request->pac,
+            'profesi'           => $request->profesi,
+            'telepon'           => $request->telepon,
+            'pendidikan'        => $request->pendidikan,
             'tanggal_bergabung' => $request->tanggal_bergabung,
-            'status' => $request->status,
-
+            'status'            => $request->status,
         ]);
 
         return redirect()->back()

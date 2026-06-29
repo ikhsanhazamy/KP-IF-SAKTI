@@ -17,14 +17,28 @@ class KegiatanController extends Controller
 
     public function store(Request $request)
     {
-        Kegiatan::create($request->all());
+        // Bug 8 Fix: Validasi input sebelum create — cegah IntegrityConstraintViolationException
+        $validated = $request->validate([
+            'judul'    => 'required|string|max:255',
+            'tanggal'  => 'required|date',
+            'waktu'    => 'required|string',
+            'lokasi'   => 'required|string|max:255',
+            'kategori' => 'required|string|max:100',
+            'peserta'  => 'required|integer|min:0',
+            'pac_id'   => 'nullable|exists:pacs,id',
+            'deskripsi'=> 'nullable|string',
+            'status'   => 'nullable|string',
+        ]);
+
+        $kegiatan = Kegiatan::create($validated);
 
         // Auto-sync: increment total_kegiatan di PAC terkait
         if ($request->filled('pac_id')) {
             PAC::where('id', $request->pac_id)->increment('total_kegiatan');
         }
 
-        return redirect('/kegiatan');
+        return redirect('/kegiatan')
+            ->with('success', 'Kegiatan berhasil ditambahkan');
     }
 
     public function show(int $id)

@@ -1,3 +1,4 @@
+
 <?php
 
 namespace App\Http\Controllers;
@@ -211,6 +212,59 @@ class PengaturanController extends Controller
             'Password berhasil diperbarui'
         );
     }
-    
+
+    public function restoreDatabase(Request $request)
+    {
+        $driver = config('database.default');
+
+        if ($driver === 'sqlite') {
+            $request->validate([
+                'backup_file' => 'required|file|mimes:sqlite,db',
+            ]);
+
+            $destination = database_path('database.sqlite');
+
+            // Timpa file SQLite aktif dengan file backup yang diupload
+            $request->file('backup_file')->move(
+                dirname($destination),
+                basename($destination)
+            );
+
+            return back()->with(
+                'success',
+                'Database berhasil dipulihkan dari file SQLite'
+            );
+        }
+
+        // MySQL: pipe .sql ke mysql CLI
+        $request->validate([
+            'backup_file' => 'required|file|mimes:sql,txt',
+        ]);
+
+        $uploadedPath = $request->file('backup_file')->getRealPath();
+
+        $command = sprintf(
+            'mysql -u%s %s %s < "%s"',
+            env('DB_USERNAME'),
+            env('DB_PASSWORD') ? '-p' . env('DB_PASSWORD') : '',
+            env('DB_DATABASE'),
+            $uploadedPath
+        );
+
+        $process = Process::fromShellCommandline($command);
+        $process->run();
+
+        if (! $process->isSuccessful()) {
+            return back()->with(
+                'error',
+                'Restore database gagal: ' . $process->getErrorOutput()
+            );
+        }
+
+        return back()->with(
+            'success',
+            'Database berhasil dipulihkan'
+        );
+    }
 
 }

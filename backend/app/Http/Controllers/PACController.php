@@ -23,7 +23,7 @@ class PACController extends Controller
 
         $totalAnggota = PAC::sum('jumlah_anggota');
 
-        $totalKecamatan = PAC::distinct('kecamatan')->count();
+        $totalKecamatan = PAC::distinct()->count('kecamatan');
 
         return view('dataPAC', compact(
             'pacs',
@@ -103,25 +103,37 @@ class PACController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function update(Request $request,int $id)
+    public function update(Request $request, int $id)
     {
         $pac = PAC::findOrFail($id);
 
+        // Bug 6 Fix: Validasi input — same rules as store()
+        $request->validate([
+            'nama_pac'       => 'required|string|max:255',
+            'kecamatan'      => 'required|string|max:255',
+            'status'         => 'required|in:aktif,tidak_aktif',
+            'tanggal_berdiri'=> 'required|date',
+            'alamat'         => 'required|string',
+            'desa'           => 'required|string',
+            'ketua_pac'      => 'required|string|max:255',
+            'telepon'        => 'required|string|max:20',
+        ]);
+
         $pac->update([
-            'nama_pac' => $request->nama_pac,
-            'kecamatan' => $request->kecamatan,
-            'status' => $request->status,
+            'nama_pac'        => $request->nama_pac,
+            'kecamatan'       => $request->kecamatan,
+            'status'          => $request->status,
             'tanggal_berdiri' => $request->tanggal_berdiri,
-            'alamat' => $request->alamat,
-            'desa' => $request->desa,
-            'kode_pos' => $request->kode_pos,
-            'ketua_pac' => $request->ketua_pac,
-            'telepon' => $request->telepon,
-            'email' => $request->email,
-            'jumlah_anggota' => $request->jumlah_anggota,
-            'nomor_sk' => $request->nomor_sk,
-            'total_kegiatan' => $request->total_kegiatan,
-            'deskripsi' => $request->deskripsi,
+            'alamat'          => $request->alamat,
+            'desa'            => $request->desa,
+            'kode_pos'        => $request->kode_pos,
+            'ketua_pac'       => $request->ketua_pac,
+            'telepon'         => $request->telepon,
+            'email'           => $request->email,
+            'jumlah_anggota'  => $request->jumlah_anggota,
+            'nomor_sk'        => $request->nomor_sk,
+            'total_kegiatan'  => $request->total_kegiatan,
+            'deskripsi'       => $request->deskripsi,
         ]);
 
         return redirect()->route('pac.index')
