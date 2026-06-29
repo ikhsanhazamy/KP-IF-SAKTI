@@ -125,7 +125,7 @@
                             <label class="block text-[13px] font-semibold text-gray-700 mb-1">Nama Ketua *</label>
                             <input
                                 type="text"
-                                name="ketua"
+                                name="ketua_pac"
                                 placeholder="Nama lengkap ketua"
                                 class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
                                 required

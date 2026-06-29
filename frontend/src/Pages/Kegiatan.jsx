@@ -8,6 +8,12 @@ import foto3 from "../assets/images/foto3.jpg";
 import { useState, useEffect } from "react";
 
 function Kegiatan() {
+  const formatTanggal = (tanggal) => {
+    return new Date(tanggal).toLocaleDateString('id-ID', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+  };
+
   const categories = [
     "Semua",
     "Seminar",
@@ -89,7 +95,7 @@ function Kegiatan() {
         const formattedData = data.map((item) => ({
           title: item.judul,
           desc: item.deskripsi,
-          date: item.tanggal,
+          date: formatTanggal(item.tanggal),
           peserta: `${item.peserta} peserta`,
           category: item.kategori,
           image: item.kategori === "Seminar" ? foto1 : item.kategori === "Sosial" ? foto2 : foto3

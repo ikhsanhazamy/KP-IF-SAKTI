@@ -52,7 +52,7 @@ class PACController extends Controller
             'alamat' => 'required',
             'desa' => 'required',
 
-            'ketua' => 'required',
+            'ketua_pac' => 'required',
             'telepon' => 'required',
 
         ]);
@@ -68,7 +68,7 @@ class PACController extends Controller
             'desa' => $request->desa,
             'kode_pos' => $request->kode_pos,
 
-            'ketua_pac' => $request->ketua,
+            'ketua_pac' => $request->ketua_pac,
             'telepon' => $request->telepon,
             'email' => $request->email,
 
@@ -115,7 +115,7 @@ class PACController extends Controller
             'alamat' => $request->alamat,
             'desa' => $request->desa,
             'kode_pos' => $request->kode_pos,
-            'ketua_pac' => $request->ketua,
+            'ketua_pac' => $request->ketua_pac,
             'telepon' => $request->telepon,
             'email' => $request->email,
             'jumlah_anggota' => $request->jumlah_anggota,

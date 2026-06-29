@@ -29,4 +29,12 @@ class PAC extends Model
         'total_kegiatan',
 
     ];
+
+    /**
+     * Relasi ke Kegiatan
+     */
+    public function kegiatans()
+    {
+        return $this->hasMany(Kegiatan::class);
+    }
 }

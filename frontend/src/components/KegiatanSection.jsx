@@ -1,9 +1,17 @@
+import { useState, useEffect } from "react";
+
 import foto1 from "../assets/images/foto1.jpg";
 import foto2 from "../assets/images/foto2.jpg";
 import foto3 from "../assets/images/foto3.jpg";
 
 function KegiatanSection() {
-  const data = [
+  const formatTanggal = (tanggal) => {
+    return new Date(tanggal).toLocaleDateString('id-ID', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+  };
+
+  const mockData = [
     {
       title: "Seminar Pemberdayaan Perempuan dan Kewirausahaan",
       date: "15 Mei 2026",
@@ -44,6 +52,30 @@ function KegiatanSection() {
       img: foto2
     }
   ];
+
+  const [data, setData] = useState(mockData);
+
+  useEffect(() => {
+    fetch("/api/kegiatan")
+      .then((res) => {
+        if (!res.ok) throw new Error("Gagal mengambil data kegiatan");
+        return res.json();
+      })
+      .then((apiData) => {
+        const formatted = apiData.slice(0, 6).map((item) => ({
+          title: item.judul,
+          date: formatTanggal(item.tanggal),
+          peserta: `${item.peserta} peserta`,
+          img: item.kategori === "Seminar" ? foto1 : item.kategori === "Sosial" ? foto2 : foto3,
+          tag: item.kategori
+        }));
+        setData(formatted);
+      })
+      .catch((err) => {
+        console.error(err);
+        // Fallback: tetap menggunakan mockData
+      });
+  }, []);
 
   return (
     <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-20">

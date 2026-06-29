@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Anggota;
+use App\Models\PAC;
 use Carbon\Carbon;
 
 class AnggotaController extends Controller
@@ -127,7 +128,7 @@ class AnggotaController extends Controller
 
         ]);
 
-        Anggota::create([
+        $anggota = Anggota::create([
 
             'nama' => $request->nama,
             'email' => $request->email,
@@ -139,6 +140,9 @@ class AnggotaController extends Controller
             'tanggal_bergabung' => $request->tanggal_bergabung,
 
         ]);
+
+        // Auto-sync: increment jumlah_anggota di PAC terkait
+        PAC::where('nama_pac', $request->pac)->increment('jumlah_anggota');
 
         return redirect()->back()
             ->with('success', 'Data anggota berhasil ditambahkan');
@@ -193,6 +197,9 @@ class AnggotaController extends Controller
     public function destroy(int $id)
     {
         $anggota = Anggota::findOrFail($id);
+
+        // Auto-sync: decrement jumlah_anggota di PAC terkait
+        PAC::where('nama_pac', $anggota->pac)->decrement('jumlah_anggota');
 
         $anggota->delete();
 

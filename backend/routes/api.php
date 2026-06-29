@@ -25,7 +25,7 @@ Route::get('/kegiatan', function (Request $request) {
     }
 
     if ($request->filled('category') && $request->category !== 'Semua') {
-        $query->where('kategori', $request->category);
+        $query->whereRaw('LOWER(kategori) = ?', [strtolower($request->category)]);
     }
 
     return response()->json($query->latest()->get());
@@ -40,7 +40,7 @@ Route::get('/pac', function () {
 Route::get('/stats', function () {
     $totalPAC = PAC::count();
     $pacAktif = PAC::where('status', 'aktif')->count();
-    $totalAnggota = Anggota::count();
+    $totalAnggota = PAC::sum('jumlah_anggota');
     $totalKecamatan = PAC::distinct('kecamatan')->count('kecamatan');
 
     return response()->json([

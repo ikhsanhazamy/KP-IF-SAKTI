@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react";
+
 function PacSection() {
-  const data = [
+  const mockData = [
     {
       name: "PAC Cibadak",
       kec: "Kecamatan Cibadak",
@@ -49,6 +51,31 @@ function PacSection() {
       aktif: true
     }
   ];
+
+  const [data, setData] = useState(mockData);
+
+  useEffect(() => {
+    fetch("/api/pac")
+      .then((res) => {
+        if (!res.ok) throw new Error("Gagal mengambil data PAC");
+        return res.json();
+      })
+      .then((apiData) => {
+        const formatted = apiData.slice(0, 6).map((item) => ({
+          name: item.nama_pac,
+          kec: `Kecamatan ${item.kecamatan}`,
+          anggota: item.jumlah_anggota ?? 0,
+          kegiatan: item.total_kegiatan ?? 0,
+          growth: "+0%",
+          aktif: item.status?.toLowerCase() === "aktif"
+        }));
+        setData(formatted);
+      })
+      .catch((err) => {
+        console.error(err);
+        // Fallback: tetap menggunakan mockData
+      });
+  }, []);
 
   return (
     <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-20">

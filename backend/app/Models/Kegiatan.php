@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Kegiatan extends Model
 {
     protected $fillable = [
+        'pac_id',
         'judul',
         'tanggal',
         'waktu',
@@ -16,4 +17,12 @@ class Kegiatan extends Model
         'status',
         'deskripsi'
     ];
+
+    /**
+     * Relasi ke PAC
+     */
+    public function pac()
+    {
+        return $this->belongsTo(PAC::class);
+    }
 }
