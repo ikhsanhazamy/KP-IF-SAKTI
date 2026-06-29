@@ -30,7 +30,7 @@ function MapSection() {
   }, []);
 
   return (
-    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16">
+    <section id="map" className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16">
 
       {/* HEADER */}
       <div className="text-center mb-12">

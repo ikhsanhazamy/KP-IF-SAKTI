@@ -9,7 +9,7 @@ function Tentang() {
 
       <Navbar />
 
-      <section className="px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-24">
+      <section id="profil" className="px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-24">
 
         {/* HEADER */}
         <div className="text-center mb-12 sm:mb-16 lg:mb-24">
@@ -25,7 +25,7 @@ function Tentang() {
         </div>
 
         {/* VISI MISI */}
-        <div className="max-w-[1280px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 items-stretch">
+        <div id="visi-misi" className="max-w-[1280px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 items-stretch">
 
           {/* VISI */}
           <div

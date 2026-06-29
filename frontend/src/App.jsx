@@ -6,10 +6,12 @@ import Kegiatan from "./Pages/Kegiatan";
 import KegiatanDetail from "./Pages/KegiatanDetail";
 import DataPAC from "./Pages/DataPAC";
 import PengajuanPAC from "./Pages/PengajuanPAC";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
 
       <Routes>
 

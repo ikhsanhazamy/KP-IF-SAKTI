@@ -3,7 +3,7 @@ import { Check, CreditCard, Briefcase, GraduationCap, BarChart2 } from "lucide-r
 
 function MembershipSection() {
   return (
-    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-20">
+    <section id="kta-digital" className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-20">
 
       {/* HEADER */}
       <div className="text-center mb-12 lg:mb-16">

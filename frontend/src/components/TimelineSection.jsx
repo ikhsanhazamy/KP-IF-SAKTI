@@ -33,7 +33,7 @@ function TimelineSection() {
   ];
 
   return (
-    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-16 sm:py-20 lg:py-24">
+    <section id="sejarah" className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-16 sm:py-20 lg:py-24">
 
       {/* HEADER */}
       <div className="text-center mb-12 sm:mb-16 lg:mb-20">
