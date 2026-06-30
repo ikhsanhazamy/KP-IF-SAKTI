@@ -30,16 +30,38 @@
             </p>
         </div>
 
-        <button
-            type="button"
-            onclick="openTambahPACModal()"
-            class="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#176B43] px-6 text-sm font-semibold text-white transition hover:bg-[#0F5534]"
-        >
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                <path d="M12 5v14M5 12h14"></path>
-            </svg>
-            Tambah PAC
-        </button>
+        <div class="flex flex-wrap items-center gap-3">
+            <form action="{{ route('pac.import-csv') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2">
+                @csrf
+                <label class="inline-flex h-12 cursor-pointer items-center justify-center rounded-2xl border border-[#DFE4E1] bg-white px-5 text-sm font-semibold text-[#262926] transition hover:bg-[#F7F9F8]">
+                    Import CSV
+                    <input type="file" name="csv_file" accept=".csv,text/csv" class="hidden" onchange="this.form.submit()">
+                </label>
+            </form>
+
+            <a
+                href="{{ route('pac.export-excel') }}"
+                class="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-[#DFE4E1] bg-white px-5 text-sm font-semibold text-[#262926] transition hover:bg-[#F7F9F8]"
+            >
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 3v12"></path>
+                    <path d="m7 10 5 5 5-5"></path>
+                    <path d="M5 21h14"></path>
+                </svg>
+                Export Excel
+            </a>
+
+            <button
+                type="button"
+                onclick="openTambahPACModal()"
+                class="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#176B43] px-6 text-sm font-semibold text-white transition hover:bg-[#0F5534]"
+            >
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                Tambah PAC
+            </button>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
@@ -83,7 +105,11 @@
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         @forelse($pacs as $pac)
             @php
-                $isActive = $pac->status === 'aktif';
+                $statusMeta = match ($pac->status) {
+                    'aktif' => ['label' => 'Aktif', 'class' => 'bg-[#EEF7F1] text-[#4FA36C]'],
+                    'akan_expire' => ['label' => 'Akan Expire', 'class' => 'bg-amber-50 text-amber-600'],
+                    default => ['label' => 'Tidak Aktif', 'class' => 'bg-[#F2F4F3] text-[#747887]'],
+                };
                 $growthPositive = $pac->growth > 0;
                 $growthNegative = $pac->growth < 0;
                 $growthColor = $growthPositive
@@ -106,8 +132,8 @@
                         </p>
                     </div>
 
-                    <span class="{{ $isActive ? 'bg-[#EEF7F1] text-[#4FA36C]' : 'bg-[#F2F4F3] text-[#747887]' }} shrink-0 rounded-full px-3 py-1.5 text-xs font-medium">
-                        {{ $isActive ? 'Aktif' : 'Tidak Aktif' }}
+                    <span class="{{ $statusMeta['class'] }} shrink-0 rounded-full px-3 py-1.5 text-xs font-medium">
+                        {{ $statusMeta['label'] }}
                     </span>
                 </div>
 
@@ -125,8 +151,8 @@
                         <svg class="mx-auto h-6 w-6 text-[#4FA36C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M3 12h4l2-7 4 14 2-7h6"></path>
                         </svg>
-                        <h3 class="mt-2 text-xl font-bold text-[#202321]">{{ number_format($pac->total_kegiatan) }}</h3>
-                        <p class="mt-1 text-xs text-[#747887]">Kegiatan</p>
+                        <h3 class="mt-2 text-xl font-bold text-[#202321]">{{ number_format($pac->alumni_lkd) }}</h3>
+                        <p class="mt-1 text-xs text-[#747887]">Alumni LKD</p>
                     </div>
 
                     <div class="rounded-2xl bg-[#F8FAF9] px-2 py-4 text-center">
@@ -171,7 +197,7 @@
                         data-nomor-sk="{{ $pac->nomor_sk }}"
                         data-jumlah-anggota="{{ $pac->jumlah_anggota }}"
                         data-pertumbuhan="{{ $pac->growth > 0 ? '+' : '' }}{{ $pac->growth }}%"
-                        data-total-kegiatan="{{ $pac->total_kegiatan }}"
+                        data-alumni-lkd="{{ $pac->alumni_lkd }}"
                         onclick="openDetailPACModal(this)"
                         class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-[#DFE4E1] text-sm font-medium text-[#262926] transition hover:bg-[#F7F9F8]"
                     >
@@ -197,7 +223,7 @@
                         data-email="{{ $pac->email }}"
                         data-nomor-sk="{{ $pac->nomor_sk }}"
                         data-jumlah-anggota="{{ $pac->jumlah_anggota }}"
-                        data-total-kegiatan="{{ $pac->total_kegiatan }}"
+                        data-alumni-lkd="{{ $pac->alumni_lkd }}"
                         data-deskripsi="{{ $pac->deskripsi }}"
                         onclick="openEditPACModal(this)"
                         class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#176B43] text-sm font-medium text-white transition hover:bg-[#0F5534]"
@@ -308,7 +334,7 @@ function openDetailPACModal(button) {
     document.getElementById('detailNomorSK').innerText = button.dataset.nomorSk || '-';
     document.getElementById('detailJumlahAnggota').innerText = button.dataset.jumlahAnggota || '0';
     document.getElementById('detailPertumbuhan').innerText = button.dataset.pertumbuhan || '0%';
-    document.getElementById('detailTotalKegiatan').innerText = button.dataset.totalKegiatan || '0';
+    document.getElementById('detailAlumniLKD').innerText = button.dataset.alumniLkd || '0';
 }
 
 function closeDetailPACModal() {
@@ -334,7 +360,7 @@ function openEditPACModal(button) {
     document.getElementById('editEmail').value = button.dataset.email || '';
     document.getElementById('editNomorSK').value = button.dataset.nomorSk || '';
     document.getElementById('editJumlahAnggota').value = button.dataset.jumlahAnggota || 0;
-    document.getElementById('editTotalKegiatan').value = button.dataset.totalKegiatan || 0;
+    document.getElementById('editAlumniLKD').value = button.dataset.alumniLkd || 0;
     document.getElementById('editDeskripsi').value = button.dataset.deskripsi || '';
     document.getElementById('formEditPAC').action = `/data-pac/update/${button.dataset.id}`;
 }

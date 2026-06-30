@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Anggota;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class AnggotaController extends Controller
@@ -75,6 +76,63 @@ class AnggotaController extends Controller
             ->with('success', 'Data anggota berhasil ditambahkan');
     }
 
+    public function importCsv(Request $request)
+    {
+        $request->validate([
+            'csv_file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+        ]);
+
+        $imported = 0;
+        $skipped = 0;
+
+        foreach ($this->csvRows($request->file('csv_file')) as $row) {
+            $email = $this->csvValue($row, ['email']);
+            $nama = $this->csvValue($row, ['nama', 'nama_lengkap']);
+
+            if (! $email || ! $nama) {
+                $skipped++;
+
+                continue;
+            }
+
+            try {
+                $tanggalLahir = $this->parseDate($this->csvValue($row, ['tanggal_lahir', 'tgl_lahir', 'dob']));
+                $tanggalBergabung = $this->parseDate($this->csvValue($row, ['tanggal_bergabung', 'tgl_bergabung', 'bergabung']));
+
+                if (! $tanggalLahir || ! $tanggalBergabung) {
+                    $skipped++;
+
+                    continue;
+                }
+
+                Anggota::updateOrCreate(
+                    ['email' => $email],
+                    [
+                        'nama' => $nama,
+                        'telepon' => $this->csvValue($row, ['telepon', 'no_telepon', 'phone'], '-'),
+                        'tanggal_lahir' => $tanggalLahir,
+                        'pac' => $this->csvValue($row, ['pac'], '-'),
+                        'profesi' => $this->csvValue($row, ['profesi'], '-'),
+                        'pendidikan' => $this->normalizePendidikan($this->csvValue($row, ['pendidikan'], 'SMA')),
+                        'status' => $this->normalizeStatus($this->csvValue($row, ['status'], 'aktif')),
+                        'status_pernikahan' => $this->normalizeStatusPernikahan(
+                            $this->csvValue($row, ['status_pernikahan', 'pernikahan'], 'belum_kawin')
+                        ),
+                        'tanggal_bergabung' => $tanggalBergabung,
+                    ]
+                );
+
+                $imported++;
+            } catch (\Throwable) {
+                $skipped++;
+            }
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', "Import anggota selesai. {$imported} data tersimpan, {$skipped} baris dilewati.");
+    }
+
     public function show($id)
     {
         $anggota = Anggota::findOrFail($id);
@@ -118,7 +176,112 @@ class AnggotaController extends Controller
             'profesi' => ['required', 'string', 'max:255'],
             'pendidikan' => ['required', Rule::in(['SD', 'SMP', 'SMA', 'D3', 'S1', 'S2', 'S3'])],
             'status' => ['required', Rule::in(['aktif', 'tidak_aktif'])],
+            'status_pernikahan' => ['required', Rule::in(['kawin', 'belum_kawin', 'cerai_hidup', 'cerai_mati'])],
             'tanggal_bergabung' => ['required', 'date'],
         ];
+    }
+
+    private function csvRows($file): array
+    {
+        $handle = fopen($file->getRealPath(), 'r');
+        $firstLine = fgets($handle) ?: '';
+        $delimiter = substr_count($firstLine, ';') > substr_count($firstLine, ',') ? ';' : ',';
+        rewind($handle);
+
+        $headers = fgetcsv($handle, 0, $delimiter) ?: [];
+        $headers = array_map(fn ($header) => $this->normalizeHeader($header), $headers);
+        $rows = [];
+
+        while (($line = fgetcsv($handle, 0, $delimiter)) !== false) {
+            if (count(array_filter($line, fn ($value) => trim((string) $value) !== '')) === 0) {
+                continue;
+            }
+
+            $line = array_slice(array_pad($line, count($headers), null), 0, count($headers));
+            $rows[] = array_combine($headers, $line);
+        }
+
+        fclose($handle);
+
+        return $rows;
+    }
+
+    private function normalizeHeader(?string $header): string
+    {
+        return Str::of($header ?? '')
+            ->replace("\xEF\xBB\xBF", '')
+            ->lower()
+            ->replaceMatches('/[^a-z0-9]+/', '_')
+            ->trim('_')
+            ->toString();
+    }
+
+    private function csvValue(array $row, array $keys, ?string $default = null): ?string
+    {
+        foreach ($keys as $key) {
+            $normalized = $this->normalizeHeader($key);
+
+            if (array_key_exists($normalized, $row) && trim((string) $row[$normalized]) !== '') {
+                return trim((string) $row[$normalized]);
+            }
+        }
+
+        return $default;
+    }
+
+    private function parseDate(?string $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        foreach (['Y-m-d', 'd/m/Y', 'd-m-Y', 'm/d/Y'] as $format) {
+            try {
+                return Carbon::createFromFormat($format, $value)->format('Y-m-d');
+            } catch (\Throwable) {
+                //
+            }
+        }
+
+        try {
+            return Carbon::parse($value)->format('Y-m-d');
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    private function normalizeStatus(?string $value): string
+    {
+        $slug = $this->slugValue($value);
+
+        return in_array($slug, ['aktif', 'tidak_aktif'], true) ? $slug : 'aktif';
+    }
+
+    private function normalizeStatusPernikahan(?string $value): string
+    {
+        return match ($this->slugValue($value)) {
+            'kawin', 'menikah' => 'kawin',
+            'cerai_hidup', 'duda' => 'cerai_hidup',
+            'cerai_mati', 'janda' => 'cerai_mati',
+            default => 'belum_kawin',
+        };
+    }
+
+    private function normalizePendidikan(?string $value): string
+    {
+        $pendidikan = Str::upper(trim((string) $value));
+
+        return in_array($pendidikan, ['SD', 'SMP', 'SMA', 'D3', 'S1', 'S2', 'S3'], true)
+            ? $pendidikan
+            : 'SMA';
+    }
+
+    private function slugValue(?string $value): string
+    {
+        return Str::of($value ?? '')
+            ->lower()
+            ->replaceMatches('/[^a-z0-9]+/', '_')
+            ->trim('_')
+            ->toString();
     }
 }

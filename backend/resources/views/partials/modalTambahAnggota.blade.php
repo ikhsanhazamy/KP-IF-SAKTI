@@ -119,6 +119,16 @@
                 </select>
             </div>
 
+            <div>
+                <label class="mb-2 block font-medium">Status Pernikahan *</label>
+                <select name="status_pernikahan" class="w-full rounded-2xl border px-5 py-4" required>
+                    <option value="kawin" @selected(old('status_pernikahan') === 'kawin')>Kawin</option>
+                    <option value="belum_kawin" @selected(old('status_pernikahan', 'belum_kawin') === 'belum_kawin')>Belum Kawin</option>
+                    <option value="cerai_hidup" @selected(old('status_pernikahan') === 'cerai_hidup')>Cerai Hidup</option>
+                    <option value="cerai_mati" @selected(old('status_pernikahan') === 'cerai_mati')>Cerai Mati</option>
+                </select>
+            </div>
+
             @if($errors->any())
                 <div class="rounded-2xl bg-red-50 px-5 py-4 text-sm text-red-700">
                     {{ $errors->first() }}

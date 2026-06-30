@@ -27,6 +27,7 @@
                 <th>Profesi</th>
                 <th>Pendidikan</th>
                 <th>Status</th>
+                <th>Status Pernikahan</th>
             </tr>
         </thead>
         <tbody>
@@ -40,9 +41,18 @@
                     <td>{{ $item->profesi }}</td>
                     <td>{{ $item->pendidikan }}</td>
                     <td>{{ ucfirst(str_replace('_', ' ', $item->status)) }}</td>
+                    <td>
+                        @switch($item->status_pernikahan)
+                            @case('kawin') Kawin @break
+                            @case('cerai_hidup') Cerai Hidup @break
+                            @case('cerai_mati') Cerai Mati @break
+                            @case('belum_kawin') Belum Kawin @break
+                            @default -
+                        @endswitch
+                    </td>
                 </tr>
             @empty
-                <tr><td colspan="8">Belum ada data anggota.</td></tr>
+                <tr><td colspan="9">Belum ada data anggota.</td></tr>
             @endforelse
         </tbody>
     </table>

@@ -24,7 +24,7 @@
                 <th>Kecamatan</th>
                 <th>Ketua</th>
                 <th>Anggota</th>
-                <th>Kegiatan</th>
+                <th>Alumni LKD</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -36,7 +36,7 @@
                     <td>{{ $pac->kecamatan }}</td>
                     <td>{{ $pac->ketua_pac ?: '-' }}</td>
                     <td>{{ $pac->jumlah_anggota }}</td>
-                    <td>{{ $pac->total_kegiatan }}</td>
+                    <td>{{ $pac->alumni_lkd }}</td>
                     <td>{{ ucfirst(str_replace('_', ' ', $pac->status)) }}</td>
                 </tr>
             @empty

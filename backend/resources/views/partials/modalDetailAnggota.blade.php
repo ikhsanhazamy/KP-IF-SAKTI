@@ -52,6 +52,10 @@
                 <p class="mb-2 text-gray-500">Status</p>
                 <span id="detailStatus"></span>
             </div>
+            <div>
+                <p class="text-gray-500">Status Pernikahan</p>
+                <h3 id="detailStatusPernikahan" class="text-xl"></h3>
+            </div>
         </div>
     </div>
 </div>

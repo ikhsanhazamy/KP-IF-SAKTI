@@ -6,6 +6,7 @@ use App\Models\Anggota;
 use App\Models\PAC;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -87,7 +88,7 @@ class PACController extends Controller
     {
         $validated = $request->validate($this->rules());
         $validated['jumlah_anggota'] ??= 0;
-        $validated['total_kegiatan'] ??= 0;
+        $validated['alumni_lkd'] ??= 0;
 
         $pac = PAC::create($validated);
         $page = (int) ceil(PAC::count() / 9);
@@ -97,6 +98,78 @@ class PACController extends Controller
 
         return redirect()->to($url.'#pac-'.$pac->id)
             ->with('success', 'PAC berhasil ditambahkan');
+    }
+
+    public function importCsv(Request $request)
+    {
+        $request->validate([
+            'csv_file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+        ]);
+
+        $imported = 0;
+        $skipped = 0;
+
+        foreach ($this->csvRows($request->file('csv_file')) as $row) {
+            $namaPac = $this->csvValue($row, ['nama_pac', 'pac', 'nama']);
+            $kecamatan = $this->csvValue($row, ['kecamatan']);
+
+            if (! $namaPac || ! $kecamatan) {
+                $skipped++;
+
+                continue;
+            }
+
+            try {
+                $tanggalBerdiri = $this->parseDate($this->csvValue($row, ['tanggal_berdiri', 'tgl_berdiri']));
+
+                if (! $tanggalBerdiri) {
+                    $skipped++;
+
+                    continue;
+                }
+
+                PAC::updateOrCreate(
+                    [
+                        'nama_pac' => $namaPac,
+                        'kecamatan' => $kecamatan,
+                    ],
+                    [
+                        'status' => $this->normalizeStatus($this->csvValue($row, ['status'], 'aktif')),
+                        'tanggal_berdiri' => $tanggalBerdiri,
+                        'alamat' => $this->csvValue($row, ['alamat'], '-'),
+                        'desa' => $this->csvValue($row, ['desa', 'kelurahan'], '-'),
+                        'kode_pos' => $this->csvValue($row, ['kode_pos']),
+                        'ketua_pac' => $this->csvValue($row, ['ketua_pac', 'ketua'], '-'),
+                        'telepon' => $this->csvValue($row, ['telepon', 'no_telepon'], '-'),
+                        'email' => $this->csvValue($row, ['email']),
+                        'jumlah_anggota' => (int) ($this->csvValue($row, ['jumlah_anggota', 'anggota'], '0')),
+                        'alumni_lkd' => (int) ($this->csvValue($row, ['alumni_lkd', 'alumni_lkd_count', 'alumni'], '0')),
+                        'nomor_sk' => $this->csvValue($row, ['nomor_sk', 'no_sk']),
+                        'deskripsi' => $this->csvValue($row, ['deskripsi', 'keterangan']),
+                    ]
+                );
+
+                $imported++;
+            } catch (\Throwable) {
+                $skipped++;
+            }
+        }
+
+        return redirect()
+            ->route('pac.index')
+            ->with('success', "Import PAC selesai. {$imported} data tersimpan, {$skipped} baris dilewati.");
+    }
+
+    public function exportExcel(): Response
+    {
+        $content = view('exports.pac-excel', [
+            'pacs' => PAC::orderBy('nama_pac')->get(),
+        ])->render();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="data-pac.xls"',
+        ]);
     }
 
     /*
@@ -124,7 +197,7 @@ class PACController extends Controller
 
         $validated = $request->validate($this->rules());
         $validated['jumlah_anggota'] ??= 0;
-        $validated['total_kegiatan'] ??= 0;
+        $validated['alumni_lkd'] ??= 0;
 
         $pac->update($validated);
 
@@ -172,7 +245,7 @@ class PACController extends Controller
         return [
             'nama_pac' => ['required', 'string', 'max:255'],
             'kecamatan' => ['required', 'string', 'max:255'],
-            'status' => ['required', Rule::in(['aktif', 'tidak_aktif'])],
+            'status' => ['required', Rule::in(['aktif', 'tidak_aktif', 'akan_expire'])],
             'tanggal_berdiri' => ['required', 'date'],
             'alamat' => ['required', 'string'],
             'desa' => ['required', 'string', 'max:255'],
@@ -182,8 +255,90 @@ class PACController extends Controller
             'email' => ['nullable', 'email', 'max:255'],
             'jumlah_anggota' => ['nullable', 'integer', 'min:0'],
             'nomor_sk' => ['nullable', 'string', 'max:255'],
-            'total_kegiatan' => ['nullable', 'integer', 'min:0'],
+            'alumni_lkd' => ['nullable', 'integer', 'min:0'],
             'deskripsi' => ['nullable', 'string'],
         ];
+    }
+
+    private function csvRows($file): array
+    {
+        $handle = fopen($file->getRealPath(), 'r');
+        $firstLine = fgets($handle) ?: '';
+        $delimiter = substr_count($firstLine, ';') > substr_count($firstLine, ',') ? ';' : ',';
+        rewind($handle);
+
+        $headers = fgetcsv($handle, 0, $delimiter) ?: [];
+        $headers = array_map(fn ($header) => $this->normalizeHeader($header), $headers);
+        $rows = [];
+
+        while (($line = fgetcsv($handle, 0, $delimiter)) !== false) {
+            if (count(array_filter($line, fn ($value) => trim((string) $value) !== '')) === 0) {
+                continue;
+            }
+
+            $line = array_slice(array_pad($line, count($headers), null), 0, count($headers));
+            $rows[] = array_combine($headers, $line);
+        }
+
+        fclose($handle);
+
+        return $rows;
+    }
+
+    private function normalizeHeader(?string $header): string
+    {
+        return Str::of($header ?? '')
+            ->replace("\xEF\xBB\xBF", '')
+            ->lower()
+            ->replaceMatches('/[^a-z0-9]+/', '_')
+            ->trim('_')
+            ->toString();
+    }
+
+    private function csvValue(array $row, array $keys, ?string $default = null): ?string
+    {
+        foreach ($keys as $key) {
+            $normalized = $this->normalizeHeader($key);
+
+            if (array_key_exists($normalized, $row) && trim((string) $row[$normalized]) !== '') {
+                return trim((string) $row[$normalized]);
+            }
+        }
+
+        return $default;
+    }
+
+    private function parseDate(?string $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        foreach (['Y-m-d', 'd/m/Y', 'd-m-Y', 'm/d/Y'] as $format) {
+            try {
+                return Carbon::createFromFormat($format, $value)->format('Y-m-d');
+            } catch (\Throwable) {
+                //
+            }
+        }
+
+        try {
+            return Carbon::parse($value)->format('Y-m-d');
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    private function normalizeStatus(?string $value): string
+    {
+        $slug = Str::of($value ?? '')
+            ->lower()
+            ->replaceMatches('/[^a-z0-9]+/', '_')
+            ->trim('_')
+            ->toString();
+
+        return in_array($slug, ['aktif', 'tidak_aktif', 'akan_expire'], true)
+            ? $slug
+            : 'aktif';
     }
 }

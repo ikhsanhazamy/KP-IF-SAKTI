@@ -70,6 +70,7 @@
                                 >
                                     <option value="aktif">Aktif</option>
                                     <option value="tidak_aktif">Tidak Aktif</option>
+                                    <option value="akan_expire">Akan Expire</option>
                                 </select>
                             </div>
 
@@ -189,11 +190,12 @@
                             </div>
 
                             <div class="space-y-2">
-                                <div class="text-sm font-medium text-[#1D1D1D]">Total Kegiatan Awal</div>
+                                <div class="text-sm font-medium text-[#1D1D1D]">Alumni LKD</div>
                                 <input
                                     type="number"
-                                    name="total_kegiatan"
+                                    name="alumni_lkd"
                                     value="0"
+                                    min="0"
                                     class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
                                 >
                             </div>

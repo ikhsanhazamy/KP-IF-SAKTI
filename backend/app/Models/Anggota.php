@@ -15,6 +15,7 @@ class Anggota extends Model
         'profesi',
         'tanggal_bergabung',
         'status',
+        'status_pernikahan',
         'pendidikan',
     ];
 

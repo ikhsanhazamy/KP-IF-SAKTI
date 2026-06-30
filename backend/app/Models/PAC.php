@@ -24,9 +24,9 @@ class PAC extends Model
         'email',
 
         'jumlah_anggota',
+        'alumni_lkd',
         'deskripsi',
         'nomor_sk',
-        'total_kegiatan',
 
     ];
 }

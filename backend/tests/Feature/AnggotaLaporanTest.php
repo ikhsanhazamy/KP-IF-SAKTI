@@ -7,6 +7,7 @@ use App\Models\PAC;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class AnggotaLaporanTest extends TestCase
@@ -34,6 +35,7 @@ class AnggotaLaporanTest extends TestCase
             'profesi' => 'Guru',
             'pendidikan' => 'S1',
             'status' => 'aktif',
+            'status_pernikahan' => 'kawin',
             'tanggal_bergabung' => '2026-01-10',
         ]);
 
@@ -58,6 +60,7 @@ class AnggotaLaporanTest extends TestCase
             'profesi' => 'Guru',
             'pendidikan' => 'S1',
             'status' => 'aktif',
+            'status_pernikahan' => 'kawin',
             'tanggal_bergabung' => '2026-01-01',
         ]);
 
@@ -70,6 +73,7 @@ class AnggotaLaporanTest extends TestCase
             'profesi' => 'Wiraswasta',
             'pendidikan' => 'SMA',
             'status' => 'tidak_aktif',
+            'status_pernikahan' => 'belum_kawin',
             'tanggal_bergabung' => '2026-02-01',
         ]);
 
@@ -79,7 +83,7 @@ class AnggotaLaporanTest extends TestCase
             'status' => 'aktif',
             'tanggal_berdiri' => '2020-01-01',
             'jumlah_anggota' => 100,
-            'total_kegiatan' => 12,
+            'alumni_lkd' => 12,
         ]);
 
         $response = $this->actingAs($user)->get('/laporan');
@@ -88,7 +92,7 @@ class AnggotaLaporanTest extends TestCase
             ->assertSee('35 tahun')
             ->assertSee('50%')
             ->assertSee('PAC Cibadak')
-            ->assertSee('12,0 kegiatan');
+            ->assertSee('0,0 kegiatan');
     }
 
     public function test_export_csv_excel_dan_generate_pdf_berfungsi(): void
@@ -105,6 +109,7 @@ class AnggotaLaporanTest extends TestCase
             'profesi' => 'Dosen',
             'pendidikan' => 'S2',
             'status' => 'aktif',
+            'status_pernikahan' => 'kawin',
             'tanggal_bergabung' => '2025-03-02',
         ]);
 
@@ -121,5 +126,24 @@ class AnggotaLaporanTest extends TestCase
         $pdf = $this->actingAs($user)->get('/laporan/generate/anggota');
         $pdf->assertOk()
             ->assertDownload('laporan-anggota.pdf');
+    }
+
+    public function test_import_anggota_dari_csv_menyimpan_status_pernikahan(): void
+    {
+        $user = User::factory()->create();
+        $csv = UploadedFile::fake()->createWithContent(
+            'anggota.csv',
+            "nama,email,telepon,tanggal_lahir,pac,profesi,pendidikan,status,status_pernikahan,tanggal_bergabung\n".
+            "Aisyah Import,aisyah.import@example.com,081233344455,1991-05-20,PAC Cicurug,Guru,S1,aktif,cerai_hidup,2026-06-30\n"
+        );
+
+        $this->actingAs($user)
+            ->post(route('anggota.import-csv'), ['csv_file' => $csv])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('anggotas', [
+            'email' => 'aisyah.import@example.com',
+            'status_pernikahan' => 'cerai_hidup',
+        ]);
     }
 }

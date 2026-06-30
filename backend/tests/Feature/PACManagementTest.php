@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\PAC;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class PACManagementTest extends TestCase
@@ -41,7 +42,7 @@ class PACManagementTest extends TestCase
             'email' => 'pacbaru@example.com',
             'jumlah_anggota' => 25,
             'nomor_sk' => 'SK-004',
-            'total_kegiatan' => 2,
+            'alumni_lkd' => 2,
             'deskripsi' => 'PAC yang baru ditambahkan',
         ]);
 
@@ -51,6 +52,7 @@ class PACManagementTest extends TestCase
         $this->assertDatabaseHas('pacs', [
             'nama_pac' => 'PAC Baru',
             'ketua_pac' => 'Ketua Baru',
+            'alumni_lkd' => 2,
         ]);
 
         $this->actingAs($user)
@@ -70,5 +72,52 @@ class PACManagementTest extends TestCase
             ->get(route('pac.index'))
             ->assertOk()
             ->assertSee('name="ketua_pac"', false);
+    }
+
+    public function test_import_pac_dari_csv_menyimpan_alumni_lkd_dan_status_akan_expire(): void
+    {
+        $user = User::factory()->create();
+        $csv = UploadedFile::fake()->createWithContent(
+            'pac.csv',
+            "nama_pac,kecamatan,status,tanggal_berdiri,alamat,desa,ketua_pac,telepon,jumlah_anggota,alumni_lkd\n".
+            "PAC Import,Cisaat,akan_expire,2026-06-30,Jalan Import,Desa Import,Ketua Import,081200000001,30,12\n"
+        );
+
+        $this->actingAs($user)
+            ->post(route('pac.import-csv'), ['csv_file' => $csv])
+            ->assertRedirect(route('pac.index'));
+
+        $this->assertDatabaseHas('pacs', [
+            'nama_pac' => 'PAC Import',
+            'status' => 'akan_expire',
+            'alumni_lkd' => 12,
+        ]);
+    }
+
+    public function test_data_pac_bisa_die_export_ke_excel(): void
+    {
+        $user = User::factory()->create();
+
+        PAC::create([
+            'nama_pac' => 'PAC Cibadak',
+            'kecamatan' => 'Cibadak',
+            'status' => 'akan_expire',
+            'tanggal_berdiri' => '2026-06-30',
+            'alamat' => 'Jalan Cibadak',
+            'desa' => 'Cibadak',
+            'ketua_pac' => 'Ketua Cibadak',
+            'telepon' => '081234567890',
+            'jumlah_anggota' => 247,
+            'alumni_lkd' => 18,
+            'nomor_sk' => 'SK-001',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('pac.export-excel'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/vnd.ms-excel; charset=UTF-8')
+            ->assertSee('PAC Cibadak')
+            ->assertSee('Akan Expire')
+            ->assertSee('Alumni LKD');
     }
 }

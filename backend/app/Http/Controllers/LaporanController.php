@@ -62,6 +62,7 @@ class LaporanController extends Controller
                 'Profesi',
                 'Pendidikan',
                 'Status',
+                'Status Pernikahan',
                 'Tanggal Bergabung',
             ]);
 
@@ -77,6 +78,7 @@ class LaporanController extends Controller
                         $anggota->profesi,
                         $anggota->pendidikan,
                         ucfirst(str_replace('_', ' ', $anggota->status)),
+                        $this->formatStatusPernikahan($anggota->status_pernikahan),
                         $anggota->tanggal_bergabung?->format('Y-m-d'),
                     ]);
                 }
@@ -93,6 +95,17 @@ class LaporanController extends Controller
         return Pdf::loadView('pdf.laporan-anggota', [
             'anggotas' => Anggota::orderBy('nama')->get(),
         ])->download('laporan-anggota.pdf');
+    }
+
+    private function formatStatusPernikahan(?string $status): string
+    {
+        return match ($status) {
+            'kawin' => 'Kawin',
+            'cerai_hidup' => 'Cerai Hidup',
+            'cerai_mati' => 'Cerai Mati',
+            'belum_kawin' => 'Belum Kawin',
+            default => '-',
+        };
     }
 
     private function reportData(): array
@@ -135,8 +148,8 @@ class LaporanController extends Controller
             ->groupBy('pendidikan')
             ->pluck('total', 'pendidikan');
 
-        $mostActivePac = PAC::orderByDesc('total_kegiatan')
-            ->orderByDesc('jumlah_anggota')
+        $mostActivePac = PAC::orderByDesc('jumlah_anggota')
+            ->orderBy('nama_pac')
             ->first();
 
         return [
@@ -146,7 +159,7 @@ class LaporanController extends Controller
             'anggotaAktif' => $anggotaAktif,
             'averageAge' => $usia->isNotEmpty() ? (int) round($usia->avg()) : 0,
             'averageActivitiesPerPac' => $totalPAC > 0
-                ? round((float) PAC::avg('total_kegiatan'), 1)
+                ? round($totalKegiatan / $totalPAC, 1)
                 : 0,
             'participationRate' => $totalAnggota > 0
                 ? (int) round(($anggotaAktif / $totalAnggota) * 100)

@@ -33,8 +33,8 @@
                     <h3 id="detailPertumbuhan" class="text-2xl font-bold text-green-600 mt-2"></h3>
                 </div>
                 <div class="bg-gray-50 rounded-2xl p-4">
-                    <p class="text-gray-500 text-sm">Total Kegiatan</p>
-                    <h3 id="detailTotalKegiatan" class="text-2xl font-bold text-[#15633D] mt-2"></h3>
+                    <p class="text-gray-500 text-sm">Alumni LKD</p>
+                    <h3 id="detailAlumniLKD" class="text-2xl font-bold text-[#15633D] mt-2"></h3>
                 </div>
             </div>
 

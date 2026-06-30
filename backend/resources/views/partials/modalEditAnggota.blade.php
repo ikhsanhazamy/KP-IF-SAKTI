@@ -77,6 +77,16 @@
                 </select>
             </div>
 
+            <div>
+                <label class="mb-3 block text-lg font-medium">Status Pernikahan</label>
+                <select name="status_pernikahan" id="editStatusPernikahan" class="w-full rounded-2xl border border-gray-200 px-5 py-4" required>
+                    <option value="kawin">Kawin</option>
+                    <option value="belum_kawin">Belum Kawin</option>
+                    <option value="cerai_hidup">Cerai Hidup</option>
+                    <option value="cerai_mati">Cerai Mati</option>
+                </select>
+            </div>
+
             <div class="flex justify-end gap-4 pt-4">
                 <button type="button" onclick="closeEditModal()" class="rounded-2xl border border-gray-200 px-8 py-4 hover:bg-gray-50">
                     Batal

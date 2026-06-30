@@ -7,7 +7,14 @@
         <p class="mt-2 text-lg text-gray-500">Kelola data anggota Fatayat NU Sukabumi</p>
     </div>
 
-    <div class="flex gap-4">
+    <div class="flex flex-wrap gap-4">
+        <form action="{{ route('anggota.import-csv') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <label class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-gray-300 bg-white px-6 py-3 hover:bg-gray-50">
+                Import CSV
+                <input type="file" name="csv_file" accept=".csv,text/csv" class="hidden" onchange="this.form.submit()">
+            </label>
+        </form>
         <a href="/laporan/export/excel" class="inline-flex items-center gap-2 rounded-2xl border border-gray-300 bg-white px-6 py-3 hover:bg-gray-50">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M12 3v11"></path>
@@ -113,6 +120,7 @@
                                 data-pac="{{ $item->pac }}"
                                 data-profesi="{{ $item->profesi }}"
                                 data-pendidikan="{{ $item->pendidikan }}"
+                                data-status-pernikahan="{{ $item->status_pernikahan }}"
                                 data-tanggal-lahir="{{ $item->tanggal_lahir?->format('Y-m-d') }}"
                                 data-umur="{{ $item->umur }}"
                                 data-tanggal="{{ $item->tanggal_bergabung?->format('Y-m-d') }}"
@@ -135,6 +143,7 @@
                                 data-pac="{{ $item->pac }}"
                                 data-profesi="{{ $item->profesi }}"
                                 data-pendidikan="{{ $item->pendidikan }}"
+                                data-status-pernikahan="{{ $item->status_pernikahan }}"
                                 data-tanggal-lahir="{{ $item->tanggal_lahir?->format('Y-m-d') }}"
                                 data-tanggal="{{ $item->tanggal_bergabung?->format('Y-m-d') }}"
                                 data-status="{{ $item->status }}"
@@ -208,6 +217,7 @@
         document.getElementById('detailPac').innerText = button.dataset.pac;
         document.getElementById('detailProfesi').innerText = button.dataset.profesi;
         document.getElementById('detailPendidikan').innerText = button.dataset.pendidikan;
+        document.getElementById('detailStatusPernikahan').innerText = formatStatusPernikahan(button.dataset.statusPernikahan);
         document.getElementById('detailTanggalLahir').innerText = formatTanggal(button.dataset.tanggalLahir);
         document.getElementById('detailUmur').innerText = button.dataset.umur ? `${button.dataset.umur} tahun` : '-';
         document.getElementById('detailTanggal').innerText = formatTanggal(button.dataset.tanggal);
@@ -229,6 +239,7 @@
         document.getElementById('editPac').value = button.dataset.pac;
         document.getElementById('editProfesi').value = button.dataset.profesi;
         document.getElementById('editPendidikan').value = button.dataset.pendidikan;
+        document.getElementById('editStatusPernikahan').value = button.dataset.statusPernikahan || 'belum_kawin';
         document.getElementById('editTanggalLahir').value = button.dataset.tanggalLahir;
         document.getElementById('editTanggal').value = button.dataset.tanggal;
         document.getElementById('editStatus').value = button.dataset.status;
@@ -256,6 +267,15 @@
 
         const [year, month, day] = value.split('-');
         return `${day}/${month}/${year}`;
+    }
+
+    function formatStatusPernikahan(value) {
+        return {
+            kawin: 'Kawin',
+            belum_kawin: 'Belum Kawin',
+            cerai_hidup: 'Cerai Hidup',
+            cerai_mati: 'Cerai Mati',
+        }[value] || '-';
     }
 
     @if($errors->any())

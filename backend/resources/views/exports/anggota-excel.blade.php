@@ -15,6 +15,7 @@
                 <th>Profesi</th>
                 <th>Pendidikan</th>
                 <th>Status</th>
+                <th>Status Pernikahan</th>
                 <th>Tanggal Bergabung</th>
             </tr>
         </thead>
@@ -30,6 +31,15 @@
                     <td>{{ $anggota->profesi }}</td>
                     <td>{{ $anggota->pendidikan }}</td>
                     <td>{{ ucfirst(str_replace('_', ' ', $anggota->status)) }}</td>
+                    <td>
+                        @switch($anggota->status_pernikahan)
+                            @case('kawin') Kawin @break
+                            @case('cerai_hidup') Cerai Hidup @break
+                            @case('cerai_mati') Cerai Mati @break
+                            @case('belum_kawin') Belum Kawin @break
+                            @default -
+                        @endswitch
+                    </td>
                     <td>{{ $anggota->tanggal_bergabung?->format('Y-m-d') }}</td>
                 </tr>
             @endforeach

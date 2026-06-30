@@ -65,6 +65,9 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/store', [AnggotaController::class, 'store']);
 
+        Route::post('/import-csv', [AnggotaController::class, 'importCsv'])
+            ->name('anggota.import-csv');
+
         Route::put('/update/{id}', [AnggotaController::class, 'update']);
 
         Route::delete('/delete/{id}', [AnggotaController::class, 'destroy']);
@@ -87,6 +90,12 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/store', [PACController::class, 'store'])
             ->name('pac.store');
+
+        Route::post('/import-csv', [PACController::class, 'importCsv'])
+            ->name('pac.import-csv');
+
+        Route::get('/export/excel', [PACController::class, 'exportExcel'])
+            ->name('pac.export-excel');
 
         Route::put('/update/{id}', [PACController::class, 'update'])
             ->name('pac.update');

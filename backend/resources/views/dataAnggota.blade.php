@@ -19,6 +19,14 @@
 
         <div class="flex items-center gap-4">
 
+            <form action="{{ route('anggota.import-csv') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <label class="flex cursor-pointer items-center gap-3 border border-gray-200 bg-white px-7 py-4 rounded-2xl text-xl font-medium hover:bg-gray-50 transition">
+                    Import CSV
+                    <input type="file" name="csv_file" accept=".csv,text/csv" class="hidden" onchange="this.form.submit()">
+                </label>
+            </form>
+
             <!-- EXPORT -->
             <a
                 href="/laporan/export/excel"
@@ -282,24 +290,23 @@
 
                         <div class="flex items-center justify-end gap-5">
 
-                            @php
-                                $tanggalGabung = \Carbon\Carbon::parse($item->tanggal_bergabung)
-                                    ->translatedFormat('d F Y');
-                            @endphp
-
                             <!-- VIEW -->
                             <button
-                                    onclick="openDetailModal(
-                                        '{{ $item->nama }}',
-                                        '{{ $item->email }}',
-                                        '{{ $item->telepon }}',
-                                        '{{ $item->pac }}',
-                                        '{{ $item->profesi }}',
-                                        '{{ $item->status }}',
-                                        '{{ $tanggalGabung }}',
-                                        '{{ $item->id }}'
-                                    )"
-                                >
+                                onclick="openDetailModalFromButton(this)"
+                                data-id="{{ $item->id }}"
+                                data-nama="{{ $item->nama }}"
+                                data-email="{{ $item->email }}"
+                                data-telepon="{{ $item->telepon }}"
+                                data-pac="{{ $item->pac }}"
+                                data-profesi="{{ $item->profesi }}"
+                                data-pendidikan="{{ $item->pendidikan }}"
+                                data-status-pernikahan="{{ $item->status_pernikahan }}"
+                                data-tanggal-lahir="{{ $item->tanggal_lahir?->format('Y-m-d') }}"
+                                data-umur="{{ $item->umur }}"
+                                data-tanggal="{{ $item->tanggal_bergabung?->format('Y-m-d') }}"
+                                data-status="{{ $item->status }}"
+                                aria-label="Lihat detail anggota"
+                            >
                                 <img
                                     src="{{ asset('backend/icons/view.svg') }}"
                                     class="w-6 h-6"
@@ -316,8 +323,12 @@
                                 data-telepon="{{ $item->telepon }}"
                                 data-pac="{{ $item->pac }}"
                                 data-profesi="{{ $item->profesi }}"
-                                data-tanggal="{{ $item->tanggal_bergabung }}"
+                                data-pendidikan="{{ $item->pendidikan }}"
+                                data-status-pernikahan="{{ $item->status_pernikahan }}"
+                                data-tanggal-lahir="{{ $item->tanggal_lahir?->format('Y-m-d') }}"
+                                data-tanggal="{{ $item->tanggal_bergabung?->format('Y-m-d') }}"
                                 data-status="{{ $item->status }}"
+                                aria-label="Edit anggota"
                             >
 
                                 <img
@@ -332,6 +343,7 @@
                                 onclick="openDeleteModalFromButton(this)"
                                 data-id="{{ $item->id }}"
                                 data-nama="{{ $item->nama }}"
+                                aria-label="Hapus anggota"
                             >
 
                                 <img
@@ -421,29 +433,24 @@
             .add('hidden');
     }
 
-    function openDetailModal(
-        nama,
-        email,
-        telepon,
-        pac,
-        profesi,
-        status,
-        tanggal,
-        id
-    )
+    function openDetailModalFromButton(button)
     {
-        document.getElementById('detailNama').innerText = nama;
-        document.getElementById('detailEmail').innerText = email;
-        document.getElementById('detailTelepon').innerText = telepon;
-        document.getElementById('detailPac').innerText = pac;
-        document.getElementById('detailProfesi').innerText = profesi;
-        document.getElementById('detailTanggal').innerText = tanggal;
-        document.getElementById('detailId').innerText = '#' + id;
+        document.getElementById('detailId').innerText = button.dataset.id;
+        document.getElementById('detailNama').innerText = button.dataset.nama;
+        document.getElementById('detailEmail').innerText = button.dataset.email;
+        document.getElementById('detailTelepon').innerText = button.dataset.telepon;
+        document.getElementById('detailPac').innerText = button.dataset.pac;
+        document.getElementById('detailProfesi').innerText = button.dataset.profesi;
+        document.getElementById('detailPendidikan').innerText = button.dataset.pendidikan || '-';
+        document.getElementById('detailTanggalLahir').innerText = formatTanggal(button.dataset.tanggalLahir);
+        document.getElementById('detailUmur').innerText = button.dataset.umur ? `${button.dataset.umur} tahun` : '-';
+        document.getElementById('detailTanggal').innerText = formatTanggal(button.dataset.tanggal);
+        document.getElementById('detailStatusPernikahan').innerText = formatStatusPernikahan(button.dataset.statusPernikahan);
 
         const statusElement =
             document.getElementById('detailStatus');
 
-        if(status == 'aktif')
+        if(button.dataset.status == 'aktif')
         {
             statusElement.innerText = 'Aktif';
 
@@ -488,22 +495,6 @@
     |--------------------------------------------------------------------------
     */
 
-    function openEditModal(id, nama, email, telepon, pac, profesi, tanggal, status)
-    {
-        document.getElementById('editNama').value = nama;
-        document.getElementById('editEmail').value = email;
-        document.getElementById('editTelepon').value = telepon;
-        document.getElementById('editPac').value = pac;
-        document.getElementById('editProfesi').value = profesi;
-        document.getElementById('editTanggal').value = tanggal;
-        document.getElementById('editStatus').value = status;
-
-        document.getElementById('formEditAnggota').action = `/anggota/update/${id}`;
-
-        document.getElementById('modalEdit').classList.remove('hidden');
-        document.getElementById('modalEdit').classList.add('flex');
-    }
-
     function closeEditModal()
     {
         document.getElementById('modalEdit').classList.remove('flex');
@@ -526,16 +517,20 @@
     }
 
     function openEditModalFromButton(button) {
-        const id = button.dataset.id;
-        const nama = button.dataset.nama;
-        const email = button.dataset.email;
-        const telepon = button.dataset.telepon;
-        const pac = button.dataset.pac;
-        const profesi = button.dataset.profesi;
-        const tanggal = button.dataset.tanggal;
-        const status = button.dataset.status;
+        document.getElementById('editNama').value = button.dataset.nama;
+        document.getElementById('editEmail').value = button.dataset.email;
+        document.getElementById('editTelepon').value = button.dataset.telepon;
+        document.getElementById('editPac').value = button.dataset.pac;
+        document.getElementById('editProfesi').value = button.dataset.profesi;
+        document.getElementById('editPendidikan').value = button.dataset.pendidikan;
+        document.getElementById('editStatusPernikahan').value = button.dataset.statusPernikahan || 'belum_kawin';
+        document.getElementById('editTanggalLahir').value = button.dataset.tanggalLahir;
+        document.getElementById('editTanggal').value = button.dataset.tanggal;
+        document.getElementById('editStatus').value = button.dataset.status;
+        document.getElementById('formEditAnggota').action = `/anggota/update/${button.dataset.id}`;
 
-        openEditModal(id, nama, email, telepon, pac, profesi, tanggal, status);
+        document.getElementById('modalEdit').classList.remove('hidden');
+        document.getElementById('modalEdit').classList.add('flex');
     }
 
     function openDeleteModalFromButton(button) {
@@ -543,6 +538,24 @@
         const nama = button.dataset.nama;
 
         openDeleteModal(id, nama);
+    }
+
+    function formatTanggal(value) {
+        if (!value) {
+            return '-';
+        }
+
+        const [year, month, day] = value.split('-');
+        return `${day}/${month}/${year}`;
+    }
+
+    function formatStatusPernikahan(value) {
+        return {
+            kawin: 'Kawin',
+            belum_kawin: 'Belum Kawin',
+            cerai_hidup: 'Cerai Hidup',
+            cerai_mati: 'Cerai Mati',
+        }[value] || '-';
     }
 
 </script>
