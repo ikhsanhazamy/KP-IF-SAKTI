@@ -18,14 +18,25 @@ class PACController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function index()
+    public function index(Request $request)
     {
-        $pacs = PAC::orderBy('id')->paginate(9);
+        $search = trim((string) $request->query('search', ''));
+        $query = PAC::query();
+
+        if ($search !== '') {
+            $query->where(function ($builder) use ($search) {
+                $builder->where('nama_pac', 'like', "%{$search}%")
+                    ->orWhere('kecamatan', 'like', "%{$search}%")
+                    ->orWhere('ketua_pac', 'like', "%{$search}%");
+            });
+        }
+
+        $pacs = (clone $query)->orderBy('id')->paginate(9)->withQueryString();
         $totalPAC = PAC::count();
         $pacAktif = PAC::where('status', 'aktif')->count();
         $totalAnggota = PAC::sum('jumlah_anggota');
         $totalKecamatan = PAC::distinct('kecamatan')->count();
-        $chartPACs = PAC::orderByDesc('jumlah_anggota')->get();
+        $chartPACs = (clone $query)->orderByDesc('jumlah_anggota')->get();
 
         $currentMonth = now();
         $previousMonth = now()->subMonthNoOverflow();

@@ -35,6 +35,20 @@ class LaporanController extends Controller
         return $this->memberPdf();
     }
 
+    public function exportPacPDF()
+    {
+        return Pdf::loadView('pdf.laporan-pac', [
+            'pacs' => PAC::orderBy('nama_pac')->get(),
+        ])->download('laporan-pac.pdf');
+    }
+
+    public function exportKegiatanPDF()
+    {
+        return Pdf::loadView('pdf.laporan-kegiatan', [
+            'kegiatans' => Kegiatan::orderByDesc('tanggal')->get(),
+        ])->download('laporan-kegiatan.pdf');
+    }
+
     public function exportExcel(): Response
     {
         $content = view('exports.anggota-excel', [

@@ -2,81 +2,74 @@
 
 @section('content')
 
-<div class="flex min-h-screen bg-[#F5F7F6]">
+<div class="space-y-8">
 
-    <main class="flex-1 p-8">
+    <div class="mb-6">
+        <h1 class="text-[26px] font-bold text-gray-900 tracking-tight">
+            Pengaturan
+        </h1>
+        <p class="text-[#717182] mt-1 text-[14px] font-medium">
+            Kelola preferensi dan konfigurasi sistem
+        </p>
+    </div>
 
-        <div class="mb-8">
+    <div class="grid grid-cols-12 gap-6">
 
-            <h1 class="text-5xl font-bold">
-                Pengaturan
-            </h1>
+        {{-- SIDEBAR --}}
+        <div class="col-span-3">
 
-            <p class="text-gray-500 text-xl mt-2">
-                Kelola preferensi dan konfigurasi sistem
-            </p>
+            <div class="bg-white rounded-2xl border border-gray-100 p-3 space-y-1.5 shadow-sm">
 
-        </div>
+                <a href="/pengaturan/profil"
+                   class="block px-5 py-3 rounded-xl text-[13px] font-bold transition duration-150
+                   {{ $activeTab == 'profil' ? 'bg-[#0F5E3A] text-white shadow-md shadow-[#0F5E3A]/10' : 'text-[#717182] hover:bg-gray-50 hover:text-gray-900' }}">
+                    Profil
+                </a>
 
-        <div class="grid grid-cols-12 gap-8">
+                <a href="/pengaturan/keamanan"
+                   class="block px-5 py-3 rounded-xl text-[13px] font-bold transition duration-150
+                   {{ $activeTab == 'keamanan' ? 'bg-[#0F5E3A] text-white shadow-md shadow-[#0F5E3A]/10' : 'text-[#717182] hover:bg-gray-50 hover:text-gray-900' }}">
+                    Keamanan
+                </a>
 
-            {{-- SIDEBAR --}}
-            <div class="col-span-3">
+                <a href="/pengaturan/notifikasi"
+                   class="block px-5 py-3 rounded-xl text-[13px] font-bold transition duration-150
+                   {{ $activeTab == 'notifikasi' ? 'bg-[#0F5E3A] text-white shadow-md shadow-[#0F5E3A]/10' : 'text-[#717182] hover:bg-gray-50 hover:text-gray-900' }}">
+                    Notifikasi
+                </a>
 
-                <div class="bg-white rounded-3xl border p-4 space-y-3">
-
-                    <a href="/pengaturan/profil"
-                       class="block px-6 py-5 rounded-2xl
-                       {{ $activeTab == 'profil' ? 'bg-[#15633D] text-white' : 'text-gray-600' }}">
-                        Profil
-                    </a>
-
-                    <a href="/pengaturan/keamanan"
-                       class="block px-6 py-5 rounded-2xl
-                       {{ $activeTab == 'keamanan' ? 'bg-[#15633D] text-white' : 'text-gray-600' }}">
-                        Keamanan
-                    </a>
-
-                    <a href="/pengaturan/notifikasi"
-                       class="block px-6 py-5 rounded-2xl
-                       {{ $activeTab == 'notifikasi' ? 'bg-[#15633D] text-white' : 'text-gray-600' }}">
-                        Notifikasi
-                    </a>
-
-                    <a href="/pengaturan/sistem"
-                       class="block px-6 py-5 rounded-2xl
-                       {{ $activeTab == 'sistem' ? 'bg-[#15633D] text-white' : 'text-gray-600' }}">
-                        Sistem
-                    </a>
-
-                </div>
-
-            </div>
-
-            {{-- CONTENT --}}
-            <div class="col-span-9">
-
-                @if($activeTab == 'profil')
-                    @include('pengaturan.profil')
-                @endif
-
-                @if($activeTab == 'keamanan')
-                    @include('pengaturan.keamanan')
-                @endif
-
-                @if($activeTab == 'notifikasi')
-                    @include('pengaturan.notifikasi')
-                @endif
-
-                @if($activeTab == 'sistem')
-                    @include('pengaturan.sistem')
-                @endif
+                <a href="/pengaturan/sistem"
+                   class="block px-5 py-3 rounded-xl text-[13px] font-bold transition duration-150
+                   {{ $activeTab == 'sistem' ? 'bg-[#0F5E3A] text-white shadow-md shadow-[#0F5E3A]/10' : 'text-[#717182] hover:bg-gray-50 hover:text-gray-900' }}">
+                    Sistem
+                </a>
 
             </div>
 
         </div>
 
-    </main>
+        {{-- CONTENT --}}
+        <div class="col-span-9">
+
+            @if($activeTab == 'profil')
+                @include('pengaturan.profil')
+            @endif
+
+            @if($activeTab == 'keamanan')
+                @include('pengaturan.keamanan')
+            @endif
+
+            @if($activeTab == 'notifikasi')
+                @include('pengaturan.notifikasi')
+            @endif
+
+            @if($activeTab == 'sistem')
+                @include('pengaturan.sistem')
+            @endif
+
+        </div>
+
+    </div>
 
 </div>
 

@@ -1,22 +1,28 @@
-version: '3.8'
 services:
   app:
-    image: php:8.1-fpm
+    build:
+      context: .
     working_dir: /var/www/html
     volumes:
       - ./backend:/var/www/html
+      - /var/www/html/vendor
     ports:
-      - "9000:9000"
-  db:
-    image: mysql:8
+      - "8000:8000"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: kp_db
-    ports:
-      - "3306:3306"
+      - APP_ENV=local
+      - APP_DEBUG=true
+
   node:
-    image: node:18
+    image: node:22-alpine
     working_dir: /workspace
     volumes:
       - ./frontend:/workspace
-    command: tail -f /dev/null
+      - /workspace/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      # Saat berjalan di Docker, API di-proxy ke service "app"
+      - VITE_API_TARGET=http://app:8000
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - app

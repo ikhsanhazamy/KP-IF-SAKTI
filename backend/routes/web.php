@@ -149,6 +149,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/export/csv', [LaporanController::class, 'exportCSV']);
 
+        Route::get('/export/pac/pdf', [LaporanController::class, 'exportPacPDF']);
+
+        Route::get('/export/kegiatan/pdf', [LaporanController::class, 'exportKegiatanPDF']);
+
     });
 
 

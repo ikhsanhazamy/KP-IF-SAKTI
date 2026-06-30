@@ -7,18 +7,50 @@ use Illuminate\Http\Request;
 
 class KegiatanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kegiatan = Kegiatan::latest()->get();
+        $status = $request->status;
+        $search = $request->search;
 
-        return view('kegiatan', compact('kegiatan'));
+        $query = Kegiatan::query();
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('lokasi', 'like', "%{$search}%")
+                  ->orWhere('kategori', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+            });
+        }
+
+        $kegiatan = $query->latest()->get();
+
+        return view('kegiatan', compact('kegiatan', 'search', 'status'));
     }
 
     public function store(Request $request)
     {
-        Kegiatan::create($request->all());
+        // Bug 8 Fix: Validasi input sebelum create — cegah IntegrityConstraintViolationException
+        $validated = $request->validate([
+            'judul'    => 'required|string|max:255',
+            'tanggal'  => 'required|date',
+            'waktu'    => 'required|string',
+            'lokasi'   => 'required|string|max:255',
+            'kategori' => 'required|string|max:100',
+            'peserta'  => 'required|integer|min:0',
+            'pac_id'   => 'nullable|exists:pacs,id',
+            'deskripsi'=> 'nullable|string',
+            'status'   => 'nullable|string',
+        ]);
 
-        return redirect('/kegiatan');
+        $kegiatan = Kegiatan::create($validated);
+
+        return redirect('/kegiatan')
+            ->with('success', 'Kegiatan berhasil ditambahkan');
     }
 
     public function show(int $id)
@@ -32,16 +64,19 @@ class KegiatanController extends Controller
     {
         $kegiatan = Kegiatan::findOrFail($id);
 
-        $kegiatan->update([
-            'judul' => $request->judul,
-            'tanggal' => $request->tanggal,
-            'waktu' => $request->waktu,
-            'lokasi' => $request->lokasi,
-            'kategori' => $request->kategori,
-            'peserta' => $request->peserta,
-            'status' => $request->status,
-            'deskripsi' => $request->deskripsi,
+        $validated = $request->validate([
+            'judul'    => 'required|string|max:255',
+            'tanggal'  => 'required|date',
+            'waktu'    => 'required|string',
+            'lokasi'   => 'required|string|max:255',
+            'kategori' => 'required|string|max:100',
+            'peserta'  => 'required|integer|min:0',
+            'pac_id'   => 'nullable|exists:pacs,id',
+            'deskripsi'=> 'nullable|string',
+            'status'   => 'required|in:upcoming,ongoing,completed',
         ]);
+
+        $kegiatan->update($validated);
 
         return redirect('/kegiatan');
     }
