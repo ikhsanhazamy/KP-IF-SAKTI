@@ -136,4 +136,126 @@ class GitHubIssuesFixTest extends TestCase
 
         $this->assertEquals(0, $pacB->fresh()->total_kegiatan);
     }
+
+    /**
+     * Test export PDF, Excel, and CSV endpoints.
+     */
+    public function test_exports_work(): void
+    {
+        $user = User::factory()->create();
+
+        // Create some dummy records
+        PAC::create([
+            'nama_pac' => 'PAC Cisaat',
+            'kecamatan' => 'Cisaat',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Jl Cisaat',
+            'desa' => 'Cisaat',
+            'ketua_pac' => 'Siti',
+            'telepon' => '08123',
+        ]);
+
+        \App\Models\Anggota::create([
+            'nama' => 'Rina',
+            'email' => 'rina@example.com',
+            'pac' => 'PAC Cisaat',
+            'profesi' => 'Guru',
+            'pendidikan' => 'S1',
+            'status' => 'aktif',
+            'tanggal_bergabung' => '2026-01-01',
+        ]);
+
+        Kegiatan::create([
+            'judul' => 'Kegiatan Rutin',
+            'tanggal' => '2026-06-30',
+            'waktu' => '08:00',
+            'lokasi' => 'Aula Sukabumi',
+            'kategori' => 'Kajian',
+            'peserta' => 50,
+            'status' => 'upcoming',
+        ]);
+
+        $responsePdf = $this->actingAs($user)->get('/laporan/export/pdf');
+        $responsePdf->assertStatus(200);
+        $responsePdf->assertHeader('Content-Disposition', 'attachment; filename=laporan-anggota.pdf');
+
+        $responseExcel = $this->actingAs($user)->get('/laporan/export/excel');
+        $responseExcel->assertStatus(200);
+        $responseExcel->assertHeader('Content-Disposition', 'attachment; filename=laporan-anggota.xls');
+
+        $responseCsv = $this->actingAs($user)->get('/laporan/export/csv');
+        $responseCsv->assertStatus(200);
+        $responseCsv->assertHeader('Content-Disposition', 'attachment; filename=laporan-anggota.csv');
+
+        $responsePacPdf = $this->actingAs($user)->get('/laporan/export/pac/pdf');
+        $responsePacPdf->assertStatus(200);
+        $responsePacPdf->assertHeader('Content-Disposition', 'attachment; filename=laporan-pac.pdf');
+
+        $responseKegPdf = $this->actingAs($user)->get('/laporan/export/kegiatan/pdf');
+        $responseKegPdf->assertStatus(200);
+        $responseKegPdf->assertHeader('Content-Disposition', 'attachment; filename=laporan-kegiatan.pdf');
+    }
+
+    /**
+     * Test local search functionality on PAC and Kegiatan pages.
+     */
+    public function test_search_features(): void
+    {
+        $user = User::factory()->create();
+
+        // Create PACs
+        $pac1 = PAC::create([
+            'nama_pac' => 'PAC Cibadak',
+            'kecamatan' => 'Cibadak',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Cibadak',
+            'desa' => 'Desa Cibadak',
+            'ketua_pac' => 'Fatma',
+            'telepon' => '081',
+        ]);
+        $pac2 = PAC::create([
+            'nama_pac' => 'PAC Cisaat',
+            'kecamatan' => 'Cisaat',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Cisaat',
+            'desa' => 'Desa Cisaat',
+            'ketua_pac' => 'Salma',
+            'telepon' => '082',
+        ]);
+
+        // Search PACs
+        $response = $this->actingAs($user)->get('/data-pac?search=Cibadak');
+        $response->assertStatus(200);
+        $response->assertSee('PAC Cibadak');
+        $response->assertDontSee('PAC Cisaat');
+
+        // Create Kegiatan
+        $keg1 = Kegiatan::create([
+            'judul' => 'Kajian Rutin Fatayat',
+            'tanggal' => '2026-06-30',
+            'waktu' => '08:00',
+            'lokasi' => 'Aula Sukabumi',
+            'kategori' => 'Kajian',
+            'peserta' => 50,
+            'status' => 'upcoming',
+        ]);
+        $keg2 = Kegiatan::create([
+            'judul' => 'Workshop IT Pemudi',
+            'tanggal' => '2026-06-30',
+            'waktu' => '09:00',
+            'lokasi' => 'Aula Sukabumi',
+            'kategori' => 'Workshop',
+            'peserta' => 30,
+            'status' => 'upcoming',
+        ]);
+
+        // Search Kegiatan
+        $response = $this->actingAs($user)->get('/kegiatan?search=Kajian');
+        $response->assertStatus(200);
+        $response->assertSee('Kajian Rutin Fatayat');
+        $response->assertDontSee('Workshop IT Pemudi');
+    }
 }

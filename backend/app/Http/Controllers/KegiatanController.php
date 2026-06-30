@@ -8,11 +8,29 @@ use Illuminate\Http\Request;
 
 class KegiatanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kegiatan = Kegiatan::latest()->get();
+        $status = $request->status;
+        $search = $request->search;
 
-        return view('kegiatan', compact('kegiatan'));
+        $query = Kegiatan::query();
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('lokasi', 'like', "%{$search}%")
+                  ->orWhere('kategori', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+            });
+        }
+
+        $kegiatan = $query->latest()->get();
+
+        return view('kegiatan', compact('kegiatan', 'search', 'status'));
     }
 
     public function store(Request $request)

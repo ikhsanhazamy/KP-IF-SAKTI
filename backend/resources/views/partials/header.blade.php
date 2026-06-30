@@ -9,6 +9,7 @@
         </span>
         <input
             type="text"
+            id="globalSearchInput"
             placeholder="Cari anggota, PAC, kegiatan..."
             class="w-full bg-[#f6f8f7] border-0 rounded-xl pl-11 pr-4 py-3 text-[14px] text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 transition"
         >
@@ -195,6 +196,35 @@
                             if (dot) dot.classList.add('hidden');
                             const markAllBtn = document.getElementById('markAllReadBtn');
                             if (markAllBtn) markAllBtn.remove();
+                        }
+                    }
+                });
+            }
+
+            // GLOBAL SEARCH LOGIC
+            const globalSearchInput = document.getElementById('globalSearchInput');
+            if (globalSearchInput) {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('search')) {
+                    globalSearchInput.value = urlParams.get('search');
+                }
+                
+                globalSearchInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        const query = this.value.trim();
+                        const currentPath = window.location.pathname;
+                        
+                        let targetUrl = '/anggota';
+                        if (currentPath.includes('/data-pac')) {
+                            targetUrl = '/data-pac';
+                        } else if (currentPath.includes('/kegiatan')) {
+                            targetUrl = '/kegiatan';
+                        }
+                        
+                        if (query !== '') {
+                            window.location.href = targetUrl + '?search=' + encodeURIComponent(query);
+                        } else {
+                            window.location.href = targetUrl;
                         }
                     }
                 });

@@ -76,6 +76,38 @@
         </div>
     </div>
 
+    <!-- FILTER -->
+    <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="relative flex-1 w-full">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </span>
+            <input
+                type="text"
+                id="searchPAC"
+                placeholder="Cari PAC, kecamatan, ketua, atau desa..."
+                class="w-full bg-[#f6f8f7] border-0 rounded-xl pl-11 pr-4 py-3 text-[14px] text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 transition"
+                value="{{ $search ?? '' }}"
+            >
+        </div>
+        <div class="flex gap-2 w-full sm:w-auto shrink-0 justify-end">
+            <a href="/data-pac{{ $search ? '?search=' . $search : '' }}"
+               class="px-4 py-2.5 rounded-xl text-xs font-bold transition duration-200 {{ !$status ? 'bg-[#0F5E3A] text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50' }}">
+                Semua
+            </a>
+            <a href="/data-pac?status=aktif{{ $search ? '&search=' . $search : '' }}"
+               class="px-4 py-2.5 rounded-xl text-xs font-bold transition duration-200 {{ $status == 'aktif' ? 'bg-[#0F5E3A] text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50' }}">
+                Aktif
+            </a>
+            <a href="/data-pac?status=tidak_aktif{{ $search ? '&search=' . $search : '' }}"
+               class="px-4 py-2.5 rounded-xl text-xs font-bold transition duration-200 {{ $status == 'tidak_aktif' ? 'bg-[#0F5E3A] text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50' }}">
+                Tidak Aktif
+            </a>
+        </div>
+    </div>
+
     <!-- PAC GRID -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($pacs as $pac)
@@ -194,6 +226,11 @@
             </div>
         </div>
         @endforeach
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="mt-6">
+        {{ $pacs->links() }}
     </div>
 </div>
 
@@ -397,6 +434,22 @@
         document
             .getElementById('modalEditPAC')
             .classList.add('hidden');
+    }
+
+    // SEARCH LISTENER FOR PAC
+    const searchPAC = document.getElementById('searchPAC');
+    if (searchPAC) {
+        searchPAC.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const queryParams = new URLSearchParams(window.location.search);
+                if (this.value.trim() !== '') {
+                    queryParams.set('search', this.value.trim());
+                } else {
+                    queryParams.delete('search');
+                }
+                window.location.search = queryParams.toString();
+            }
+        });
     }
 
 </script>

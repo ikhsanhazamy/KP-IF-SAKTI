@@ -62,6 +62,42 @@
         </div>
     </div>
 
+    <!-- FILTER -->
+    <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="relative flex-1 w-full">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </span>
+            <input
+                type="text"
+                id="searchKegiatan"
+                placeholder="Cari judul, lokasi, kategori, atau deskripsi..."
+                class="w-full bg-[#f6f8f7] border-0 rounded-xl pl-11 pr-4 py-3 text-[14px] text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 transition"
+                value="{{ $search ?? '' }}"
+            >
+        </div>
+        <div class="flex gap-2 w-full sm:w-auto shrink-0 justify-end">
+            <a href="/kegiatan{{ $search ? '?search=' . $search : '' }}"
+               class="px-4 py-2.5 rounded-xl text-xs font-bold transition duration-200 {{ !$status ? 'bg-[#0F5E3A] text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50' }}">
+                Semua
+            </a>
+            <a href="/kegiatan?status=upcoming{{ $search ? '&search=' . $search : '' }}"
+               class="px-4 py-2.5 rounded-xl text-xs font-bold transition duration-200 {{ $status == 'upcoming' ? 'bg-[#0F5E3A] text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50' }}">
+                Upcoming
+            </a>
+            <a href="/kegiatan?status=ongoing{{ $search ? '&search=' . $search : '' }}"
+               class="px-4 py-2.5 rounded-xl text-xs font-bold transition duration-200 {{ $status == 'ongoing' ? 'bg-[#0F5E3A] text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50' }}">
+                Ongoing
+            </a>
+            <a href="/kegiatan?status=completed{{ $search ? '&search=' . $search : '' }}"
+               class="px-4 py-2.5 rounded-xl text-xs font-bold transition duration-200 {{ $status == 'completed' ? 'bg-[#0F5E3A] text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50' }}">
+                Completed
+            </a>
+        </div>
+    </div>
+
     <!-- TABLE -->
     <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
@@ -254,6 +290,22 @@
         document.getElementById('peserta').value = '';
         document.getElementById('status').value = 'upcoming';
         document.getElementById('deskripsi').value = '';
+    }
+
+    // SEARCH LISTENER FOR KEGIATAN
+    const searchKegiatan = document.getElementById('searchKegiatan');
+    if (searchKegiatan) {
+        searchKegiatan.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const queryParams = new URLSearchParams(window.location.search);
+                if (this.value.trim() !== '') {
+                    queryParams.set('search', this.value.trim());
+                } else {
+                    queryParams.delete('search');
+                }
+                window.location.search = queryParams.toString();
+            }
+        });
     }
 
 </script>

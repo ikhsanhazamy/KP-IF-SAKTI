@@ -13,9 +13,28 @@ class PACController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function index()
+    public function index(Request $request)
     {
-        $pacs = PAC::latest()->paginate(9);
+        $status = $request->status;
+        $search = $request->search;
+
+        $query = PAC::query();
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_pac', 'like', "%{$search}%")
+                  ->orWhere('kecamatan', 'like', "%{$search}%")
+                  ->orWhere('ketua_pac', 'like', "%{$search}%")
+                  ->orWhere('desa', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%");
+            });
+        }
+
+        $pacs = $query->latest()->paginate(9)->withQueryString();
 
         $totalPAC = PAC::count();
 
@@ -30,7 +49,9 @@ class PACController extends Controller
             'totalPAC',
             'pacAktif',
             'totalAnggota',
-            'totalKecamatan'
+            'totalKecamatan',
+            'search',
+            'status'
         ));
     }
 

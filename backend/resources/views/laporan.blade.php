@@ -56,9 +56,13 @@
                     Ringkasan aktivitas dan kinerja kepengurusan PAC
                 </p>
             </div>
-            <button class="mt-6 w-full border border-gray-200 hover:bg-gray-50 transition text-gray-700 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm bg-white cursor-pointer">
-                Generate Report
-            </button>
+            <a href="/laporan/export/pac/pdf"
+               class="mt-6 w-full border border-gray-200 hover:bg-gray-50 transition text-gray-700 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm bg-white cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v12m0 0l-4-4m4 4l4-4m5 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1"/>
+                </svg>
+                Generate PDF
+            </a>
         </div>
 
         <!-- CARD 3 -->
@@ -76,9 +80,13 @@
                     Daftar dan evaluasi kegiatan yang dilaksanakan
                 </p>
             </div>
-            <button class="mt-6 w-full border border-gray-200 hover:bg-gray-50 transition text-gray-700 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm bg-white cursor-pointer">
-                Generate Report
-            </button>
+            <a href="/laporan/export/kegiatan/pdf"
+               class="mt-6 w-full border border-gray-200 hover:bg-gray-50 transition text-gray-700 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm bg-white cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v12m0 0l-4-4m4 4l4-4m5 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1"/>
+                </svg>
+                Generate PDF
+            </a>
         </div>
 
     </div>
