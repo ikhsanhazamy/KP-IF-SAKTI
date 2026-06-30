@@ -52,25 +52,31 @@ class KegiatanController extends Controller
     {
         $kegiatan = Kegiatan::findOrFail($id);
 
-        // Jika pac_id berubah, update total_kegiatan di PAC lama dan baru
-        if ($request->filled('pac_id') && $kegiatan->pac_id != $request->pac_id) {
-            if ($kegiatan->pac_id) {
-                PAC::where('id', $kegiatan->pac_id)->decrement('total_kegiatan');
+        $validated = $request->validate([
+            'judul'    => 'required|string|max:255',
+            'tanggal'  => 'required|date',
+            'waktu'    => 'required|string',
+            'lokasi'   => 'required|string|max:255',
+            'kategori' => 'required|string|max:100',
+            'peserta'  => 'required|integer|min:0',
+            'pac_id'   => 'nullable|exists:pacs,id',
+            'deskripsi'=> 'nullable|string',
+            'status'   => 'required|in:upcoming,ongoing,completed',
+        ]);
+
+        $oldPacId = $kegiatan->pac_id;
+        $newPacId = $validated['pac_id'] ?? null;
+
+        if ($oldPacId != $newPacId) {
+            if ($oldPacId) {
+                PAC::where('id', $oldPacId)->decrement('total_kegiatan');
             }
-            PAC::where('id', $request->pac_id)->increment('total_kegiatan');
+            if ($newPacId) {
+                PAC::where('id', $newPacId)->increment('total_kegiatan');
+            }
         }
 
-        $kegiatan->update([
-            'pac_id' => $request->pac_id,
-            'judul' => $request->judul,
-            'tanggal' => $request->tanggal,
-            'waktu' => $request->waktu,
-            'lokasi' => $request->lokasi,
-            'kategori' => $request->kategori,
-            'peserta' => $request->peserta,
-            'status' => $request->status,
-            'deskripsi' => $request->deskripsi,
-        ]);
+        $kegiatan->update($validated);
 
         return redirect('/kegiatan');
     }

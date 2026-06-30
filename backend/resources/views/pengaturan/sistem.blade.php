@@ -91,15 +91,24 @@
             <form
                 action="{{ route('restore.database') }}"
                 method="POST"
+                enctype="multipart/form-data"
                 class="m-0"
             >
                 @csrf
-                <button
-                    type="submit"
-                    class="w-full border border-gray-200 hover:bg-gray-50 bg-white transition text-gray-700 py-2.5 rounded-xl text-xs font-semibold shadow-sm flex items-center justify-center cursor-pointer"
-                >
-                    Restore Database
-                </button>
+                <div class="flex flex-col gap-3">
+                    <input
+                        type="file"
+                        name="backup_file"
+                        required
+                        class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                    >
+                    <button
+                        type="submit"
+                        class="w-full border border-gray-200 hover:bg-gray-50 bg-white transition text-gray-700 py-2.5 rounded-xl text-xs font-semibold shadow-sm flex items-center justify-center cursor-pointer"
+                    >
+                        Restore Database
+                    </button>
+                </div>
             </form>
 
         </div>

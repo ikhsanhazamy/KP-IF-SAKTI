@@ -45,9 +45,8 @@
                 >
                 @if(auth()->user()->photo)
                     <button
-                        type="submit"
-                        formaction="{{ route('pengaturan.profil.foto.delete') }}"
-                        formmethod="POST"
+                        type="button"
+                        onclick="document.getElementById('delete-photo-form').submit();"
                         class="text-red-600 hover:text-red-700 text-xs font-bold transition cursor-pointer select-none"
                     >
                         Hapus Foto
@@ -121,4 +120,9 @@
 
     </div>
 
+</form>
+
+<form id="delete-photo-form" action="{{ route('pengaturan.profil.foto.delete') }}" method="POST" class="hidden">
+    @csrf
+    @method('DELETE')
 </form>

@@ -131,3 +131,121 @@ Dokumen ini mencantumkan hasil analisis bug secara menyeluruh pada aplikasi **KP
 * **Deskripsi**: Konfigurasi proxy server Vite menggunakan target default `http://app:8000` (yang merupakan nama service di dalam Docker).
 * **Dampak**: Ketika pengembang mencoba menjalankan frontend secara lokal tanpa Docker (`npm run dev`), request API ke `/api/*` akan gagal terkoneksi (karena hostname `app` tidak dikenal oleh OS host) kecuali pengembang mengetahui bahwa mereka harus menyetel environment variable `VITE_API_TARGET=http://localhost:8000`.
 * **Cara Memperbaiki**: Tambahkan petunjuk yang lebih jelas di README atau ubah default proxy target untuk mendeteksi apakah service berjalan di luar docker, atau ubah konfigurasi proxy agar lebih ramah terhadap pengembangan lokal secara default.
+* **Status**: **Sudah Diperbaiki** (Menggunakan `process.env.VITE_API_TARGET || 'http://localhost:8000'`).
+
+---
+
+## Daftar Bug Baru yang Terdeteksi & Belum Diperbaiki
+
+### 10. Migrasi Kosong untuk Kolom Profil User
+* **Lokasi File**: [2026_06_08_182340_add_profile_columns_to_users_table.php](file:///Users/mac/kppppp/KP-IF-SAKTI/backend/database/migrations/2026_06_08_182340_add_profile_columns_to_users_table.php)
+* **Deskripsi**: File migrasi ini dibuat tetapi isi method `up` dan `down` kosong (`//`). Akibatnya, kolom `phone`, `jabatan`, dan `photo` tidak pernah dibuat di tabel `users` database SQLite.
+* **Dampak**: Halaman pengaturan profil admin tidak akan bisa menyimpan atau menampilkan no telepon, jabatan, atau foto profil dari user.
+* **Cara Memperbaiki**: Isi method `up` dan `down` pada migrasi tersebut dengan pendefinisian kolom yang sesuai:
+  ```php
+  public function up(): void
+  {
+      Schema::table('users', function (Blueprint $table) {
+          $table->string('phone')->nullable();
+          $table->string('jabatan')->nullable();
+          $table->string('photo')->nullable();
+      });
+  }
+  ```
+
+---
+
+### 11. Kolom Profil Belum Ditambahkan pada `$fillable` Model `User`
+* **Lokasi File**: [User.php](file:///Users/mac/kppppp/KP-IF-SAKTI/backend/app/Models/User.php#L21-L25)
+* **Deskripsi**: Properti `$fillable` di kelas `User` hanya mencakup `name`, `email`, dan `password`. Kolom profil seperti `phone`, `jabatan`, dan `photo` belum dimasukkan.
+* **Dampak**: Ketika admin mengupdate profil di `PengaturanController@updateProfil` menggunakan `$user->update(...)`, kolom-kolom baru tersebut akan diabaikan secara diam-diam oleh Laravel (Mass Assignment Protection).
+* **Cara Memperbaiki**: Tambahkan kolom-kolom tersebut ke dalam array `$fillable` di model `User`:
+  ```php
+  protected $fillable = [
+      'name',
+      'email',
+      'password',
+      'phone',
+      'jabatan',
+      'photo',
+  ];
+  ```
+
+---
+
+### 12. Ketidaksesuaian Method HTTP Route pada Fitur Hapus Foto Profil
+* **Lokasi File**: [profil.blade.php](file:///Users/mac/kppppp/KP-IF-SAKTI/backend/resources/views/pengaturan/profil.blade.php#L47-L55) dan [web.php](file:///Users/mac/kppppp/KP-IF-SAKTI/backend/routes/web.php#L148)
+* **Deskripsi**: Route untuk hapus foto dikonfigurasi sebagai method `DELETE`. Namun, tombol "Hapus Foto" di form profil menggunakan atribut `formmethod="POST"` tanpa adanya input directive `@method('DELETE')` atau spoofing method.
+* **Dampak**: Menekan tombol "Hapus Foto" akan menghasilkan error `405 Method Not Allowed` dari router Laravel.
+* **Cara Memperbaiki**: Pisahkan tombol hapus foto ke form tersendiri dengan `@method('DELETE')`, atau ubah route di `web.php` menjadi POST.
+
+---
+
+### 13. Form Restore Database Kurang Input File dan Atribut Enctype
+* **Lokasi File**: [sistem.blade.php](file:///Users/mac/kppppp/KP-IF-SAKTI/backend/resources/views/pengaturan/sistem.blade.php#L90-L103)
+* **Deskripsi**: Form untuk memicu aksi `restoreDatabase` hanya berisi tombol submit tanpa ada input file upload (`<input type="file" name="backup_file">`) dan tidak memiliki atribut `enctype="multipart/form-data"`.
+* **Dampak**: Menekan tombol "Restore Database" akan mengirimkan request kosong ke backend, yang langsung gagal divalidasi oleh `PengaturanController@restoreDatabase` karena field `backup_file` wajib diisi. Pengguna akan diarahkan kembali (redirect back) tanpa kejelasan.
+* **Cara Memperbaiki**: Lengkapi form restore dengan input file dan enctype yang sesuai:
+  ```html
+  <form action="{{ route('restore.database') }}" method="POST" enctype="multipart/form-data" class="m-0">
+      @csrf
+      <input type="file" name="backup_file" required class="mb-2 text-xs">
+      <button type="submit" class="...">Restore Database</button>
+  </form>
+  ```
+
+---
+
+### 14. Ketiadaan Validasi Input pada `KegiatanController@update`
+* **Lokasi File**: [KegiatanController.php](file:///Users/mac/kppppp/KP-IF-SAKTI/backend/app/Http/Controllers/KegiatanController.php#L51-L76)
+* **Deskripsi**: Method `update` pada `KegiatanController` memproses dan menyimpan perubahan data secara langsung dari `$request` ke database tanpa validasi input.
+* **Dampak**: Jika admin mengosongkan field wajib (seperti `judul`, `tanggal`, dll.), database akan memicu constraint exception yang membuat web crash.
+* **Cara Memperbaiki**: Terapkan validasi input yang serupa dengan method `store` sebelum melakukan update:
+  ```php
+  $validated = $request->validate([
+      'judul'    => 'required|string|max:255',
+      'tanggal'  => 'required|date',
+      'waktu'    => 'required|string',
+      'lokasi'   => 'required|string|max:255',
+      'kategori' => 'required|string|max:100',
+      'peserta'  => 'required|integer|min:0',
+      'pac_id'   => 'nullable|exists:pacs,id',
+      'deskripsi'=> 'nullable|string',
+      'status'   => 'required|in:upcoming,ongoing,completed',
+  ]);
+  ```
+
+---
+
+### 15. Bug Desinkronisasi `total_kegiatan` PAC Saat Penghapusan Hubungan PAC di Kegiatan
+* **Lokasi File**: [KegiatanController.php](file:///Users/mac/kppppp/KP-IF-SAKTI/backend/app/Http/Controllers/KegiatanController.php#L56-L61)
+* **Deskripsi**: Pada method `update`, jika kegiatan sebelumnya memiliki asosiasi `pac_id` dan diubah menjadi kosong/tanpa PAC (null), sistem tidak akan mengurangi `total_kegiatan` pada PAC lama. Hal ini karena kode dibungkus dalam blok if `$request->filled('pac_id')`.
+* **Dampak**: Statistik total kegiatan pada PAC lama akan tetap bertambah (tidak tersinkronisasi), menyebabkan data desinkronisasi.
+* **Cara Memperbaiki**: Ubah logika sinkronisasi PAC agar mendeteksi transisi dari ada PAC menjadi tanpa PAC:
+  ```php
+  if ($kegiatan->pac_id != $request->pac_id) {
+      if ($kegiatan->pac_id) {
+          PAC::where('id', $kegiatan->pac_id)->decrement('total_kegiatan');
+      }
+      if ($request->filled('pac_id')) {
+          PAC::where('id', $request->pac_id)->increment('total_kegiatan');
+      }
+  }
+  ```
+
+---
+
+### 16. Penggunaan Anchor Tag Murni untuk Navigasi Internal React
+* **Lokasi File**: [DataPAC.jsx](file:///Users/mac/kppppp/KP-IF-SAKTI/frontend/src/Pages/DataPAC.jsx#L394-L400)
+* **Deskripsi**: Tautan detail kegiatan di modal PAC menggunakan anchor tag murni (`<a href="...">`) alih-alih komponen `<Link>` dari `react-router-dom`.
+* **Dampak**: Menghancurkan performa Single Page Application (SPA) karena memicu reload halaman penuh (full page reload) setiap kali diklik.
+* **Cara Memperbaiki**: Ganti tag `<a>` menjadi `<Link>` dengan atribut `to`:
+  ```javascript
+  <Link
+    to={`/kegiatan/${keg.id}`}
+    className="text-xs font-semibold text-[#1f7a4d] hover:underline"
+  >
+    Lihat Detail →
+  </Link>
+  ```
+

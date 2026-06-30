@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -391,12 +391,12 @@ function DataPAC() {
                           <p className="text-xs text-gray-400 mt-0.5">📅 {keg.tanggal || keg.date}</p>
                         </div>
                         {keg.id && (
-                          <a
-                            href={`/kegiatan/${keg.id}`}
+                          <Link
+                            to={`/kegiatan/${keg.id}`}
                             className="text-xs font-semibold text-[#1f7a4d] hover:underline"
                           >
                             Lihat Detail →
-                          </a>
+                          </Link>
                         )}
                       </div>
                     ))}
