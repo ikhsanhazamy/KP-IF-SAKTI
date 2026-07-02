@@ -18,11 +18,10 @@ use App\Http\Controllers\SettingController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
+Route::view('/', 'login');
 
-    return view('login');
-
-})->name('login');
+Route::view('/login', 'login')
+    ->name('login');
 
 Route::post('/login', [AuthController::class, 'login']);
 
