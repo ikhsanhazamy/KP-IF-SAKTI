@@ -4,7 +4,10 @@ FROM php:8.2-cli
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
     libpng-dev \
+    libwebp-dev \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
@@ -17,7 +20,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions. MySQL is used by Docker Compose; SQLite stays available for PHPUnit.
-RUN docker-php-ext-install \
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install \
     pdo \
     pdo_sqlite \
     pdo_mysql \
@@ -27,6 +31,8 @@ RUN docker-php-ext-install \
     bcmath \
     gd \
     zip
+
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

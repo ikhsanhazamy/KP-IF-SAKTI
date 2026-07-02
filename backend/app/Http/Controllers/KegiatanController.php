@@ -103,7 +103,7 @@ class KegiatanController extends Controller
             'pac_id' => ['nullable', 'exists:pacs,id'],
             'deskripsi' => ['nullable', 'string'],
             'status' => ['required', 'in:upcoming,ongoing,completed'],
-            'gambar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'gambar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:30720'],
         ];
     }
 

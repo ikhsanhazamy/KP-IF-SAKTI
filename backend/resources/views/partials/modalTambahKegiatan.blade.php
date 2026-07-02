@@ -146,8 +146,9 @@
                         class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 file:mr-4 file:rounded-lg file:border-0 file:bg-[#EDF7F0] file:px-3 file:py-1.5 file:text-[12px] file:font-semibold file:text-[#15633D] focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
                     >
                     <p class="mt-1 text-[11px] text-gray-400">
-                        JPG, PNG, atau WebP maksimal 5MB. Gambar akan dikompres otomatis.
+                        JPG, PNG, atau WebP maksimal 30MB. Gambar akan dikompres otomatis sebelum disimpan.
                     </p>
+                    <p id="gambarInfo" class="mt-1 text-[11px] text-gray-400"></p>
                     <div id="gambarPreviewWrapper" class="mt-3 hidden overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
                         <img id="gambarPreview" src="" alt="Preview gambar kegiatan" class="h-36 w-full object-cover">
                     </div>

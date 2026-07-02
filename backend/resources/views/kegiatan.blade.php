@@ -366,8 +366,11 @@
         document.getElementById('status').value = 'upcoming';
         document.getElementById('deskripsi').value = '';
         document.getElementById('gambar').value = '';
+        setGambarInfo('');
         setGambarPreview('');
     }
+
+    let currentGambarPreviewUrl = '';
 
     function setGambarPreview(src)
     {
@@ -378,8 +381,14 @@
             return;
         }
 
+        if (currentGambarPreviewUrl && currentGambarPreviewUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(currentGambarPreviewUrl);
+            currentGambarPreviewUrl = '';
+        }
+
         if (src) {
             preview.src = src;
+            currentGambarPreviewUrl = src;
             wrapper.classList.remove('hidden');
             return;
         }
@@ -388,15 +397,133 @@
         wrapper.classList.add('hidden');
     }
 
-    document.getElementById('gambar')?.addEventListener('change', (event) => {
-        const file = event.target.files?.[0];
+    function setGambarInfo(message, isError = false)
+    {
+        const info = document.getElementById('gambarInfo');
+
+        if (!info) {
+            return;
+        }
+
+        info.textContent = message;
+        info.classList.toggle('text-red-500', isError);
+        info.classList.toggle('text-gray-400', !isError);
+    }
+
+    function formatFileSize(bytes)
+    {
+        if (!bytes) {
+            return '0 KB';
+        }
+
+        const units = ['B', 'KB', 'MB'];
+        let size = bytes;
+        let unitIndex = 0;
+
+        while (size >= 1024 && unitIndex < units.length - 1) {
+            size /= 1024;
+            unitIndex += 1;
+        }
+
+        return `${size.toFixed(unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+    }
+
+    function compressImageFile(file)
+    {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            const objectUrl = URL.createObjectURL(file);
+
+            image.onload = () => {
+                URL.revokeObjectURL(objectUrl);
+
+                const maxSize = 1280;
+                const scale = Math.min(maxSize / image.width, maxSize / image.height, 1);
+                const width = Math.max(1, Math.round(image.width * scale));
+                const height = Math.max(1, Math.round(image.height * scale));
+                const canvas = document.createElement('canvas');
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const context = canvas.getContext('2d');
+
+                if (!context) {
+                    reject(new Error('Canvas tidak tersedia'));
+                    return;
+                }
+
+                context.fillStyle = '#ffffff';
+                context.fillRect(0, 0, width, height);
+                context.drawImage(image, 0, 0, width, height);
+
+                canvas.toBlob((blob) => {
+                    if (!blob) {
+                        reject(new Error('Gambar gagal dikompres'));
+                        return;
+                    }
+
+                    const filename = file.name.replace(/\.[^.]+$/, '') || 'gambar-kegiatan';
+
+                    resolve(new File([blob], `${filename}.jpg`, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now(),
+                    }));
+                }, 'image/jpeg', 0.75);
+            };
+
+            image.onerror = () => {
+                URL.revokeObjectURL(objectUrl);
+                reject(new Error('Gambar tidak bisa dibaca'));
+            };
+
+            image.src = objectUrl;
+        });
+    }
+
+    document.getElementById('gambar')?.addEventListener('change', async (event) => {
+        const input = event.target;
+        const file = input.files?.[0];
+        const submitButton = document.getElementById('kegiatanSubmitButton');
 
         if (!file) {
             setGambarPreview('');
+            setGambarInfo('');
+            return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+            input.value = '';
+            setGambarPreview('');
+            setGambarInfo('File harus berupa gambar JPG, PNG, atau WebP.', true);
             return;
         }
 
         setGambarPreview(URL.createObjectURL(file));
+        setGambarInfo(`Mengompres ${formatFileSize(file.size)}...`);
+
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-60', 'cursor-wait');
+        }
+
+        try {
+            const compressed = await compressImageFile(file);
+            const dataTransfer = new DataTransfer();
+
+            dataTransfer.items.add(compressed);
+            input.files = dataTransfer.files;
+
+            setGambarPreview(URL.createObjectURL(compressed));
+            setGambarInfo(`Dikompres dari ${formatFileSize(file.size)} menjadi ${formatFileSize(compressed.size)} sebelum upload.`);
+        } catch (error) {
+            setGambarInfo('Gambar gagal dikompres di browser. File asli tetap akan diproses oleh server.', true);
+        } finally {
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.classList.remove('opacity-60', 'cursor-wait');
+            }
+        }
     });
 
 </script>
