@@ -89,37 +89,49 @@
     <!-- TABLE -->
     <div class="bg-white border border-gray-200 rounded-3xl overflow-hidden">
 
-        <table class="w-full">
+        <div class="overflow-x-auto">
+
+        <table class="w-full min-w-[1180px] table-fixed">
+
+            <colgroup>
+                <col class="w-[34%]">
+                <col class="w-[13%]">
+                <col class="w-[17%]">
+                <col class="w-[13%]">
+                <col class="w-[8%]">
+                <col class="w-[8%]">
+                <col class="w-[7%]">
+            </colgroup>
 
             <thead class="bg-[#FAFAFA]">
 
                 <tr class="text-left">
 
-                    <th class="px-8 py-6 font-semibold">
+                    <th class="px-8 py-6 text-sm font-bold text-gray-900">
                         Kegiatan
                     </th>
 
-                    <th class="px-8 py-6 font-semibold">
+                    <th class="px-6 py-6 text-sm font-bold text-gray-900">
                         Tanggal
                     </th>
 
-                    <th class="px-8 py-6 font-semibold">
+                    <th class="px-6 py-6 text-sm font-bold text-gray-900">
                         Lokasi
                     </th>
 
-                    <th class="px-8 py-6 font-semibold">
+                    <th class="px-6 py-6 text-sm font-bold text-gray-900">
                         Kategori
                     </th>
 
-                    <th class="px-8 py-6 font-semibold">
+                    <th class="px-6 py-6 text-sm font-bold text-gray-900">
                         Peserta
                     </th>
 
-                    <th class="px-8 py-6 font-semibold">
+                    <th class="px-6 py-6 text-sm font-bold text-gray-900">
                         Status
                     </th>
 
-                    <th class="px-8 py-6 font-semibold text-right">
+                    <th class="px-8 py-6 text-right text-sm font-bold text-gray-900">
                         Aksi
                     </th>
 
@@ -131,29 +143,29 @@
 
                 @forelse($kegiatan as $item)
 
-                <tr id="kegiatan-{{ $item->id }}" class="scroll-mt-6 border-t border-gray-100 hover:bg-gray-50 transition">
+                <tr id="kegiatan-{{ $item->id }}" class="scroll-mt-6 border-t border-gray-100 align-top hover:bg-gray-50 transition">
 
                     <td class="px-8 py-6">
 
-                        <div class="flex items-center gap-4">
+                        <div class="flex min-w-0 items-center gap-4">
                             @if($item->gambar_url)
                                 <img
                                     src="{{ $item->gambar_url }}"
                                     alt="Gambar {{ $item->judul }}"
-                                    class="h-16 w-24 rounded-2xl object-cover border border-gray-100"
+                                    class="h-16 w-24 shrink-0 rounded-2xl border border-gray-100 object-cover"
                                 >
                             @else
-                                <div class="flex h-16 w-24 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 text-xs text-gray-400">
+                                <div class="flex h-16 w-24 shrink-0 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 text-xs text-gray-400">
                                     No Image
                                 </div>
                             @endif
 
-                            <div>
-                                <h3 class="font-semibold text-lg">
+                            <div class="min-w-0">
+                                <h3 class="break-words text-base font-bold leading-snug text-gray-900">
                                     {{ $item->judul }}
                                 </h3>
 
-                                <p class="text-sm text-[#717182] mt-1">
+                                <p class="mt-1 line-clamp-2 break-words text-sm leading-relaxed text-[#717182]">
                                     {{ $item->deskripsi }}
                                 </p>
                             </div>
@@ -161,52 +173,57 @@
 
                     </td>
 
-                    <td class="px-8 py-6 text-[#717182]">
+                    <td class="px-6 py-6 text-sm text-[#717182]">
 
-                        {{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}
-                        <br>
+                        <div class="whitespace-nowrap font-medium text-gray-700">
+                            {{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}
+                        </div>
 
-                        {{ $item->waktu }}
+                        <div class="mt-1 whitespace-nowrap text-[#717182]">
+                            {{ $item->waktu }}
+                        </div>
 
                     </td>
 
-                    <td class="px-8 py-6 text-[#717182]">
+                    <td class="px-6 py-6 text-sm leading-relaxed text-[#717182]">
                         {{ $item->lokasi }}
                     </td>
 
-                    <td class="px-8 py-6">
+                    <td class="px-6 py-6">
 
-                        <span class="bg-[#EDF7F0] text-[#15633D] px-4 py-2 rounded-full text-sm">
+                        <span class="inline-flex max-w-full rounded-full bg-[#EDF7F0] px-4 py-2 text-sm font-semibold text-[#15633D]">
 
-                            {{ $item->kategori }}
+                            <span class="truncate">
+                                {{ $item->kategori }}
+                            </span>
 
                         </span>
 
                     </td>
 
-                    <td class="px-8 py-6 text-[#717182]">
+                    <td class="px-6 py-6 text-sm font-medium text-[#717182]">
 
                         {{ $item->peserta }}
 
                     </td>
 
-                    <td class="px-8 py-6">
+                    <td class="px-6 py-6">
 
                         @if($item->status == 'upcoming')
 
-                            <span class="bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm">
+                            <span class="inline-flex rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-600">
                                 Upcoming
                             </span>
 
                         @elseif($item->status == 'ongoing')
 
-                            <span class="bg-green-100 text-green-600 px-4 py-2 rounded-full text-sm">
+                            <span class="inline-flex rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-600">
                                 Ongoing
                             </span>
 
                         @else
 
-                            <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-sm">
+                            <span class="inline-flex rounded-full bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-600">
                                 Completed
                             </span>
 
@@ -216,7 +233,7 @@
 
                     <td class="px-8 py-6">
 
-                        <div class="flex justify-end gap-4">
+                        <div class="flex justify-end gap-3">
 
                             <button
                                 type="button"
@@ -268,6 +285,8 @@
             </tbody>
 
         </table>
+
+        </div>
 
     </div>
 
