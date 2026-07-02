@@ -91,16 +91,16 @@
 
         <div class="overflow-x-auto">
 
-        <table class="w-full min-w-[1180px] table-fixed">
+        <table class="w-full min-w-[1360px] table-fixed">
 
             <colgroup>
-                <col class="w-[34%]">
-                <col class="w-[13%]">
-                <col class="w-[17%]">
-                <col class="w-[13%]">
-                <col class="w-[8%]">
-                <col class="w-[8%]">
+                <col class="w-[29%]">
+                <col class="w-[12%]">
+                <col class="w-[15%]">
+                <col class="w-[12%]">
                 <col class="w-[7%]">
+                <col class="w-[12%]">
+                <col class="w-[13%]">
             </colgroup>
 
             <thead class="bg-[#FAFAFA]">
@@ -127,11 +127,11 @@
                         Peserta
                     </th>
 
-                    <th class="px-6 py-6 text-sm font-bold text-gray-900">
+                    <th class="px-4 py-6 text-sm font-bold text-gray-900">
                         Status
                     </th>
 
-                    <th class="px-8 py-6 text-right text-sm font-bold text-gray-900">
+                    <th class="px-4 py-6 text-right text-sm font-bold text-gray-900">
                         Aksi
                     </th>
 
@@ -207,23 +207,23 @@
 
                     </td>
 
-                    <td class="px-6 py-6">
+                    <td class="px-4 py-6">
 
                         @if($item->status == 'upcoming')
 
-                            <span class="inline-flex rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-600">
+                            <span class="inline-flex whitespace-nowrap rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-600">
                                 Upcoming
                             </span>
 
                         @elseif($item->status == 'ongoing')
 
-                            <span class="inline-flex rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-600">
+                            <span class="inline-flex whitespace-nowrap rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-600">
                                 Ongoing
                             </span>
 
                         @else
 
-                            <span class="inline-flex rounded-full bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-600">
+                            <span class="inline-flex whitespace-nowrap rounded-full bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-600">
                                 Completed
                             </span>
 
@@ -231,15 +231,15 @@
 
                     </td>
 
-                    <td class="px-8 py-6">
+                    <td class="px-4 py-6">
 
-                        <div class="flex justify-end gap-3">
+                        <div class="flex items-center justify-end gap-2">
 
                             <button
                                 type="button"
                                 data-id="{{ $item->id }}"
                                 onclick="openEditKegiatanModal(this.dataset.id)"
-                                class="flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-200 text-[#4B5563] hover:bg-gray-100 transition"
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-gray-200 text-[#4B5563] hover:bg-gray-100 transition"
                                 aria-label="Edit kegiatan"
                             >
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -251,7 +251,7 @@
                             <form action="/kegiatan/delete/{{ $item->id }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kegiatan ini?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="flex h-11 w-11 items-center justify-center rounded-2xl border border-red-100 bg-red-50 text-red-600 hover:bg-red-100 transition" aria-label="Hapus kegiatan">
+                                <button type="submit" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-red-100 bg-red-50 text-red-600 hover:bg-red-100 transition" aria-label="Hapus kegiatan">
                                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                         <path d="M3 6h18" />
                                         <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
