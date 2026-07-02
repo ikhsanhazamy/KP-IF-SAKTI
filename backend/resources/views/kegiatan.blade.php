@@ -526,6 +526,46 @@
         }
     });
 
+    document.getElementById('kegiatanForm')?.addEventListener('submit', async (event) => {
+        const form = event.currentTarget;
+
+        if (form.dataset.csrfRefreshed === 'true') {
+            delete form.dataset.csrfRefreshed;
+            return;
+        }
+
+        event.preventDefault();
+
+        const submitButton = document.getElementById('kegiatanSubmitButton');
+
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-60', 'cursor-wait');
+        }
+
+        try {
+            const response = await fetch('/csrf-token', {
+                headers: {
+                    Accept: 'application/json',
+                },
+                credentials: 'same-origin',
+                cache: 'no-store',
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const tokenInput = form.querySelector('input[name="_token"]');
+
+                if (tokenInput && data.token) {
+                    tokenInput.value = data.token;
+                }
+            }
+        } finally {
+            form.dataset.csrfRefreshed = 'true';
+            form.submit();
+        }
+    });
+
 </script>
 
 @endsection

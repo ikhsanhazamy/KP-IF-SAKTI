@@ -28,6 +28,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
+Route::get('/csrf-token', fn () => response()->json([
+    'token' => csrf_token(),
+]))->name('csrf-token');
+
 
 /*
 |--------------------------------------------------------------------------
