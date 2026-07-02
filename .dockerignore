@@ -8,6 +8,7 @@ backend/.env
 backend/vendor
 backend/node_modules
 backend/public/build
+backend/public/storage
 backend/database/*.sqlite
 backend/storage/logs/*.log
 
