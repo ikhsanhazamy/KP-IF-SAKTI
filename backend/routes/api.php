@@ -46,14 +46,30 @@ Route::get('/pac', function () {
 Route::get('/stats', function () {
     $totalPAC = PAC::count();
     $pacAktif = PAC::where('status', 'aktif')->count();
-    $totalAnggota = PAC::sum('jumlah_anggota');
-    $totalKecamatan = PAC::distinct('kecamatan')->count('kecamatan');
+    $totalAnggota = Anggota::count();
+    $anggotaAktif = Anggota::where('status', 'aktif')->count();
+    $totalKecamatan = PAC::whereNotNull('kecamatan')
+        ->where('kecamatan', '!=', '')
+        ->distinct('kecamatan')
+        ->count('kecamatan');
+    $anggotaTerverifikasi = Anggota::whereNotNull('email')
+        ->whereNotNull('telepon')
+        ->whereNotNull('tanggal_lahir')
+        ->whereNotNull('pendidikan')
+        ->whereNotNull('profesi')
+        ->count();
+    $tingkatVerifikasi = $totalAnggota > 0
+        ? (int) round(($anggotaTerverifikasi / $totalAnggota) * 100)
+        : 0;
 
     return response()->json([
         'total_pac' => $totalPAC,
         'pac_aktif' => $pacAktif,
         'total_anggota' => $totalAnggota,
+        'anggota_aktif' => $anggotaAktif,
         'total_kecamatan' => $totalKecamatan,
+        'tingkat_verifikasi' => $tingkatVerifikasi,
+        'kepuasan' => $tingkatVerifikasi,
     ]);
 });
 

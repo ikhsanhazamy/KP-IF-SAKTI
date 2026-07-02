@@ -1,9 +1,50 @@
 import image1 from "../assets/images/image1.jpeg";
 import { ArrowRight, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Hero() {
   const navigate = useNavigate();
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((res) => {
+        if (!res.ok) throw new Error("Gagal mengambil statistik");
+        return res.json();
+      })
+      .then((data) => setStats(data))
+      .catch((err) => {
+        console.error(err);
+        setStats({
+          anggota_aktif: 0,
+          pac_aktif: 0,
+          total_kecamatan: 0,
+          kepuasan: 0,
+        });
+      });
+  }, []);
+
+  const formatNumber = (value) => Number(value ?? 0).toLocaleString("id-ID");
+
+  const heroStats = [
+    {
+      value: formatNumber(stats?.anggota_aktif ?? stats?.total_anggota),
+      label: "Anggota Aktif",
+    },
+    {
+      value: formatNumber(stats?.pac_aktif),
+      label: "PAC Aktif",
+    },
+    {
+      value: formatNumber(stats?.total_kecamatan),
+      label: "Kecamatan",
+    },
+    {
+      value: `${formatNumber(stats?.kepuasan)}%`,
+      label: "Kepuasan",
+    },
+  ];
 
   return (
     <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16 lg:py-24 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
@@ -47,22 +88,16 @@ function Hero() {
 
         {/* STATS */}
         <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-8 sm:gap-12 lg:gap-14 mt-14 justify-items-center sm:justify-center lg:justify-start">
-          <div className="text-center lg:text-left">
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-[#0F5E3A] tracking-tight">2,847</h2>
-            <p className="text-xs sm:text-sm text-gray-400 font-medium mt-1">Anggota Aktif</p>
-          </div>
-          <div className="text-center lg:text-left">
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-[#0F5E3A] tracking-tight">47</h2>
-            <p className="text-xs sm:text-sm text-gray-400 font-medium mt-1">PAC Aktif</p>
-          </div>
-          <div className="text-center lg:text-left">
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-[#0F5E3A] tracking-tight">15</h2>
-            <p className="text-xs sm:text-sm text-gray-400 font-medium mt-1">Kecamatan</p>
-          </div>
-          <div className="text-center lg:text-left">
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-[#0F5E3A] tracking-tight">98%</h2>
-            <p className="text-xs sm:text-sm text-gray-400 font-medium mt-1">Kepuasan</p>
-          </div>
+          {heroStats.map((item) => (
+            <div className="text-center lg:text-left" key={item.label}>
+              <h2 className="text-3xl lg:text-4xl font-extrabold text-[#0F5E3A] tracking-tight">
+                {stats ? item.value : "..."}
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-400 font-medium mt-1">
+                {item.label}
+              </p>
+            </div>
+          ))}
         </div>
 
       </div>

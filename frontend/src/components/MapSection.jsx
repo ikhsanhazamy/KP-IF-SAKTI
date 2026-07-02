@@ -4,10 +4,10 @@ import { PopupExample } from "./PopupExample";
 
 function MapSection() {
   const [stats, setStats] = useState({
-    total_pac: 47,
-    pac_aktif: 45,
-    total_anggota: 2847,
-    total_kecamatan: 15
+    total_pac: 0,
+    pac_aktif: 0,
+    total_anggota: 0,
+    total_kecamatan: 0
   });
 
   useEffect(() => {
@@ -18,10 +18,10 @@ function MapSection() {
       })
       .then((data) => {
         setStats({
-          total_pac: data.total_pac ?? 47,
-          pac_aktif: data.pac_aktif ?? 45,
-          total_anggota: data.total_anggota ?? 2847,
-          total_kecamatan: data.total_kecamatan ?? 15
+          total_pac: data.total_pac ?? 0,
+          pac_aktif: data.pac_aktif ?? 0,
+          total_anggota: data.total_anggota ?? 0,
+          total_kecamatan: data.total_kecamatan ?? 0
         });
       })
       .catch((err) => {
@@ -115,7 +115,7 @@ function MapSection() {
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-2xl font-black text-gray-900 leading-none">{stats.total_anggota.toLocaleString()}</p>
+              <p className="text-2xl font-black text-gray-900 leading-none">{stats.total_anggota.toLocaleString("id-ID")}</p>
               <p className="text-xs text-gray-400 font-semibold mt-1">Total Anggota</p>
             </div>
           </div>
