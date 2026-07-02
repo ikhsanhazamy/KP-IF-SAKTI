@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pacs', function (Blueprint $table) {
-            $table->integer('Alumni_LKD')->default(0);
+            if (! Schema::hasColumn('pacs', 'alumni_lkd')) {
+                $table->unsignedInteger('alumni_lkd')->default(0)->after('jumlah_anggota');
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('pacs', function (Blueprint $table) {
-            $table->dropColumn('Alumni_LKD');
+            if (Schema::hasColumn('pacs', 'alumni_lkd')) {
+                $table->dropColumn('alumni_lkd');
+            }
         });
     }
 };

@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\PAC;
 use App\Models\Kegiatan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class GitHubIssuesFixTest extends TestCase
@@ -138,6 +140,71 @@ class GitHubIssuesFixTest extends TestCase
             'id' => $kegiatan->id,
             'pac_id' => null,
         ]);
+    }
+
+    public function test_kegiatan_image_is_compressed_replaced_and_deleted(): void
+    {
+        if (! function_exists('imagecreatetruecolor') || ! function_exists('imagejpeg')) {
+            $this->markTestSkipped('GD extension is not installed on this PHP runtime.');
+        }
+
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $image = UploadedFile::fake()->image('kegiatan.png', 2000, 1200)->size(3000);
+
+        $response = $this->actingAs($user)
+            ->post('/kegiatan/store', [
+                'judul' => 'Kegiatan Bergambar',
+                'tanggal' => '2026-07-03',
+                'waktu' => '08:00',
+                'lokasi' => 'Aula Sukabumi',
+                'kategori' => 'Kajian',
+                'peserta' => 100,
+                'status' => 'upcoming',
+                'deskripsi' => 'Kegiatan dengan gambar',
+                'gambar' => $image,
+            ]);
+
+        $response->assertRedirect('/kegiatan');
+
+        $kegiatan = Kegiatan::where('judul', 'Kegiatan Bergambar')->firstOrFail();
+        $this->assertNotNull($kegiatan->gambar);
+        $this->assertStringStartsWith('kegiatan/', $kegiatan->gambar);
+        $this->assertStringEndsWith('.jpg', $kegiatan->gambar);
+        Storage::disk('public')->assertExists($kegiatan->gambar);
+
+        [$width, $height] = getimagesize(Storage::disk('public')->path($kegiatan->gambar));
+        $this->assertLessThanOrEqual(1280, max($width, $height));
+
+        $oldImage = $kegiatan->gambar;
+        $replacement = UploadedFile::fake()->image('pengganti.jpg', 900, 900)->size(2000);
+
+        $this->actingAs($user)
+            ->put("/kegiatan/update/{$kegiatan->id}", [
+                'judul' => 'Kegiatan Bergambar Update',
+                'tanggal' => '2026-07-04',
+                'waktu' => '09:00',
+                'lokasi' => 'Aula Baru',
+                'kategori' => 'Pelatihan',
+                'peserta' => 120,
+                'status' => 'ongoing',
+                'deskripsi' => 'Kegiatan dengan gambar baru',
+                'gambar' => $replacement,
+            ])
+            ->assertRedirect('/kegiatan');
+
+        $kegiatan->refresh();
+        Storage::disk('public')->assertMissing($oldImage);
+        Storage::disk('public')->assertExists($kegiatan->gambar);
+
+        $newImage = $kegiatan->gambar;
+
+        $this->actingAs($user)
+            ->delete("/kegiatan/delete/{$kegiatan->id}")
+            ->assertRedirect('/kegiatan');
+
+        Storage::disk('public')->assertMissing($newImage);
     }
 
     /**

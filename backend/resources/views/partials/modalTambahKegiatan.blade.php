@@ -3,7 +3,7 @@
     class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4"
 >
 
-    <div class="bg-white w-full max-w-[560px] rounded-2xl p-7 relative shadow-2xl border border-gray-100 transform scale-95 transition-all duration-300">
+    <div class="bg-white w-full max-w-[560px] max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl p-7 relative shadow-2xl border border-gray-100 transform scale-95 transition-all duration-300">
 
         <!-- CLOSE -->
         <button
@@ -23,7 +23,7 @@
             </p>
         </div>
 
-        <form id="kegiatanForm" action="/kegiatan/store" method="POST" class="m-0">
+        <form id="kegiatanForm" action="/kegiatan/store" method="POST" enctype="multipart/form-data" class="m-0">
             @csrf
             <input type="hidden" name="_method" id="kegiatanMethod" value="POST">
 
@@ -131,6 +131,26 @@
                         <option value="ongoing">Ongoing</option>
                         <option value="completed">Completed</option>
                     </select>
+                </div>
+
+                <!-- GAMBAR -->
+                <div>
+                    <label class="block text-[13px] font-semibold text-gray-700 mb-1.5">
+                        Gambar Kegiatan
+                    </label>
+                    <input
+                        id="gambar"
+                        type="file"
+                        name="gambar"
+                        accept="image/jpeg,image/png,image/webp"
+                        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 file:mr-4 file:rounded-lg file:border-0 file:bg-[#EDF7F0] file:px-3 file:py-1.5 file:text-[12px] file:font-semibold file:text-[#15633D] focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
+                    >
+                    <p class="mt-1 text-[11px] text-gray-400">
+                        JPG, PNG, atau WebP maksimal 5MB. Gambar akan dikompres otomatis.
+                    </p>
+                    <div id="gambarPreviewWrapper" class="mt-3 hidden overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
+                        <img id="gambarPreview" src="" alt="Preview gambar kegiatan" class="h-36 w-full object-cover">
+                    </div>
                 </div>
 
                 <!-- DESKRIPSI -->

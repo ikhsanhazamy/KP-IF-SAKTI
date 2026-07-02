@@ -45,7 +45,7 @@ Sistem informasi berbasis web untuk mengelola data organisasi **Fatayat NU Kabup
 | ------------ | ------------------------------------------------------------ |
 | **Frontend** | React 18, Vite 5, Tailwind CSS 4, shadcn/ui, Radix UI       |
 | **Backend**  | Laravel 12 (PHP 8.2), Blade Templates                        |
-| **Database** | SQLite                                                       |
+| **Database** | MySQL 8 via Docker Compose                                  |
 | **Maps**     | MapLibre GL                                                  |
 | **Icons**    | Lucide React, React Icons                                    |
 | **PDF**      | Laravel DomPDF                                               |
@@ -73,8 +73,7 @@ KP-IF-SAKTI/
 │   │   └── Models/           # Anggota, PAC, Kegiatan, Pengaturan, User
 │   ├── database/
 │   │   ├── migrations/       # Skema database
-│   │   ├── seeders/          # Data awal (PAC, Anggota, Kegiatan)
-│   │   └── database.sqlite   # File database SQLite
+│   │   └── seeders/          # Data awal (PAC, Anggota, Kegiatan)
 │   ├── routes/
 │   │   ├── api.php           # REST API untuk frontend publik
 │   │   └── web.php           # Routes admin dashboard (auth-protected)
@@ -82,7 +81,7 @@ KP-IF-SAKTI/
 │   └── .env.example          # Template konfigurasi environment
 │
 ├── Dockerfile                # Docker image untuk backend (PHP 8.2)
-├── docker-compose.yml        # Orchestration: backend + frontend
+├── docker-compose.yml        # Orchestration: backend + frontend + MySQL
 └── README.md
 ```
 
@@ -98,9 +97,9 @@ KP-IF-SAKTI/
 | **Composer** | 2.x           | `composer -V`          |
 | **Node.js**  | 18+           | `node -v`              |
 | **npm**      | 9+            | `npm -v`               |
-| **SQLite**   | 3.x           | `sqlite3 --version`    |
+| **MySQL**    | 8.x           | Disarankan melalui `docker compose` |
 
-Pastikan juga ekstensi PHP berikut sudah aktif: `pdo_sqlite`, `mbstring`, `gd`, `zip`, `bcmath`.
+Pastikan juga ekstensi PHP berikut sudah aktif jika menjalankan backend tanpa Docker: `pdo_mysql`, `mbstring`, `gd`, `zip`, `bcmath`.
 
 ### Untuk Menjalankan dengan Docker
 
@@ -112,6 +111,8 @@ Pastikan juga ekstensi PHP berikut sudah aktif: `pdo_sqlite`, `mbstring`, `gd`, 
 ---
 
 ## 🚀 Menjalankan Secara Lokal
+
+> Rekomendasi utama proyek ini adalah menjalankan lewat Docker agar MySQL dibuat otomatis. Mode lokal di bawah hanya diperlukan jika ingin menjalankan backend/frontend langsung dari host dan sudah punya MySQL lokal sendiri.
 
 ### 1. Clone Repository
 
@@ -131,11 +132,13 @@ composer install
 # Salin file environment
 cp .env.example .env
 
+# Jika menjalankan tanpa Docker, arahkan database ke MySQL lokal
+# DB_HOST=127.0.0.1
+# DB_USERNAME=root
+# DB_PASSWORD=sesuaikan_password_mysql_lokal
+
 # Generate application key
 php artisan key:generate
-
-# Pastikan file database SQLite ada
-touch database/database.sqlite
 
 # Jalankan migrasi database
 php artisan migrate
@@ -201,14 +204,16 @@ cp backend/.env.example backend/.env
 docker compose up --build
 ```
 
-Docker Compose akan menjalankan dua service:
+Docker Compose akan menjalankan empat service:
 
 | Service  | Deskripsi                          | Port   |
 | -------- | ---------------------------------- | ------ |
 | **app**  | Backend Laravel (PHP 8.2)          | `8000` |
 | **node** | Frontend React (Vite dev server)   | `5173` |
+| **db**   | MySQL 8 untuk database aplikasi    | internal |
+| **backend-assets** | Build aset Vite untuk dashboard admin | internal |
 
-Container `app` secara otomatis menjalankan `php artisan migrate --force` saat startup.
+Container `db` otomatis dibuat oleh Docker Compose. Container `backend-assets` akan menjalankan `npm ci && npm run build` untuk aset admin Laravel. Container `app` akan menunggu MySQL siap, membersihkan config cache, membuat `APP_KEY` jika masih kosong, lalu menjalankan `php artisan migrate --force` saat startup. Tidak perlu membuat atau menyambungkan MySQL manual dari host.
 
 ### 4. Akses Aplikasi
 
@@ -229,6 +234,8 @@ docker compose logs -f
 # Lihat log service tertentu
 docker compose logs -f app
 docker compose logs -f node
+docker compose logs -f db
+docker compose logs -f backend-assets
 
 # Masuk ke container backend
 docker compose exec app bash
@@ -253,8 +260,13 @@ File konfigurasi backend berada di `backend/.env`. Berikut variabel penting:
 | ----------------- | ---------------- | --------------------------------- |
 | `APP_ENV`         | `local`          | Environment aplikasi              |
 | `APP_DEBUG`       | `true`           | Mode debug                        |
-| `APP_URL`         | `http://localhost` | URL dasar aplikasi              |
-| `DB_CONNECTION`   | `sqlite`         | Driver database                   |
+| `APP_URL`         | `http://localhost:8000` | URL dasar aplikasi          |
+| `DB_CONNECTION`   | `mysql`          | Driver database                   |
+| `DB_HOST`         | `db`             | Host MySQL saat berjalan di Docker Compose |
+| `DB_PORT`         | `3306`           | Port MySQL                        |
+| `DB_DATABASE`     | `kp_db`          | Nama database Docker              |
+| `DB_USERNAME`     | `kp_user`        | User database Docker              |
+| `DB_PASSWORD`     | `kp_password`    | Password database Docker          |
 | `SESSION_DRIVER`  | `database`       | Driver session                    |
 | `QUEUE_CONNECTION`| `database`       | Driver antrian                    |
 

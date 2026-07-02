@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
+    default-mysql-client \
     zip \
     unzip \
     sqlite3 \
@@ -15,10 +16,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
+# Install PHP extensions. MySQL is used by Docker Compose; SQLite stays available for PHPUnit.
 RUN docker-php-ext-install \
     pdo \
     pdo_sqlite \
+    pdo_mysql \
     mbstring \
     exif \
     pcntl \
@@ -44,12 +46,11 @@ COPY backend/ .
 # Generate optimized autoload
 RUN composer dump-autoload --optimize
 
-# Pastikan SQLite database file ada
-RUN mkdir -p database && touch database/database.sqlite
-
 # Fix storage permissions
 RUN chmod -R 775 storage bootstrap/cache
 
+COPY docker/app-entrypoint.sh /usr/local/bin/app-entrypoint.sh
+
 EXPOSE 8000
 
-CMD ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]
+CMD ["sh", "/usr/local/bin/app-entrypoint.sh"]

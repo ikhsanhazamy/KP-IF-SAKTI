@@ -135,13 +135,29 @@
 
                     <td class="px-8 py-6">
 
-                        <h3 class="font-semibold text-lg">
-                            {{ $item->judul }}
-                        </h3>
+                        <div class="flex items-center gap-4">
+                            @if($item->gambar_url)
+                                <img
+                                    src="{{ $item->gambar_url }}"
+                                    alt="Gambar {{ $item->judul }}"
+                                    class="h-16 w-24 rounded-2xl object-cover border border-gray-100"
+                                >
+                            @else
+                                <div class="flex h-16 w-24 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 text-xs text-gray-400">
+                                    No Image
+                                </div>
+                            @endif
 
-                        <p class="text-sm text-[#717182] mt-1">
-                            {{ $item->deskripsi }}
-                        </p>
+                            <div>
+                                <h3 class="font-semibold text-lg">
+                                    {{ $item->judul }}
+                                </h3>
+
+                                <p class="text-sm text-[#717182] mt-1">
+                                    {{ $item->deskripsi }}
+                                </p>
+                            </div>
+                        </div>
 
                     </td>
 
@@ -301,6 +317,7 @@
                 document.getElementById('peserta').value = data.peserta || '';
                 document.getElementById('status').value = data.status || 'upcoming';
                 document.getElementById('deskripsi').value = data.deskripsi || '';
+                setGambarPreview(data.gambar_url || '');
 
                 document
                     .getElementById('modalTambahKegiatan')
@@ -348,7 +365,39 @@
         document.getElementById('peserta').value = '';
         document.getElementById('status').value = 'upcoming';
         document.getElementById('deskripsi').value = '';
+        document.getElementById('gambar').value = '';
+        setGambarPreview('');
     }
+
+    function setGambarPreview(src)
+    {
+        const wrapper = document.getElementById('gambarPreviewWrapper');
+        const preview = document.getElementById('gambarPreview');
+
+        if (!wrapper || !preview) {
+            return;
+        }
+
+        if (src) {
+            preview.src = src;
+            wrapper.classList.remove('hidden');
+            return;
+        }
+
+        preview.removeAttribute('src');
+        wrapper.classList.add('hidden');
+    }
+
+    document.getElementById('gambar')?.addEventListener('change', (event) => {
+        const file = event.target.files?.[0];
+
+        if (!file) {
+            setGambarPreview('');
+            return;
+        }
+
+        setGambarPreview(URL.createObjectURL(file));
+    });
 
 </script>
 

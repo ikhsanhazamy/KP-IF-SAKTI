@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Kegiatan extends Model
 {
@@ -15,8 +16,18 @@ class Kegiatan extends Model
         'kategori',
         'peserta',
         'status',
-        'deskripsi'
+        'deskripsi',
+        'gambar',
     ];
+
+    protected $appends = [
+        'gambar_url',
+    ];
+
+    public function getGambarUrlAttribute(): ?string
+    {
+        return $this->gambar ? Storage::url($this->gambar) : null;
+    }
 
     /**
      * Relasi ke PAC
