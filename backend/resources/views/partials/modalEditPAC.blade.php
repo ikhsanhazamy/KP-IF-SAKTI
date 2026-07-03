@@ -225,15 +225,21 @@
                     </div>
 
                 </div>
-
                 <div class="border-t border-[#E5E7EB] bg-white px-8 py-6">
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-3 gap-4">
                         <button
                             type="button"
                             onclick="closeEditPACModal()"
-                            class="flex h-12 items-center justify-center rounded-[12px] border border-[#E5E7EB] text-sm font-medium text-[#1D1D1D]"
+                            class="flex h-12 items-center justify-center rounded-[12px] border border-[#E5E7EB] text-sm font-medium text-[#1D1D1D] hover:bg-[#F5F7F8] transition"
                         >
                             Batal
+                        </button>
+                        <button
+                            type="button"
+                            onclick="hapusPAC()"
+                            class="flex h-12 items-center justify-center rounded-[12px] bg-red-600 text-sm font-medium text-white transition hover:bg-red-700"
+                        >
+                            Hapus PAC
                         </button>
                         <button
                             type="submit"
@@ -243,6 +249,34 @@
                         </button>
                     </div>
                 </div>
+
+<script>
+function hapusPAC() {
+    if(confirm('Apakah Anda yakin ingin menghapus PAC ini? Data yang dihapus tidak dapat dikembalikan.')) {
+        const formAction = document.getElementById('formEditPAC').action;
+        const deleteAction = formAction.replace('/update/', '/delete/');
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = deleteAction;
+        
+        const tokenInput = document.createElement('input');
+        tokenInput.type = 'hidden';
+        tokenInput.name = '_token';
+        tokenInput.value = document.querySelector('#formEditPAC input[name="_token"]').value;
+        
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'DELETE';
+        
+        form.appendChild(tokenInput);
+        form.appendChild(methodInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
 
             </form>
 
