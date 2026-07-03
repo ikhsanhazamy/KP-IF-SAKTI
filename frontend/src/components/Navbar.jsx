@@ -1,11 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { FiChevronDown, FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiX } from "react-icons/fi";
 import FatayatLogo from "../assets/icons/Fatayat Logo.svg";
 import { useState } from "react";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dataPacOpen, setDataPacOpen] = useState(false);
 
   return (
     <nav className="w-full bg-[#f6f8f7] border-b border-gray-200 sticky top-0 z-50">
@@ -56,29 +55,16 @@ function Navbar() {
             Tentang
           </NavLink>
 
-          {/* DATA PAC */}
-          <div className="relative group">
-            <button className="flex items-center gap-1 text-gray-600 hover:text-[#1f7a4d] transition">
-              Data PAC
-              <FiChevronDown className="text-[17px] group-hover:rotate-180 transition duration-200" />
-            </button>
-
-            {/* DROPDOWN */}
-            <div className="absolute left-1/2 -translate-x-1/2 top-[42px] w-[240px] bg-white border border-gray-200 rounded-2xl shadow-xl opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 overflow-hidden z-50">
-              <NavLink
-                to="/data-pac"
-                className="block px-5 py-4 text-sm text-gray-700 hover:bg-[#f6f8f7] transition"
-              >
-                Data PAC
-              </NavLink>
-              <NavLink
-                to="/pengajuan-data-pac"
-                className="block px-5 py-4 text-sm text-gray-700 hover:bg-[#f6f8f7] transition"
-              >
-                Pengajuan Data PAC
-              </NavLink>
-            </div>
-          </div>
+          <NavLink
+            to="/pengajuan-data-pac"
+            className={({ isActive }) =>
+              isActive
+                ? "text-[#1f7a4d]"
+                : "text-gray-600 hover:text-[#1f7a4d] transition"
+            }
+          >
+            Pengajuan PAC
+          </NavLink>
 
           <NavLink
             to="/kegiatan"
@@ -138,44 +124,17 @@ function Navbar() {
             Tentang
           </NavLink>
 
-          {/* DATA PAC ACCORDION */}
-          <div>
-            <button
-              onClick={() => setDataPacOpen(!dataPacOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
-            >
-              Data PAC
-              <FiChevronDown
-                className={`text-[17px] transition duration-200 ${dataPacOpen ? "rotate-180" : ""}`}
-              />
-            </button>
-            {dataPacOpen && (
-              <div className="pl-6 flex flex-col gap-1 mt-1">
-                <NavLink
-                  to="/data-pac"
-                  onClick={() => { setMenuOpen(false); setDataPacOpen(false); }}
-                  className={({ isActive }) =>
-                    `block px-4 py-2 rounded-xl text-sm transition ${
-                      isActive ? "text-[#1f7a4d]" : "text-gray-600 hover:bg-gray-100"
-                    }`
-                  }
-                >
-                  Data PAC
-                </NavLink>
-                <NavLink
-                  to="/pengajuan-data-pac"
-                  onClick={() => { setMenuOpen(false); setDataPacOpen(false); }}
-                  className={({ isActive }) =>
-                    `block px-4 py-2 rounded-xl text-sm transition ${
-                      isActive ? "text-[#1f7a4d]" : "text-gray-600 hover:bg-gray-100"
-                    }`
-                  }
-                >
-                  Pengajuan Data PAC
-                </NavLink>
-              </div>
-            )}
-          </div>
+          <NavLink
+            to="/pengajuan-data-pac"
+            onClick={() => setMenuOpen(false)}
+            className={({ isActive }) =>
+              `block px-4 py-3 rounded-xl text-sm font-medium transition ${
+                isActive ? "bg-[#eef3f0] text-[#1f7a4d]" : "text-gray-700 hover:bg-gray-100"
+              }`
+            }
+          >
+            Pengajuan PAC
+          </NavLink>
 
           <NavLink
             to="/kegiatan"

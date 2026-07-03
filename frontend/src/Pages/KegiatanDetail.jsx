@@ -6,6 +6,24 @@ import { useState, useEffect } from "react";
 import foto1 from "../assets/images/foto1.jpg";
 import foto2 from "../assets/images/foto2.jpg";
 import foto3 from "../assets/images/foto3.jpg";
+import anggotaIcon from "../assets/icons/anggota.svg";
+import calendarIcon from "../assets/icons/calendar.svg";
+import clockIcon from "../assets/icons/clock.svg";
+import descriptionIcon from "../assets/icons/description.svg";
+import locationIcon from "../assets/icons/Location.svg";
+import pacIcon from "../assets/icons/pac.svg";
+import pertumbuhanIcon from "../assets/icons/pertumbuhan.svg";
+
+function AssetIcon({ src, alt, size = "w-10 h-10" }) {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={`${size} object-contain flex-shrink-0`}
+      aria-hidden="true"
+    />
+  );
+}
 
 function KegiatanDetail() {
   const { id } = useParams();
@@ -184,9 +202,7 @@ function KegiatanDetail() {
         <Navbar />
         <div className="flex items-center justify-center py-40">
           <div className="text-center max-w-md mx-auto px-4">
-            <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-3xl">😕</span>
-            </div>
+            <AssetIcon src={descriptionIcon} alt="" size="w-16 h-16 mx-auto mb-6" />
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">Kegiatan Tidak Ditemukan</h2>
             <p className="text-gray-500 mb-8">
               Kegiatan yang Anda cari tidak tersedia atau telah dihapus.
@@ -269,7 +285,7 @@ function KegiatanDetail() {
               {/* Deskripsi */}
               <div className="bg-white border border-[#E5E7EB] rounded-[24px] p-6 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
                 <h2 className="text-[20px] sm:text-[24px] font-semibold text-gray-900 mb-5 flex items-center gap-3">
-                  <span className="w-8 h-8 bg-[#eef3f0] rounded-lg flex items-center justify-center text-sm">📝</span>
+                  <AssetIcon src={descriptionIcon} alt="" size="w-8 h-8" />
                   Deskripsi Kegiatan
                 </h2>
                 <p className="text-[15px] sm:text-[16px] text-gray-600 leading-[1.9] whitespace-pre-line">
@@ -281,7 +297,7 @@ function KegiatanDetail() {
               {data.pac && (
                 <div className="bg-white border border-[#E5E7EB] rounded-[24px] p-6 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
                   <h2 className="text-[20px] sm:text-[24px] font-semibold text-gray-900 mb-5 flex items-center gap-3">
-                    <span className="w-8 h-8 bg-[#eef3f0] rounded-lg flex items-center justify-center text-sm">🏛️</span>
+                    <AssetIcon src={pacIcon} alt="" size="w-8 h-8" />
                     PAC Penyelenggara
                   </h2>
                   <div className="bg-[#f6f8f7] border border-[#E5E7EB] rounded-[16px] p-5 flex items-center gap-4">
@@ -309,9 +325,7 @@ function KegiatanDetail() {
 
                   {/* Tanggal */}
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-[#eef3f0] rounded-xl flex items-center justify-center flex-shrink-0">
-                      <span className="text-base">📅</span>
-                    </div>
+                    <AssetIcon src={calendarIcon} alt="" />
                     <div>
                       <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Tanggal</p>
                       <p className="text-[15px] text-gray-900 font-medium mt-0.5">{formatTanggal(data.tanggal)}</p>
@@ -320,9 +334,7 @@ function KegiatanDetail() {
 
                   {/* Waktu */}
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-[#eef3f0] rounded-xl flex items-center justify-center flex-shrink-0">
-                      <span className="text-base">🕐</span>
-                    </div>
+                    <AssetIcon src={clockIcon} alt="" />
                     <div>
                       <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Waktu</p>
                       <p className="text-[15px] text-gray-900 font-medium mt-0.5">{formatWaktu(data.waktu)}</p>
@@ -331,9 +343,7 @@ function KegiatanDetail() {
 
                   {/* Lokasi */}
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-[#eef3f0] rounded-xl flex items-center justify-center flex-shrink-0">
-                      <span className="text-base">📍</span>
-                    </div>
+                    <AssetIcon src={locationIcon} alt="" />
                     <div>
                       <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Lokasi</p>
                       <p className="text-[15px] text-gray-900 font-medium mt-0.5">{data.lokasi}</p>
@@ -342,9 +352,7 @@ function KegiatanDetail() {
 
                   {/* Peserta */}
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-[#eef3f0] rounded-xl flex items-center justify-center flex-shrink-0">
-                      <span className="text-base">👥</span>
-                    </div>
+                    <AssetIcon src={anggotaIcon} alt="" />
                     <div>
                       <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Peserta</p>
                       <p className="text-[15px] text-gray-900 font-medium mt-0.5">{data.peserta} Peserta</p>
@@ -353,9 +361,7 @@ function KegiatanDetail() {
 
                   {/* Status */}
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-[#eef3f0] rounded-xl flex items-center justify-center flex-shrink-0">
-                      <span className="text-base">📊</span>
-                    </div>
+                    <AssetIcon src={pertumbuhanIcon} alt="" />
                     <div>
                       <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Status</p>
                       <div className="mt-1">

@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use App\Models\Kegiatan;
 use App\Models\PAC;
@@ -104,9 +106,56 @@ Route::post('/pac/pengajuan', function (Request $request) {
         'deskripsi' => $request->deskripsi,
     ]);
 
+    $googleSheetSynced = false;
+    $webhookUrl = config('services.google_apps_script.pac_pengajuan_webhook_url');
+
+    if ($webhookUrl) {
+        try {
+            $payload = [
+                'token' => config('services.google_apps_script.pac_pengajuan_webhook_token'),
+                'source' => config('app.name', 'KP-IF-SAKTI'),
+                'submitted_at' => now()->toIso8601String(),
+                'pac' => [
+                    'id' => $pac->id,
+                    'nama_pac' => $pac->nama_pac,
+                    'kecamatan' => $pac->kecamatan,
+                    'status' => $pac->status,
+                    'tanggal_berdiri' => $request->tanggal_berdiri,
+                    'ketua_pac' => $pac->ketua_pac,
+                    'telepon' => $pac->telepon,
+                    'email' => $pac->email,
+                    'desa' => $pac->desa,
+                    'kode_pos' => $pac->kode_pos,
+                    'alamat' => $pac->alamat,
+                    'deskripsi' => $pac->deskripsi,
+                ],
+            ];
+
+            $response = Http::timeout(10)
+                ->withOptions(['allow_redirects' => true])
+                ->asJson()
+                ->post($webhookUrl, $payload);
+            $googleSheetSynced = $response->successful();
+
+            if (! $googleSheetSynced) {
+                Log::warning('Sinkronisasi pengajuan PAC ke Google Sheet gagal.', [
+                    'pac_id' => $pac->id,
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Sinkronisasi pengajuan PAC ke Google Sheet error.', [
+                'pac_id' => $pac->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
     return response()->json([
         'success' => true,
         'message' => 'Pengajuan PAC berhasil dikirim dan sedang menunggu persetujuan admin.',
+        'google_sheet_synced' => $googleSheetSynced,
         'data' => $pac
     ], 201);
 });

@@ -28,10 +28,10 @@ function PengajuanPAC() {
     setLoading(true);
     setAlert(null);
 
-    fetch("/api/pac/pengajuan", {
+    fetch("https://script.google.com/macros/s/AKfycbyvV4fqb4Zd3URFHH_tFOBabt-odyl9HcPZcZo52JPIz7WIANqkCkdvfFH_jp030FN6/exec", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "text/plain;charset=utf-8"
       },
       body: JSON.stringify(formData)
     })

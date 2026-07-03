@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'google_apps_script' => [
+        'pac_pengajuan_webhook_url' => env('GOOGLE_APPS_SCRIPT_WEBHOOK_URL'),
+        'pac_pengajuan_webhook_token' => env('GOOGLE_APPS_SCRIPT_WEBHOOK_TOKEN'),
+    ],
+
 ];
