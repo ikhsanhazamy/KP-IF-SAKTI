@@ -91,48 +91,48 @@ function KegiatanSection() {
   }, []);
 
   return (
-    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16">
+    <section className="bg-[#f6f8f7] py-16 sm:py-20 border-t border-gray-100">
+      <div className="section-container">
 
-      {/* HEADER */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 bg-white border border-[#0F5E3A]/10 text-[#0F5E3A] px-4 py-1.5 rounded-full text-sm font-semibold shadow-xs">
-          Berita & Kegiatan
+        {/* HEADER */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-[#0F5E3A]/8 border border-[#0F5E3A]/20 text-[#0F5E3A] px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold shadow-xs">
+            Berita & Program Kerja
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl font-extrabold mt-4 text-gray-900 tracking-tight">
+            Kegiatan & Dokumentasi
+          </h2>
+
+          <p className="text-gray-600 mt-3 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
+            Kumpulan kegiatan terbaru, program pemberdayaan, dan dokumentasi aktivitas keorganisasian Fatayat NU Sukabumi.
+          </p>
         </div>
 
-        <h2 className="text-3xl font-bold mt-4 text-gray-900 tracking-tight">
-          Kegiatan & Dokumentasi
-        </h2>
-
-        <p className="text-gray-500 mt-2 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
-          Update terbaru mengenai kegiatan, program, dan aktivitas organisasi Fatayat NU Sukabumi
-        </p>
-      </div>
-
-      {/* GRID */}
-      <div className="max-w-[1215px] mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
+        {/* GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {data.map((item, i) => (
             <div
               key={item.id || i}
               onClick={() => item.id && navigate(`/kegiatan/${item.id}`)}
-              className={`bg-white rounded-[24px] overflow-hidden border border-gray-150 shadow-xs hover:shadow-md transition duration-300 ${item.id ? 'cursor-pointer hover:-translate-y-1' : ''} flex flex-col justify-between`}
+              className={`bg-white rounded-3xl overflow-hidden border border-gray-200/80 shadow-xs hover:shadow-xl transition-all duration-300 ${
+                item.id ? 'cursor-pointer hover:-translate-y-1.5 hover:border-[#0F5E3A]/30' : ''
+              } flex flex-col justify-between group`}
             >
 
               {/* IMAGE */}
-              <div className="relative h-[200px] overflow-hidden">
+              <div className="relative h-[210px] overflow-hidden bg-gray-100">
                 <img
                   src={item.img}
-                  className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   alt={item.title}
                 />
 
-                {/* OVERLAY HIJAU */}
-                <div className="absolute inset-0 bg-gradient-to-t from-green-950/30 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
 
                 {/* TAG */}
                 {item.tag && (
-                  <span className="absolute top-4 left-4 bg-white/95 backdrop-blur-xs text-[#0F5E3A] text-xs font-bold px-3.5 py-1.5 rounded-full shadow-xs">
+                  <span className="absolute top-4 left-4 bg-white/95 backdrop-blur-md text-[#0F5E3A] text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md">
                     {item.tag}
                   </span>
                 )}
@@ -141,60 +141,49 @@ function KegiatanSection() {
               {/* CONTENT */}
               <div className="p-6 flex flex-col justify-between flex-1">
                 <div>
-                  <h3 className="font-bold text-gray-900 text-base leading-snug tracking-tight hover:text-[#0F5E3A] transition duration-200">
+                  <h3 className="font-bold text-gray-900 text-base sm:text-lg leading-snug tracking-tight group-hover:text-[#0F5E3A] transition duration-200 line-clamp-2">
                     {item.title}
                   </h3>
 
                   {/* META */}
-                  <div className="mt-4 text-xs font-semibold text-gray-400 space-y-2">
+                  <div className="mt-4 text-xs sm:text-sm font-medium text-gray-600 space-y-2">
                     <p className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                      <Calendar className="w-4 h-4 text-[#0F5E3A] flex-shrink-0" />
                       {item.date}
                     </p>
                     <p className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                      <Users className="w-4 h-4 text-[#0F5E3A] flex-shrink-0" />
                       {item.peserta}
                     </p>
                   </div>
                 </div>
 
                 {/* BUTTON */}
-                <div className="mt-6">
-                  {item.id ? (
-                    <Link
-                      to={`/kegiatan/${item.id}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-full h-[40px] border border-gray-200 rounded-xl text-sm font-semibold hover:bg-[#0F5E3A] hover:text-white hover:border-[#0F5E3A] transition duration-200 flex items-center justify-center gap-1.5 text-gray-700 shadow-2xs cursor-pointer"
-                    >
-                      Selengkapnya
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  ) : (
-                    <button className="w-full h-[40px] border border-gray-200 rounded-xl text-sm font-semibold hover:bg-[#0F5E3A] hover:text-white hover:border-[#0F5E3A] transition duration-200 flex items-center justify-center gap-1.5 text-gray-700 shadow-2xs cursor-pointer">
-                      Selengkapnya
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  )}
+                <div className="mt-6 pt-4 border-t border-gray-100">
+                  <span className="w-full py-2.5 px-4 border border-gray-200 rounded-xl text-sm font-semibold group-hover:bg-[#0F5E3A] group-hover:text-white group-hover:border-[#0F5E3A] transition duration-200 flex items-center justify-center gap-2 text-gray-700">
+                    Selengkapnya
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
+                  </span>
                 </div>
 
               </div>
 
             </div>
           ))}
-
         </div>
-      </div>
 
-      {/* BUTTON BAWAH */}
-      <div className="flex justify-center mt-12">
-        <Link
-          to="/kegiatan"
-          className="bg-[#0F5E3A] text-white px-7 py-3.5 rounded-xl font-bold shadow-md hover:bg-[#126A42] transition cursor-pointer flex items-center gap-2"
-        >
-          Lihat Semua Kegiatan
-        </Link>
-      </div>
+        {/* BUTTON BAWAH */}
+        <div className="flex justify-center mt-12">
+          <Link
+            to="/kegiatan"
+            className="bg-[#0F5E3A] text-white px-8 py-3.5 rounded-xl font-bold shadow-md hover:bg-[#0D4E30] transition duration-200 flex items-center gap-2.5 transform hover:-translate-y-0.5"
+          >
+            Lihat Semua Kegiatan
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+        </div>
 
+      </div>
     </section>
   );
 }

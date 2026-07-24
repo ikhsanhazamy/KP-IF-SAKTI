@@ -6,28 +6,53 @@
 @custom-variant dark (&:is(.dark *));
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #1F2937;
 }
+
+/* Fatayat NU Design System Tokens */
+:root {
+  --brand-green: #0F5E3A;
+  --brand-green-hover: #0D4E30;
+  --brand-green-light: #EBF6F0;
+  --brand-green-border: rgba(15, 94, 58, 0.15);
+}
+
+.bg-brand-green { background-color: var(--brand-green); }
+.bg-brand-green-hover:hover { background-color: var(--brand-green-hover); }
+.bg-brand-green-light { background-color: var(--brand-green-light); }
+.text-brand-green { color: var(--brand-green); }
+.border-brand-green { border-color: var(--brand-green); }
 
 .footer-gradient {
   background: linear-gradient(
     135deg,
-    #0F5E3A 0%,
-    #1A6741 7.14%,
-    #237148 14.29%,
-    #2C7B4F 21.43%,
-    #358556 28.57%,
-    #3E8F5D 35.71%,
-    #469965 42.86%,
-    #4FA36C 50%,
-    #469965 57.14%,
-    #3E8F5D 64.29%,
-    #358556 71.43%,
-    #2C7B4F 78.57%,
-    #237148 85.71%,
-    #1A6741 92.86%,
-    #0F5E3A 100%
+    #0B472C 0%,
+    #0F5E3A 25%,
+    #17754A 50%,
+    #0F5E3A 75%,
+    #0B472C 100%
   );
+}
+
+.section-container {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .section-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .section-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
 @theme inline {

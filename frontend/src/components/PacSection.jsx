@@ -80,51 +80,49 @@ function PacSection() {
   }, []);
 
   return (
-    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-12 sm:py-16">
+    <section className="bg-white py-16 sm:py-20 border-t border-gray-100">
+      <div className="section-container">
 
-      {/* HEADER */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 bg-white border border-[#0F5E3A]/10 text-[#0F5E3A] px-4 py-1.5 rounded-full text-sm font-semibold shadow-xs">
-          Informasi PAC
+        {/* HEADER */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-[#0F5E3A]/8 border border-[#0F5E3A]/20 text-[#0F5E3A] px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold shadow-xs">
+            Petaan Wilayah
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl font-extrabold mt-4 text-gray-900 tracking-tight">
+            Daftar Pimpinan Anak Cabang (PAC)
+          </h2>
+
+          <p className="text-gray-600 mt-3 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
+            Informasi keaktifan dan jumlah anggota PAC Fatayat NU di kecamatan se-Kabupaten Sukabumi.
+          </p>
         </div>
 
-        <h2 className="text-3xl font-bold mt-4 text-gray-900 tracking-tight">
-          Daftar Pimpinan Anak Cabang
-        </h2>
-
-        <p className="text-gray-500 mt-2 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
-          Informasi lengkap mengenai PAC Fatayat NU di seluruh wilayah Kabupaten Sukabumi
-        </p>
-      </div>
-
-      {/* GRID WRAPPER */}
-      <div className="max-w-[1215px] mx-auto">
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
+        {/* GRID WRAPPER */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {data.map((item, i) => (
             <div
               key={i}
-              className="bg-white rounded-[24px] p-6 border border-gray-150 flex flex-col justify-between shadow-xs hover:shadow-md transition duration-300"
+              className="bg-white rounded-3xl p-6 sm:p-7 border border-gray-200/80 flex flex-col justify-between shadow-xs hover:shadow-xl hover:border-[#0F5E3A]/30 transition-all duration-300 group"
             >
 
               {/* HEADER CARD */}
               <div className="flex justify-between items-start gap-4">
                 <div>
-                  <h3 className="font-bold text-gray-900 text-lg tracking-tight">
+                  <h3 className="font-bold text-gray-900 text-lg tracking-tight group-hover:text-[#0F5E3A] transition">
                     {item.name}
                   </h3>
-                  <p className="text-xs text-gray-400 font-semibold mt-1 flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+                  <p className="text-xs text-gray-600 font-semibold mt-1 flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-[#0F5E3A] flex-shrink-0" />
                     {item.kec}
                   </p>
                 </div>
 
                 <span
-                  className={`text-xs px-3 py-1.5 rounded-full font-bold shadow-2xs ${
+                  className={`text-xs px-3 py-1 rounded-full font-bold shadow-2xs ${
                     item.aktif
-                      ? "bg-[#E6F3EC] text-[#0F5E3A]"
-                      : "bg-gray-100 text-gray-500"
+                      ? "bg-[#0F5E3A]/10 text-[#0F5E3A] border border-[#0F5E3A]/20"
+                      : "bg-gray-100 text-gray-600"
                   }`}
                 >
                   {item.aktif ? "Aktif" : "Tidak Aktif"}
@@ -135,36 +133,36 @@ function PacSection() {
               <div className="flex justify-between mt-6 gap-3">
 
                 {/* ANGGOTA BOX */}
-                <div className="bg-[#f6f8f7] rounded-2xl flex-1 h-[90px] flex flex-col items-center justify-center border border-gray-100 hover:bg-white hover:border-gray-200 transition duration-200">
+                <div className="bg-[#f6f8f7] rounded-2xl flex-1 py-3 flex flex-col items-center justify-center border border-gray-100 group-hover:bg-[#0F5E3A]/5 transition duration-200">
                   <Users className="w-4 h-4 text-[#0F5E3A] mb-1" />
                   <p className="text-base font-black text-gray-900 leading-none">{item.anggota}</p>
-                  <p className="text-[10px] text-gray-400 font-bold mt-1.5 uppercase tracking-wider">Anggota</p>
+                  <p className="text-[10px] text-gray-500 font-bold mt-1.5 uppercase tracking-wider">Anggota</p>
                 </div>
 
                 {/* KEGIATAN BOX */}
-                <div className="bg-[#f6f8f7] rounded-2xl flex-1 h-[90px] flex flex-col items-center justify-center border border-gray-100 hover:bg-white hover:border-gray-200 transition duration-200">
+                <div className="bg-[#f6f8f7] rounded-2xl flex-1 py-3 flex flex-col items-center justify-center border border-gray-100 group-hover:bg-[#0F5E3A]/5 transition duration-200">
                   <Calendar className="w-4 h-4 text-[#0F5E3A] mb-1" />
                   <p className="text-base font-black text-gray-900 leading-none">{item.kegiatan}</p>
-                  <p className="text-[10px] text-gray-400 font-bold mt-1.5 uppercase tracking-wider">Kegiatan</p>
+                  <p className="text-[10px] text-gray-500 font-bold mt-1.5 uppercase tracking-wider">Kegiatan</p>
                 </div>
 
                 {/* GROWTH BOX */}
-                <div className="bg-[#f6f8f7] rounded-2xl flex-1 h-[90px] flex flex-col items-center justify-center border border-gray-100 hover:bg-white hover:border-gray-200 transition duration-200">
+                <div className="bg-[#f6f8f7] rounded-2xl flex-1 py-3 flex flex-col items-center justify-center border border-gray-100 group-hover:bg-[#0F5E3A]/5 transition duration-200">
                   {item.growth.includes("-") ? (
                     <TrendingDown className="w-4 h-4 text-red-500 mb-1" />
                   ) : (
-                    <TrendingUp className="w-4 h-4 text-green-600 mb-1" />
+                    <TrendingUp className="w-4 h-4 text-emerald-600 mb-1" />
                   )}
                   <p
                     className={`text-base font-black leading-none ${
                       item.growth.includes("-")
                         ? "text-red-500"
-                        : "text-green-600"
+                        : "text-emerald-600"
                     }`}
                   >
                     {item.growth}
                   </p>
-                  <p className="text-[10px] text-gray-400 font-bold mt-1.5 uppercase tracking-wider">Growth</p>
+                  <p className="text-[10px] text-gray-500 font-bold mt-1.5 uppercase tracking-wider">Growth</p>
                 </div>
 
               </div>
@@ -172,28 +170,26 @@ function PacSection() {
               {/* BUTTON */}
               <button
                 onClick={() => navigate(`/data-pac?search=${item.name.replace("PAC ", "")}`)}
-                className="w-full h-[42px] border border-gray-200 rounded-xl text-sm font-semibold hover:bg-[#0F5E3A] hover:text-white hover:border-[#0F5E3A] transition mt-6 cursor-pointer text-gray-700 flex items-center justify-center shadow-2xs"
+                className="w-full py-2.5 border border-gray-200 rounded-xl text-sm font-semibold hover:bg-[#0F5E3A] hover:text-white hover:border-[#0F5E3A] transition mt-6 cursor-pointer text-gray-700 flex items-center justify-center shadow-2xs"
               >
-                Lihat Detail
+                Lihat Detail PAC
               </button>
 
             </div>
           ))}
+        </div>
 
+        {/* BUTTON BAWAH */}
+        <div className="flex justify-center mt-12">
+          <Link
+            to="/data-pac"
+            className="bg-[#0F5E3A] text-white px-8 py-3.5 rounded-xl font-bold shadow-md hover:bg-[#0D4E30] transition duration-200 flex items-center justify-center cursor-pointer transform hover:-translate-y-0.5"
+          >
+            Lihat Semua PAC
+          </Link>
         </div>
 
       </div>
-
-      {/* BUTTON BAWAH */}
-      <div className="flex justify-center mt-12">
-        <Link
-          to="/data-pac"
-          className="bg-[#0F5E3A] text-white px-7 py-3.5 rounded-xl font-bold shadow-md hover:bg-[#126A42] transition cursor-pointer flex items-center justify-center"
-        >
-          Lihat Semua PAC
-        </Link>
-      </div>
-
     </section>
   );
 }

@@ -78,7 +78,7 @@ function PengajuanPAC() {
           {/* Header */}
           <div className="text-center mb-10 sm:mb-12">
             <div className="inline-flex items-center gap-2 bg-[#eef3f0] text-[#1f7a4d] px-4 py-1 rounded-full text-sm font-medium">
-              ✍️ Formulir Pendaftaran
+              Formulir Pendaftaran
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 mt-4">
               Pengajuan Data PAC Baru
@@ -91,11 +91,10 @@ function PengajuanPAC() {
           {/* Alert Notification */}
           {alert && (
             <div
-              className={`p-5 rounded-2xl mb-8 flex items-start gap-3 border ${
-                alert.type === "success"
+              className={`p-5 rounded-2xl mb-8 flex items-start gap-3 border ${alert.type === "success"
                   ? "bg-green-50 text-green-800 border-green-200"
                   : "bg-red-50 text-red-800 border-red-200"
-              }`}
+                }`}
             >
               <span className="text-xl">{alert.type === "success" ? "✅" : "⚠️"}</span>
               <p className="text-sm font-medium">{alert.message}</p>
@@ -105,7 +104,7 @@ function PengajuanPAC() {
           {/* Form Card */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-gray-200 shadow-sm">
             <form onSubmit={handleSubmit} className="space-y-6">
-              
+
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800 border-b border-gray-100 pb-4">
                 Informasi PAC & Organisasi
               </h2>
