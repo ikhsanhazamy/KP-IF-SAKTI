@@ -150,16 +150,25 @@ class PengaturanController extends Controller
             mkdir($backupDir, 0755, true);
         }
 
+        $dbHost = config('database.connections.mysql.host', '127.0.0.1');
+        $dbPort = config('database.connections.mysql.port', '3306');
+        $dbUser = config('database.connections.mysql.username', 'root');
+        $dbPass = config('database.connections.mysql.password', '');
+        $dbName = config('database.connections.mysql.database', 'laravel');
+
         $filePath = $backupDir.'/'.$filename;
         $command = sprintf(
-            'mysqldump -u%s %s %s > "%s"',
-            env('DB_USERNAME'),
-            env('DB_PASSWORD') ? '-p'.env('DB_PASSWORD') : '',
-            env('DB_DATABASE'),
+            'mysqldump -h%s -P%s -u%s %s %s > "%s"',
+            $dbHost,
+            $dbPort,
+            $dbUser,
+            $dbPass !== '' ? '-p'.escapeshellarg($dbPass) : '',
+            $dbName,
             $filePath
         );
 
         $process = Process::fromShellCommandline($command);
+        $process->setTimeout(120);
         $process->run();
 
         if (! $process->isSuccessful()) {
@@ -167,6 +176,47 @@ class PengaturanController extends Controller
         }
 
         return response()->download($filePath);
+    }
+
+    public function restoreDatabase(Request $request)
+    {
+        $request->validate([
+            'backup_file' => ['required', 'file', 'max:51200'],
+        ]);
+
+        $file = $request->file('backup_file');
+        $extension = strtolower($file->getClientOriginalExtension());
+
+        if ($extension !== 'sql') {
+            return back()->with('error', 'File harus berformat .sql');
+        }
+
+        $dbHost = config('database.connections.mysql.host', '127.0.0.1');
+        $dbPort = config('database.connections.mysql.port', '3306');
+        $dbUser = config('database.connections.mysql.username', 'root');
+        $dbPass = config('database.connections.mysql.password', '');
+        $dbName = config('database.connections.mysql.database', 'laravel');
+
+        $filePath = $file->getRealPath();
+        $command = sprintf(
+            'mysql -h%s -P%s -u%s %s %s < "%s"',
+            $dbHost,
+            $dbPort,
+            $dbUser,
+            $dbPass !== '' ? '-p'.escapeshellarg($dbPass) : '',
+            $dbName,
+            $filePath
+        );
+
+        $process = Process::fromShellCommandline($command);
+        $process->setTimeout(300);
+        $process->run();
+
+        if (! $process->isSuccessful()) {
+            return back()->with('error', 'Restore database gagal: '.$process->getErrorOutput());
+        }
+
+        return back()->with('success', 'Database berhasil di-restore');
     }
 
     public function updatePassword(Request $request)

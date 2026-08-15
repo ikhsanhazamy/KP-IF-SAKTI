@@ -58,4 +58,6 @@ fi
 
 php artisan migrate --force
 php artisan db:seed --class=AdminUserSeeder --force
-php artisan serve --host=0.0.0.0 --port=8000
+
+# Start Nginx + PHP-FPM via Supervisor
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

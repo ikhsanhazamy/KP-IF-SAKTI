@@ -13,6 +13,17 @@ export default defineConfig({
     },
   },
   root: '.',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-map': ['maplibre-gl'],
+          'vendor-icons': ['react-icons', 'lucide-react'],
+        },
+      },
+    },
+  },
   server: {
     host: '0.0.0.0',
     proxy: {

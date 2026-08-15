@@ -23,6 +23,15 @@ services:
       - /workspace/node_modules
     command: sh -c "npm install && npm run build"
 
+  frontend-build:
+    image: node:22-alpine
+    working_dir: /workspace
+    volumes:
+      - ./frontend:/workspace
+      - frontend_dist:/workspace/dist
+      - /workspace/node_modules
+    command: sh -c "npm install && npm run build"
+
   app:
     build:
       context: .
@@ -30,11 +39,12 @@ services:
     volumes:
       - ./backend:/var/www/html
       - /var/www/html/vendor
+      - frontend_dist:/var/www/frontend
     ports:
-      - "8000:8000"
+      - "8000:80"
     environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
+      - APP_ENV=production
+      - APP_DEBUG=false
       - APP_URL=http://localhost:8000
       - DB_CONNECTION=mysql
       - DB_HOST=db
@@ -50,21 +60,9 @@ services:
         condition: service_healthy
       backend-assets:
         condition: service_completed_successfully
-
-  node:
-    image: node:22-alpine
-    working_dir: /workspace
-    volumes:
-      - ./frontend:/workspace
-      - /workspace/node_modules
-    ports:
-      - "5173:5173"
-    environment:
-      # Saat berjalan di Docker, API di-proxy ke service "app"
-      - VITE_API_TARGET=http://app:8000
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
-    depends_on:
-      - app
+      frontend-build:
+        condition: service_completed_successfully
 
 volumes:
   db_data:
+  frontend_dist:

@@ -23,7 +23,8 @@ Route::view('/', 'login');
 Route::view('/login', 'login')
     ->name('login');
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware('throttle:login');
 
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');

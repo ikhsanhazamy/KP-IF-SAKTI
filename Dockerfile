@@ -1,6 +1,6 @@
-FROM php:8.2-cli
+FROM php:8.2-fpm
 
-# Install system dependencies
+# Install system dependencies (including Nginx & Supervisor)
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -16,6 +16,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     sqlite3 \
     libsqlite3-dev \
+    nginx \
+    supervisor \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -55,8 +57,20 @@ RUN composer dump-autoload --optimize
 # Fix storage permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-COPY docker/app-entrypoint.sh /usr/local/bin/app-entrypoint.sh
+# Nginx & Supervisor config
+COPY docker/nginx/default.conf /etc/nginx/sites-available/default
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-EXPOSE 8000
+# Remove default nginx config that may conflict
+RUN rm -f /etc/nginx/sites-enabled/default \
+    && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+# Create frontend directory for static files
+RUN mkdir -p /var/www/frontend
+
+COPY docker/app-entrypoint.sh /usr/local/bin/app-entrypoint.sh
+RUN chmod +x /usr/local/bin/app-entrypoint.sh
+
+EXPOSE 80
 
 CMD ["sh", "/usr/local/bin/app-entrypoint.sh"]
