@@ -77,4 +77,15 @@ class FrontendStatsApiTest extends TestCase
             ->assertJsonMissingPath('kegiatan_bulan_ini')
             ->assertJsonMissingPath('total_kegiatan');
     }
+
+    public function test_api_routes_are_protected_by_rate_limiter(): void
+    {
+        for ($i = 0; $i < 60; $i++) {
+            $response = $this->getJson('/api/stats');
+            $response->assertOk();
+        }
+
+        $blocked = $this->getJson('/api/stats');
+        $blocked->assertStatus(429);
+    }
 }

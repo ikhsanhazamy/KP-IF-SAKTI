@@ -14,148 +14,150 @@ use App\Models\Anggota;
 |--------------------------------------------------------------------------
 */
 
-// GET KEGIATAN (dengan filter & search)
-Route::get('/kegiatan', function (Request $request) {
-    $query = Kegiatan::query();
+Route::middleware('throttle:api')->group(function () {
+    // GET KEGIATAN (dengan filter & search)
+    Route::get('/kegiatan', function (Request $request) {
+        $query = Kegiatan::query();
 
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where(function ($q) use ($search) {
-            $q->where('judul', 'like', "%{$search}%")
-              ->orWhere('deskripsi', 'like', "%{$search}%");
-        });
-    }
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+            });
+        }
 
-    if ($request->filled('category') && $request->category !== 'Semua') {
-        $query->whereRaw('LOWER(kategori) = ?', [strtolower($request->category)]);
-    }
+        if ($request->filled('category') && $request->category !== 'Semua') {
+            $query->whereRaw('LOWER(kategori) = ?', [strtolower($request->category)]);
+        }
 
-    return response()->json($query->latest()->get());
-});
+        return response()->json($query->latest()->get());
+    });
 
-// GET DETAIL KEGIATAN (single, with PAC relation)
-Route::get('/kegiatan/{id}', function ($id) {
-    $kegiatan = Kegiatan::with('pac:id,nama_pac,kecamatan')->findOrFail($id);
-    return response()->json($kegiatan);
-});
+    // GET DETAIL KEGIATAN (single, with PAC relation)
+    Route::get('/kegiatan/{id}', function ($id) {
+        $kegiatan = Kegiatan::with('pac:id,nama_pac,kecamatan')->findOrFail($id);
+        return response()->json($kegiatan);
+    });
 
-// GET ALL PAC
-Route::get('/pac', function () {
-    return response()->json(PAC::latest()->get());
-});
+    // GET ALL PAC
+    Route::get('/pac', function () {
+        return response()->json(PAC::latest()->get());
+    });
 
-// GET SUMMARY STATS
-Route::get('/stats', function () {
-    $totalPAC = PAC::count();
-    $pacAktif = PAC::where('status', 'aktif')->count();
-    $totalAnggota = Anggota::count();
-    $anggotaAktif = Anggota::where('status', 'aktif')->count();
-    $totalKecamatan = PAC::whereNotNull('kecamatan')
-        ->where('kecamatan', '!=', '')
-        ->distinct('kecamatan')
-        ->count('kecamatan');
-    $anggotaTerverifikasi = Anggota::whereNotNull('email')
-        ->whereNotNull('telepon')
-        ->whereNotNull('tanggal_lahir')
-        ->whereNotNull('pendidikan')
-        ->whereNotNull('profesi')
-        ->count();
-    $tingkatVerifikasi = $totalAnggota > 0
-        ? (int) round(($anggotaTerverifikasi / $totalAnggota) * 100)
-        : 0;
+    // GET SUMMARY STATS
+    Route::get('/stats', function () {
+        $totalPAC = PAC::count();
+        $pacAktif = PAC::where('status', 'aktif')->count();
+        $totalAnggota = Anggota::count();
+        $anggotaAktif = Anggota::where('status', 'aktif')->count();
+        $totalKecamatan = PAC::whereNotNull('kecamatan')
+            ->where('kecamatan', '!=', '')
+            ->distinct('kecamatan')
+            ->count('kecamatan');
+        $anggotaTerverifikasi = Anggota::whereNotNull('email')
+            ->whereNotNull('telepon')
+            ->whereNotNull('tanggal_lahir')
+            ->whereNotNull('pendidikan')
+            ->whereNotNull('profesi')
+            ->count();
+        $tingkatVerifikasi = $totalAnggota > 0
+            ? (int) round(($anggotaTerverifikasi / $totalAnggota) * 100)
+            : 0;
 
-    return response()->json([
-        'total_pac' => $totalPAC,
-        'pac_aktif' => $pacAktif,
-        'total_anggota' => $totalAnggota,
-        'anggota_aktif' => $anggotaAktif,
-        'total_kecamatan' => $totalKecamatan,
-        'tingkat_verifikasi' => $tingkatVerifikasi,
-        'kepuasan' => $tingkatVerifikasi,
-    ]);
-});
+        return response()->json([
+            'total_pac' => $totalPAC,
+            'pac_aktif' => $pacAktif,
+            'total_anggota' => $totalAnggota,
+            'anggota_aktif' => $anggotaAktif,
+            'total_kecamatan' => $totalKecamatan,
+            'tingkat_verifikasi' => $tingkatVerifikasi,
+            'kepuasan' => $tingkatVerifikasi,
+        ]);
+    });
 
-// POST PENGAJUAN PAC BARU
-Route::post('/pac/pengajuan', function (Request $request) {
-    $request->validate([
-        'nama_pac' => 'required|string|max:255',
-        'kecamatan' => 'required|string|max:255',
-        'tanggal_berdiri' => 'required|date',
-        'alamat' => 'nullable|string',
-        'desa' => 'nullable|string|max:255',
-        'kode_pos' => 'nullable|string|max:10',
-        'ketua_pac' => 'required|string|max:255',
-        'telepon' => 'required|string|max:20',
-        'email' => 'nullable|email|max:255',
-        'deskripsi' => 'nullable|string',
-    ]);
+    // POST PENGAJUAN PAC BARU
+    Route::post('/pac/pengajuan', function (Request $request) {
+        $request->validate([
+            'nama_pac' => 'required|string|max:255',
+            'kecamatan' => 'required|string|max:255',
+            'tanggal_berdiri' => 'required|date',
+            'alamat' => 'nullable|string',
+            'desa' => 'nullable|string|max:255',
+            'kode_pos' => 'nullable|string|max:10',
+            'ketua_pac' => 'required|string|max:255',
+            'telepon' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'deskripsi' => 'nullable|string',
+        ]);
 
-    $pac = PAC::create([
-        'nama_pac' => $request->nama_pac,
-        'kecamatan' => $request->kecamatan,
-        'status' => 'pending', // Default status pending untuk pengajuan baru
-        'tanggal_berdiri' => $request->tanggal_berdiri,
-        'alamat' => $request->alamat,
-        'desa' => $request->desa,
-        'kode_pos' => $request->kode_pos,
-        'ketua_pac' => $request->ketua_pac,
-        'telepon' => $request->telepon,
-        'email' => $request->email,
-        'jumlah_anggota' => 0,
-        'total_kegiatan' => 0,
-        'deskripsi' => $request->deskripsi,
-    ]);
+        $pac = PAC::create([
+            'nama_pac' => $request->nama_pac,
+            'kecamatan' => $request->kecamatan,
+            'status' => 'pending', // Default status pending untuk pengajuan baru
+            'tanggal_berdiri' => $request->tanggal_berdiri,
+            'alamat' => $request->alamat,
+            'desa' => $request->desa,
+            'kode_pos' => $request->kode_pos,
+            'ketua_pac' => $request->ketua_pac,
+            'telepon' => $request->telepon,
+            'email' => $request->email,
+            'jumlah_anggota' => 0,
+            'total_kegiatan' => 0,
+            'deskripsi' => $request->deskripsi,
+        ]);
 
-    $googleSheetSynced = false;
-    $webhookUrl = config('services.google_apps_script.pac_pengajuan_webhook_url');
+        $googleSheetSynced = false;
+        $webhookUrl = config('services.google_apps_script.pac_pengajuan_webhook_url');
 
-    if ($webhookUrl) {
-        try {
-            $payload = [
-                'token' => config('services.google_apps_script.pac_pengajuan_webhook_token'),
-                'source' => config('app.name', 'KP-IF-SAKTI'),
-                'submitted_at' => now()->toIso8601String(),
-                'pac' => [
-                    'id' => $pac->id,
-                    'nama_pac' => $pac->nama_pac,
-                    'kecamatan' => $pac->kecamatan,
-                    'status' => $pac->status,
-                    'tanggal_berdiri' => $request->tanggal_berdiri,
-                    'ketua_pac' => $pac->ketua_pac,
-                    'telepon' => $pac->telepon,
-                    'email' => $pac->email,
-                    'desa' => $pac->desa,
-                    'kode_pos' => $pac->kode_pos,
-                    'alamat' => $pac->alamat,
-                    'deskripsi' => $pac->deskripsi,
-                ],
-            ];
+        if ($webhookUrl) {
+            try {
+                $payload = [
+                    'token' => config('services.google_apps_script.pac_pengajuan_webhook_token'),
+                    'source' => config('app.name', 'KP-IF-SAKTI'),
+                    'submitted_at' => now()->toIso8601String(),
+                    'pac' => [
+                        'id' => $pac->id,
+                        'nama_pac' => $pac->nama_pac,
+                        'kecamatan' => $pac->kecamatan,
+                        'status' => $pac->status,
+                        'tanggal_berdiri' => $request->tanggal_berdiri,
+                        'ketua_pac' => $pac->ketua_pac,
+                        'telepon' => $pac->telepon,
+                        'email' => $pac->email,
+                        'desa' => $pac->desa,
+                        'kode_pos' => $pac->kode_pos,
+                        'alamat' => $pac->alamat,
+                        'deskripsi' => $pac->deskripsi,
+                    ],
+                ];
 
-            $response = Http::timeout(10)
-                ->withOptions(['allow_redirects' => true])
-                ->asJson()
-                ->post($webhookUrl, $payload);
-            $googleSheetSynced = $response->successful();
+                $response = Http::timeout(10)
+                    ->withOptions(['allow_redirects' => true])
+                    ->asJson()
+                    ->post($webhookUrl, $payload);
+                $googleSheetSynced = $response->successful();
 
-            if (! $googleSheetSynced) {
-                Log::warning('Sinkronisasi pengajuan PAC ke Google Sheet gagal.', [
+                if (! $googleSheetSynced) {
+                    Log::warning('Sinkronisasi pengajuan PAC ke Google Sheet gagal.', [
+                        'pac_id' => $pac->id,
+                        'status' => $response->status(),
+                        'body' => $response->body(),
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Sinkronisasi pengajuan PAC ke Google Sheet error.', [
                     'pac_id' => $pac->id,
-                    'status' => $response->status(),
-                    'body' => $response->body(),
+                    'error' => $e->getMessage(),
                 ]);
             }
-        } catch (\Throwable $e) {
-            Log::warning('Sinkronisasi pengajuan PAC ke Google Sheet error.', [
-                'pac_id' => $pac->id,
-                'error' => $e->getMessage(),
-            ]);
         }
-    }
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Pengajuan PAC berhasil dikirim dan sedang menunggu persetujuan admin.',
-        'google_sheet_synced' => $googleSheetSynced,
-        'data' => $pac
-    ], 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Pengajuan PAC berhasil dikirim dan sedang menunggu persetujuan admin.',
+            'google_sheet_synced' => $googleSheetSynced,
+            'data' => $pac
+        ], 201);
+    });
 });
