@@ -137,4 +137,30 @@ class PengaturanTest extends TestCase
         $this->assertTrue($settings->anggota_notification);
         $this->assertTrue($settings->pac_notification);
     }
+
+    public function test_user_can_backup_and_restore_sqlite_database(): void
+    {
+        $user = User::factory()->create();
+
+        // Test Backup
+        $response = $this->actingAs($user)->post(route('backup.database'));
+        $response->assertOk();
+        $response->assertHeader('content-disposition');
+
+        // Test Restore with SQLite file
+        $tempDb = tempnam(sys_get_temp_dir(), 'test_restore_');
+        file_put_contents($tempDb, 'SQLite format 3');
+        $uploadedFile = new UploadedFile($tempDb, 'backup.sqlite', 'application/x-sqlite3', null, true);
+
+        $restoreResponse = $this->actingAs($user)->post(route('restore.database'), [
+            'backup_file' => $uploadedFile,
+        ]);
+
+        $restoreResponse->assertRedirect();
+        $restoreResponse->assertSessionHas('success');
+
+        if (file_exists($tempDb)) {
+            @unlink($tempDb);
+        }
+    }
 }
