@@ -5,6 +5,7 @@ import { useState } from "react";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const adminLoginUrl = import.meta.env.VITE_ADMIN_URL || "/login";
 
   return (
     <nav className="w-full bg-[#f6f8f7]/90 backdrop-blur-md border-b border-gray-200/80 sticky top-0 z-50 transition-all duration-200">
@@ -53,7 +54,7 @@ function Navbar() {
 
         {/* RIGHT - ACTION BUTTON */}
         <div className="hidden md:flex items-center">
-          <a href="http://localhost:8000/login" target="_blank" rel="noopener noreferrer">
+          <a href={adminLoginUrl}>
             <button className="px-5 py-2.5 bg-[#0F5E3A] text-white rounded-xl text-sm font-semibold hover:bg-[#0D4E30] hover:shadow-md transition-all duration-200 cursor-pointer flex items-center gap-2">
               Admin Login
             </button>
@@ -94,7 +95,7 @@ function Navbar() {
           ))}
 
           <div className="mt-2 pt-2 border-t border-gray-100">
-            <a href="http://localhost:8000/login" target="_blank" rel="noopener noreferrer">
+            <a href={adminLoginUrl}>
               <button className="w-full py-3 bg-[#0F5E3A] text-white rounded-xl text-sm font-semibold hover:bg-[#0D4E30] transition">
                 Admin Login
               </button>
