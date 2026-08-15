@@ -120,4 +120,47 @@ class PACManagementTest extends TestCase
             ->assertSee('Akan Expire')
             ->assertSee('Alumni LKD');
     }
+
+    public function test_total_kecamatan_menghitung_kecamatan_secara_unik(): void
+    {
+        $user = User::factory()->create();
+
+        PAC::create([
+            'nama_pac' => 'PAC Cibadak 1',
+            'kecamatan' => 'Cibadak',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2026-01-01',
+            'alamat' => 'Alamat 1',
+            'desa' => 'Desa 1',
+            'ketua_pac' => 'Ketua 1',
+            'telepon' => '081234567891',
+        ]);
+
+        PAC::create([
+            'nama_pac' => 'PAC Cibadak 2',
+            'kecamatan' => 'Cibadak',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2026-01-02',
+            'alamat' => 'Alamat 2',
+            'desa' => 'Desa 2',
+            'ketua_pac' => 'Ketua 2',
+            'telepon' => '081234567892',
+        ]);
+
+        PAC::create([
+            'nama_pac' => 'PAC Cisaat',
+            'kecamatan' => 'Cisaat',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2026-01-03',
+            'alamat' => 'Alamat 3',
+            'desa' => 'Desa 3',
+            'ketua_pac' => 'Ketua 3',
+            'telepon' => '081234567893',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('pac.index'));
+        $response->assertOk();
+        $response->assertViewHas('totalPAC', 3);
+        $response->assertViewHas('totalKecamatan', 2);
+    }
 }

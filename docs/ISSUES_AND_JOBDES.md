@@ -1,80 +1,94 @@
 # Pembagian Jobdesk & Daftar Issue Repository (Antara Backend & Frontend)
 
-Dokumen ini memetakan seluruh bug yang teridentifikasi ke dalam bentuk **Issue Template** siap pakai untuk repositori (GitHub/GitLab) serta membagi tanggung jawab pengerjaannya antara developer **Backend** (Laravel/Blade) dan **Frontend** (React/SPA).
+Dokumen ini memetakan seluruh temuan bug dan hasil audit ke dalam bentuk **Daftar GitHub Issues** yang aktif di repositori `ikhsanhazamy/KP-IF-SAKTI`, beserta pembagian tanggung jawab antara developer **Backend** (Laravel/Blade) dan **Frontend** (React/SPA).
 
 ---
 
-## 🗺️ Matriks Pembagian Kerja (Job Description Matrix)
+## 🗺️ Matriks Issue Aktif (Active Issues Matrix)
 
-| ID Bug | Deskripsi Singkat | Jenis Pekerjaan | Penanggung Jawab | File Terkait |
-|---|---|---|---|---|
-| **Bug #10** | Migrasi kosong kolom profil user | Database / Migration | **Backend** | `backend/database/migrations/..._add_profile_columns_to_users_table.php` |
-| **Bug #11** | `$fillable` Model `User` tidak lengkap | Model / Mass Assignment | **Backend** | `backend/app/Models/User.php` |
-| **Bug #12** | Route mismatch "Hapus Foto" (DELETE vs POST) | View & Routing | **Backend** | `backend/resources/views/pengaturan/profil.blade.php`<br>`backend/routes/web.php` |
-| **Bug #13** | Form restore database tidak memiliki input file & enctype | View / Blade Form | **Backend** | `backend/resources/views/pengaturan/sistem.blade.php` |
-| **Bug #14** | Ketiadaan validasi di `KegiatanController@update` | Controller / Security | **Backend** | `backend/app/Http/Controllers/KegiatanController.php` |
-| **Bug #15** | Bug desinkronisasi `total_kegiatan` saat hapus PAC | Controller / Logic | **Backend** | `backend/app/Http/Controllers/KegiatanController.php` |
-| **Bug #16** | Navigasi `<a>` tag memicu reload halaman pada React | React Navigation | **Frontend** | `frontend/src/Pages/DataPAC.jsx` |
+| Issue GitHub | Prioritas | Tipe | Deskripsi Singkat | PIC | File Terkait |
+|---|---|---|---|---|---|
+| [**#24**](https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/24) | **P1 (High)** | Bug | Perhitungan `totalKecamatan` di PACController mengabaikan `distinct` | **Backend** | `backend/app/Http/Controllers/PACController.php` |
+| [**#25**](https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/25) | **P1 (High)** | Bug | Link "Admin Login" di Navbar Frontend hardcoded ke `localhost:8000` | **Frontend** | `frontend/src/components/Navbar.jsx` |
+| [**#26**](https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/26) | **P2 (Medium)** | Security | Penerapan middleware rate limiting (`throttle:api`) pada rute publik API | **Backend** | `backend/routes/api.php`<br>`backend/bootstrap/app.php` |
+| [**#27**](https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/27) | **P2 (Medium)** | Enhancement | Dukungan driver SQLite pada fitur Backup dan Restore Database | **Backend** | `backend/app/Http/Controllers/PengaturanController.php` |
+| [**#28**](https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/28) | **P3 (Low)** | Performance | Optimasi lazy loading komponen MapLibre GL (`MapSection`) | **Frontend** | `frontend/src/components/MapSection.jsx`<br>`frontend/src/components/PopupExample.jsx` |
+| [**#29**](https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/29) | **P3 (Low)** | Clean Code | Pembersihan file orphaned (views usang, migrasi kosong, dead imports) | **Fullstack** | `backend/resources/views/*`<br>`frontend/src/components/Card.jsx` |
 
 ---
 
-## 🛠️ Detail Issue Templates - BACKEND (Laravel)
+## 🛠️ Detail Issue - BACKEND (Laravel)
 
-### [Issue BE-10] Perbaikan Migrasi Kolom Profil User
-* **Deskripsi**: File migrasi `add_profile_columns_to_users_table.php` dibuat kosong tanpa mendefinisikan kolom `phone`, `jabatan`, dan `photo`.
+### [Issue #24] [BE] Bug: Perhitungan `totalKecamatan` di PACController Mengabaikan distinct
+* **Prioritas**: **P1 (Tinggi)**
+* **Link GitHub**: https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/24
+* **Deskripsi**: Di `backend/app/Http/Controllers/PACController.php:38`, query `$totalKecamatan = PAC::distinct('kecamatan')->count();` mengabaikan kolom distinct sehingga menghitung seluruh baris tabel PAC.
 * **Kriteria Penerimaan (Acceptance Criteria)**:
-  - [ ] Lengkapi method `up()` pada migrasi untuk menambahkan kolom `phone`, `jabatan`, dan `photo` secara nullable ke tabel `users`.
-  - [ ] Lengkapi method `down()` untuk menjamin migrasi dapat di-rollback dengan aman (`dropColumn`).
-  - [ ] Jalankan `php artisan migrate` dan pastikan schema database SQLite terupdate.
+  - [ ] Ubah query menjadi `PAC::distinct('kecamatan')->count('kecamatan');`
+  - [ ] Pastikan nilai statistik pada tampilan admin merefleksikan jumlah kecamatan unik secara akurat.
+  - [ ] Tambahkan unit/feature test untuk memverifikasi kalkulasi kecamatan unik di PACController.
 
 ---
 
-### [Issue BE-11] Pendaftaran Atribut Profil ke `$fillable` Model User
-* **Deskripsi**: Laravel Mass Assignment memblokir pengisian kolom baru (`phone`, `jabatan`, `photo`) karena belum terdaftar di `$fillable` di model `User.php`.
+### [Issue #26] [BE] Security: Pasang Middleware Rate Limiting (Throttle) pada Rute Publik API
+* **Prioritas**: **P2 (Sedang)**
+* **Link GitHub**: https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/26
+* **Deskripsi**: Rate limiter `api` (`Limit::perMinute(60)`) sudah didefinisikan di `backend/bootstrap/app.php`, namun belum dipasang sebagai middleware pada rute-rute di `backend/routes/api.php`.
 * **Kriteria Penerimaan (Acceptance Criteria)**:
-  - [ ] Tambahkan `'phone'`, `'jabatan'`, dan `'photo'` ke dalam properti `$fillable` pada [User.php](file:///Users/mac/kppppp/KP-IF-SAKTI/backend/app/Models/User.php).
-  - [ ] Uji pengisian form profil dan pastikan data tersimpan dengan benar di database.
+  - [ ] Terapkan middleware `throttle:api` pada rute-rute di `backend/routes/api.php` atau daftarkan secara global di grup middleware API.
+  - [ ] Uji respons HTTP 429 Too Many Requests saat request melebihi batas rate per menit.
 
 ---
 
-### [Issue BE-12] Perbaikan Route Mismatch Hapus Foto Profil (DELETE vs POST)
-* **Deskripsi**: Tombol hapus foto profil mengirim HTTP POST, sedangkan route Laravel didefinisikan sebagai `DELETE` di `web.php`.
+### [Issue #27] [BE] Enhancement: Dukungan Driver SQLite pada Fitur Backup dan Restore Database
+* **Prioritas**: **P2 (Sedang)**
+* **Link GitHub**: https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/27
+* **Deskripsi**: Method `backupDatabase` dan `restoreDatabase` di `PengaturanController.php` saat ini mengeksekusi shell command `mysqldump` dan `mysql` dengan konfigurasi MySQL secara hardcoded.
 * **Kriteria Penerimaan (Acceptance Criteria)**:
-  - [ ] Pisahkan tombol "Hapus Foto" di [profil.blade.php](file:///Users/mac/kppppp/KP-IF-SAKTI/backend/resources/views/pengaturan/profil.blade.php) menjadi form mandiri atau gunakan form method spoofing `@method('DELETE')`.
-  - [ ] Pastikan saat tombol diklik, foto berhasil dihapus dari storage publik dan field di database diset `null`.
+  - [ ] Lakukan deteksi driver database aktif melalui `config('database.default')`.
+  - [ ] Jika driver SQLite: lakukan backup dengan menyalin berkas database SQLite (`copy()`) ke direktori penyimpanan backup, dan restore dengan memvalidasi lalu mengganti berkas SQLite.
+  - [ ] Jika driver MySQL/MariaDB: tetap gunakan pipeline `mysqldump` / `mysql` yang sudah ada.
 
 ---
 
-### [Issue BE-13] Kelengkapan Input File & Enctype Form Restore Database
-* **Deskripsi**: Form restore database di [sistem.blade.php](file:///Users/mac/kppppp/KP-IF-SAKTI/backend/resources/views/pengaturan/sistem.blade.php) tidak memiliki input untuk berkas backup dan tidak ber-enctype `multipart/form-data`.
+## 🎨 Detail Issue - FRONTEND (React)
+
+### [Issue #25] [FE] Bug: Link Admin Login di Navbar Frontend Hardcoded ke localhost:8000
+* **Prioritas**: **P1 (Tinggi)**
+* **Link GitHub**: https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/25
+* **Deskripsi**: Di `frontend/src/components/Navbar.jsx` baris 56 dan 97, tag `<a>` untuk tombol Admin Login mengarah ke URL hardcoded `http://localhost:8000/login`.
 * **Kriteria Penerimaan (Acceptance Criteria)**:
-  - [ ] Tambahkan atribut `enctype="multipart/form-data"` pada tag `<form>` restore.
-  - [ ] Tambahkan input file `<input type="file" name="backup_file" required>` sebelum tombol restore.
-  - [ ] Uji fungsionalitas restore dengan berkas database `.sqlite` hasil backup.
+  - [ ] Ganti link hardcoded `http://localhost:8000/login` menjadi relative path `/login` atau gunakan environment variable `import.meta.env.VITE_ADMIN_URL || '/login'`.
+  - [ ] Pastikan navigasi ke halaman login admin berfungsi dengan benar pada desktop nav maupun mobile hamburger nav.
 
 ---
 
-### [Issue BE-14] Validasi Input Request pada `KegiatanController@update`
-* **Deskripsi**: Method `update` pada `KegiatanController.php` tidak melakukan pengecekan atau validasi request sehingga rentan terhadap database crash (error 500) jika ada parameter kosong.
+### [Issue #28] [FE] Performance: Optimasi Lazy Loading Komponen MapLibre GL (MapSection)
+* **Prioritas**: **P3 (Rendah)**
+* **Link GitHub**: https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/28
+* **Deskripsi**: Chunk `vendor-map` berukuran 1,053.53 kB (1.05 MB) saat dibuild karena library WebGL MapLibre di-bundle dan di-import secara statis di dalam `MapSection.jsx`.
 * **Kriteria Penerimaan (Acceptance Criteria)**:
-  - [ ] Tambahkan validasi `$request->validate([...])` di awal method `update()` serupa dengan method `store()`.
-  - [ ] Pastikan error validasi dikembalikan ke pengguna dengan benar jika ada field wajib yang kosong.
+  - [ ] Gunakan `React.lazy` dan `Suspense` untuk me-load komponen `PopupExample` di dalam `MapSection`.
+  - [ ] Berikan loading skeleton/placeholder di dalam area container peta saat library MapLibre sedang diunduh.
+  - [ ] Pastikan chunk `vendor-map` hanya diunduh secara on-demand saat komponen MapSection dimuat.
 
 ---
 
-### [Issue BE-15] Perbaikan Desinkronisasi `total_kegiatan` PAC di Kegiatan
-* **Deskripsi**: Menghapus/mengosongkan PAC (`pac_id` di-set null) pada suatu kegiatan tidak mengurangi `total_kegiatan` pada PAC lama karena terlewat oleh logika pengecekan `$request->filled('pac_id')`.
+## 🧹 Detail Issue - FULLSTACK & CLEANUP
+
+### [Issue #29] [CLEANUP] Pembersihan File Orphaned, Migrasi Kosong, dan Unused Imports
+* **Prioritas**: **P3 (Rendah)**
+* **Link GitHub**: https://github.com/ikhsanhazamy/KP-IF-SAKTI/issues/29
+* **Deskripsi**: Menghapus file blade view yang sudah tidak terpakai, migrasi kosong, dead import, dan komponen dummy di frontend.
 * **Kriteria Penerimaan (Acceptance Criteria)**:
-  - [ ] Ubah logika sinkronisasi di `update()` agar mendeteksi transisi perubahan PAC secara tepat (termasuk jika `pac_id` baru bernilai null).
-  - [ ] Uji perubahan PAC pada kegiatan dan verifikasi kesesuaian nilai statistik di tabel `pacs`.
+  - [ ] Hapus view blade usang di backend (`dataAnggota.blade.php`, `pengaturan.blade.php`, `dashboard/index.blade.php`).
+  - [ ] Hapus dead import `SettingController` pada `backend/routes/web.php`.
+  - [ ] Hapus komponen unused `Card.jsx` di frontend.
+  - [ ] Pastikan seluruh test suite backend (`php artisan test`) dan frontend build (`npm run build`) tetap berjalan sukses (PASS).
 
 ---
 
-## 🎨 Detail Issue Templates - FRONTEND (React)
-
-### [Issue FE-16] Penggunaan Link Component untuk Navigasi Internal di Modal PAC
-* **Deskripsi**: Tautan ke detail kegiatan di modal [DataPAC.jsx](file:///Users/mac/kppppp/KP-IF-SAKTI/frontend/src/Pages/DataPAC.jsx) masih menggunakan tag anchor html murni (`<a>`), mengakibatkan reload halaman penuh (full page reload).
-* **Kriteria Penerimaan (Acceptance Criteria)**:
-  - [ ] Ganti tag `<a>` menjadi komponen `<Link>` dari `react-router-dom`.
-  - [ ] Ganti atribut `href` menjadi `to`.
-  - [ ] Pastikan navigasi berjalan mulus secara instan tanpa ada indikator pemuatan browser penuh (SPA transition).
+## 📜 Riwayat Issue Terselesaikan (Resolved Issues)
+- **#1 - #10**: Perbaikan Bug 1 - Bug 9 (Storage facade, mass assignment, proxy Vite, validasi anggota).
+- **#11 - #17**: Perbaikan Bug 10 - Bug 16 (Migrasi profil user, `$fillable`, HTTP DELETE route, enctype restore form, validasi update kegiatan, sinkronisasi PAC kegiatan, SPA Link).
+- **#22**: Production Readiness Audit & Roadmap.

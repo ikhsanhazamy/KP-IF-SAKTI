@@ -35,7 +35,10 @@ class PACController extends Controller
         $totalPAC = PAC::count();
         $pacAktif = PAC::where('status', 'aktif')->count();
         $totalAnggota = PAC::sum('jumlah_anggota');
-        $totalKecamatan = PAC::distinct('kecamatan')->count();
+        $totalKecamatan = PAC::whereNotNull('kecamatan')
+            ->where('kecamatan', '!=', '')
+            ->distinct('kecamatan')
+            ->count('kecamatan');
         $chartPACs = (clone $query)->orderByDesc('jumlah_anggota')->get();
 
         $currentMonth = now();
