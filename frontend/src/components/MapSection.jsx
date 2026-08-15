@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Building2, TrendingUp, Users, MapPin } from "lucide-react";
-import { PopupExample } from "./PopupExample";
+
+const PopupExample = lazy(() =>
+  import("./PopupExample").then((module) => ({ default: module.PopupExample }))
+);
 
 function MapSection() {
   const [stats, setStats] = useState({
@@ -73,8 +76,17 @@ function MapSection() {
           </div>
 
           {/* MAP AREA */}
-          <div className="h-[350px] sm:h-[450px] lg:h-[500px] bg-[#f6f8f7] rounded-2xl flex items-center justify-center text-gray-400 overflow-hidden border border-gray-100">
-            <PopupExample />
+          <div className="h-[350px] sm:h-[450px] lg:h-[500px] bg-[#f6f8f7] rounded-2xl flex items-center justify-center text-gray-400 overflow-hidden border border-gray-100 relative">
+            <Suspense
+              fallback={
+                <div className="flex flex-col items-center justify-center gap-3 w-full h-full bg-gray-50">
+                  <div className="w-8 h-8 border-3 border-[#1f7a4d]/20 border-t-[#1f7a4d] rounded-full animate-spin" />
+                  <p className="text-xs text-gray-400 font-medium">Memuat peta interaktif...</p>
+                </div>
+              }
+            >
+              <PopupExample />
+            </Suspense>
           </div>
 
           {/* FOOTER */}
