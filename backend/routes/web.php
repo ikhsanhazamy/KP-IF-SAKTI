@@ -10,7 +10,6 @@ use App\Http\Controllers\PACController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PengaturanController;
-use App\Http\Controllers\SettingController;
 
 /*
 |--------------------------------------------------------------------------
