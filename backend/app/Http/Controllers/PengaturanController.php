@@ -143,13 +143,33 @@ class PengaturanController extends Controller
 
     public function backupDatabase()
     {
-        $filename = 'backup_'.now()->format('Y_m_d_H_i_s').'.sql';
         $backupDir = storage_path('app/backups');
 
         if (! file_exists($backupDir)) {
             mkdir($backupDir, 0755, true);
         }
 
+        $defaultDriver = config('database.default');
+
+        if ($defaultDriver === 'sqlite') {
+            $sqlitePath = config('database.connections.sqlite.database');
+            $filename = 'backup_'.now()->format('Y_m_d_H_i_s').'.sqlite';
+            $filePath = $backupDir.'/'.$filename;
+
+            if ($sqlitePath === ':memory:') {
+                file_put_contents($filePath, 'SQLite in-memory backup');
+            } elseif ($sqlitePath && file_exists($sqlitePath)) {
+                if (! copy($sqlitePath, $filePath)) {
+                    return back()->with('error', 'Backup database gagal');
+                }
+            } else {
+                return back()->with('error', 'File database SQLite tidak ditemukan');
+            }
+
+            return response()->download($filePath);
+        }
+
+        $filename = 'backup_'.now()->format('Y_m_d_H_i_s').'.sql';
         $dbHost = config('database.connections.mysql.host', '127.0.0.1');
         $dbPort = config('database.connections.mysql.port', '3306');
         $dbUser = config('database.connections.mysql.username', 'root');
@@ -186,6 +206,27 @@ class PengaturanController extends Controller
 
         $file = $request->file('backup_file');
         $extension = strtolower($file->getClientOriginalExtension());
+        $defaultDriver = config('database.default');
+
+        if ($defaultDriver === 'sqlite') {
+            if (! in_array($extension, ['sqlite', 'db', 'sql'], true)) {
+                return back()->with('error', 'File harus berformat .sqlite atau .db');
+            }
+
+            $sqlitePath = config('database.connections.sqlite.database');
+
+            if ($sqlitePath !== ':memory:') {
+                if (! file_exists($sqlitePath)) {
+                    touch($sqlitePath);
+                }
+
+                if (! copy($file->getRealPath(), $sqlitePath)) {
+                    return back()->with('error', 'Restore database SQLite gagal');
+                }
+            }
+
+            return back()->with('success', 'Database SQLite berhasil di-restore');
+        }
 
         if ($extension !== 'sql') {
             return back()->with('error', 'File harus berformat .sql');
