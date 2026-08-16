@@ -25,8 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->ip());
         });
+
+        RateLimiter::for('pac-pengajuan', function (Request $request) {
+            return Limit::perMinute(10)->by($request->ip());
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
-

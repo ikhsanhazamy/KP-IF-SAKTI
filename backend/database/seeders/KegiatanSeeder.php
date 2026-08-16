@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Kegiatan;
+use Illuminate\Database\Seeder;
 
 class KegiatanSeeder extends Seeder
 {
@@ -69,7 +69,7 @@ class KegiatanSeeder extends Seeder
                 'peserta' => 200,
                 'status' => 'upcoming',
                 'deskripsi' => 'Kajian rutin bulanan tentang keislaman dan keputrian dengan ustadzah berpengalaman.',
-            ]
+            ],
         ];
 
         foreach ($kegiatan as $item) {

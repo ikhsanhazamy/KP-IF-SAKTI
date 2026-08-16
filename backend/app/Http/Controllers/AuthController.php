@@ -16,8 +16,7 @@ class AuthController extends Controller
 
         ]);
 
-        if(Auth::attempt($credentials))
-        {
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
             return redirect('/dashboard');
@@ -25,7 +24,7 @@ class AuthController extends Controller
 
         return back()->withErrors([
 
-            'email' => 'Email atau password salah'
+            'email' => 'Email atau password salah',
 
         ]);
     }

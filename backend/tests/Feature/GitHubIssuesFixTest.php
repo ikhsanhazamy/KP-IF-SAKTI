@@ -2,9 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\PAC;
+use App\Models\Anggota;
 use App\Models\Kegiatan;
+use App\Models\PAC;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -226,7 +227,7 @@ class GitHubIssuesFixTest extends TestCase
             'telepon' => '08123',
         ]);
 
-        \App\Models\Anggota::create([
+        Anggota::create([
             'nama' => 'Rina',
             'email' => 'rina@example.com',
             'pac' => 'PAC Cisaat',
