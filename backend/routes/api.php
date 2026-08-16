@@ -1,12 +1,12 @@
 <?php
 
+use App\Models\Anggota;
+use App\Models\Kegiatan;
+use App\Models\PAC;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use App\Models\Kegiatan;
-use App\Models\PAC;
-use App\Models\Anggota;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +23,7 @@ Route::middleware('throttle:api')->group(function () {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('judul', 'like', "%{$search}%")
-                  ->orWhere('deskripsi', 'like', "%{$search}%");
+                    ->orWhere('deskripsi', 'like', "%{$search}%");
             });
         }
 
@@ -37,6 +37,7 @@ Route::middleware('throttle:api')->group(function () {
     // GET DETAIL KEGIATAN (single, with PAC relation)
     Route::get('/kegiatan/{id}', function ($id) {
         $kegiatan = Kegiatan::with('pac:id,nama_pac,kecamatan')->findOrFail($id);
+
         return response()->json($kegiatan);
     });
 
@@ -145,7 +146,7 @@ Route::middleware('throttle:api')->group(function () {
                         'body' => $response->body(),
                     ]);
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::warning('Sinkronisasi pengajuan PAC ke Google Sheet error.', [
                     'pac_id' => $pac->id,
                     'error' => $e->getMessage(),
@@ -157,7 +158,7 @@ Route::middleware('throttle:api')->group(function () {
             'success' => true,
             'message' => 'Pengajuan PAC berhasil dikirim dan sedang menunggu persetujuan admin.',
             'google_sheet_synced' => $googleSheetSynced,
-            'data' => $pac
+            'data' => $pac,
         ], 201);
-    });
+    })->middleware('throttle:pac-pengajuan');
 });

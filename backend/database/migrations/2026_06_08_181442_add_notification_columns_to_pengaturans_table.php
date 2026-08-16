@@ -33,7 +33,7 @@ return new class extends Migration
                 'email_notification',
                 'kegiatan_notification',
                 'anggota_notification',
-                'pac_notification'
+                'pac_notification',
             ]);
 
         });

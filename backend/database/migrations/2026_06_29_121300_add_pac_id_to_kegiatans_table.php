@@ -15,9 +15,9 @@ return new class extends Migration
             $table->unsignedBigInteger('pac_id')->nullable()->after('id');
 
             $table->foreign('pac_id')
-                  ->references('id')
-                  ->on('pacs')
-                  ->onDelete('set null');
+                ->references('id')
+                ->on('pacs')
+                ->onDelete('set null');
         });
     }
 

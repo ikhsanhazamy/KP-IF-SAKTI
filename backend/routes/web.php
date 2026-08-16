@@ -1,15 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HeaderController;
-use App\Http\Controllers\AnggotaController;
-use App\Http\Controllers\PACController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\PACController;
 use App\Http\Controllers\PengaturanController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +31,6 @@ Route::get('/csrf-token', fn () => response()->json([
     'token' => csrf_token(),
 ]))->name('csrf-token');
 
-
 /*
 |--------------------------------------------------------------------------
 | DASHBOARD AREA
@@ -54,7 +52,6 @@ Route::middleware('auth')->group(function () {
     */
 
     Route::get('/dashboard', [DashboardController::class, 'index']);
-
 
     /*
     |--------------------------------------------------------------------------
@@ -79,7 +76,6 @@ Route::middleware('auth')->group(function () {
 
     });
 
-
     /*
     |--------------------------------------------------------------------------
     | PAC
@@ -89,7 +85,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('data-pac')->group(function () {
 
         Route::get('/', [PACController::class, 'index'])
-        ->name('pac.index');
+            ->name('pac.index');
 
         Route::post('/store', [PACController::class, 'store'])
             ->name('pac.store');
@@ -111,7 +107,6 @@ Route::middleware('auth')->group(function () {
 
     });
 
-
     /*
     |--------------------------------------------------------------------------
     | KEGIATAN
@@ -131,7 +126,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}', [KegiatanController::class, 'show']);
 
     });
-
 
     /*
     |--------------------------------------------------------------------------
@@ -158,7 +152,6 @@ Route::middleware('auth')->group(function () {
 
     });
 
-
     /*
     |--------------------------------------------------------------------------
     | PENGATURAN
@@ -169,26 +162,26 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/pengaturan/profil', [PengaturanController::class, 'profil']);
 
-    Route::post('/pengaturan/profil/update',[PengaturanController::class, 'updateProfil'])->name('pengaturan.profil.update');
+    Route::post('/pengaturan/profil/update', [PengaturanController::class, 'updateProfil'])->name('pengaturan.profil.update');
 
-    Route::delete('/pengaturan/profil/foto',[PengaturanController::class, 'hapusFoto'])->name('pengaturan.profil.foto.delete');
+    Route::delete('/pengaturan/profil/foto', [PengaturanController::class, 'hapusFoto'])->name('pengaturan.profil.foto.delete');
 
     Route::get('/pengaturan/keamanan', [PengaturanController::class, 'keamanan']);
 
-    Route::post('/pengaturan/update-password',[PengaturanController::class, 'updatePassword'])->name('pengaturan.password.update');
+    Route::post('/pengaturan/update-password', [PengaturanController::class, 'updatePassword'])->name('pengaturan.password.update');
 
-    Route::post('/pengaturan/keamanan/two-factor',[PengaturanController::class, 'updateTwoFactor'])->name('pengaturan.two-factor.update');
+    Route::post('/pengaturan/keamanan/two-factor', [PengaturanController::class, 'updateTwoFactor'])->name('pengaturan.two-factor.update');
 
-    Route::post('/pengaturan/update',[PengaturanController::class, 'update'])->name('pengaturan.update');
-    
+    Route::post('/pengaturan/update', [PengaturanController::class, 'update'])->name('pengaturan.update');
+
     Route::get('/pengaturan/notifikasi', [PengaturanController::class, 'notifikasi']);
 
-    Route::post('/pengaturan/notifikasi',[PengaturanController::class, 'updateNotifikasi'])->name('pengaturan.notifikasi.update');
+    Route::post('/pengaturan/notifikasi', [PengaturanController::class, 'updateNotifikasi'])->name('pengaturan.notifikasi.update');
 
     Route::get('/pengaturan/sistem', [PengaturanController::class, 'sistem']);
 
-    Route::post('/backup/database',[PengaturanController::class, 'backupDatabase'])->name('backup.database');
+    Route::post('/backup/database', [PengaturanController::class, 'backupDatabase'])->name('backup.database');
 
-    Route::post('/restore/database',[PengaturanController::class, 'restoreDatabase'])->name('restore.database');
+    Route::post('/restore/database', [PengaturanController::class, 'restoreDatabase'])->name('restore.database');
 
 });

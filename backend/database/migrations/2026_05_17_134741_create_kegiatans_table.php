@@ -30,7 +30,7 @@ return new class extends Migration
             $table->enum('status', [
                 'upcoming',
                 'ongoing',
-                'completed'
+                'completed',
             ]);
 
             $table->text('deskripsi')->nullable();

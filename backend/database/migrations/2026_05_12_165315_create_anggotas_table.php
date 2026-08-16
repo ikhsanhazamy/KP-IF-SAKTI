@@ -26,7 +26,7 @@ return new class extends Migration
 
             $table->enum('status', [
                 'aktif',
-                'tidak_aktif'
+                'tidak_aktif',
             ]);
 
             $table->date('tanggal_bergabung');

@@ -25,9 +25,9 @@ class KegiatanController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('judul', 'like', "%{$search}%")
-                  ->orWhere('lokasi', 'like', "%{$search}%")
-                  ->orWhere('kategori', 'like', "%{$search}%")
-                  ->orWhere('deskripsi', 'like', "%{$search}%");
+                    ->orWhere('lokasi', 'like', "%{$search}%")
+                    ->orWhere('kategori', 'like', "%{$search}%")
+                    ->orWhere('deskripsi', 'like', "%{$search}%");
             });
         }
 

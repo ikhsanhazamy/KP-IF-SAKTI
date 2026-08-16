@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -177,22 +178,34 @@ class PengaturanController extends Controller
         $dbName = config('database.connections.mysql.database', 'laravel');
 
         $filePath = $backupDir.'/'.$filename;
-        $command = sprintf(
-            'mysqldump -h%s -P%s -u%s %s %s > "%s"',
-            $dbHost,
-            $dbPort,
-            $dbUser,
-            $dbPass !== '' ? '-p'.escapeshellarg($dbPass) : '',
-            $dbName,
-            $filePath
-        );
+        $cnfFile = tempnam(sys_get_temp_dir(), 'mysql_cnf_');
+        file_put_contents($cnfFile, "[client]\nuser = \"{$dbUser}\"\npassword = \"{$dbPass}\"\nhost = \"{$dbHost}\"\nport = \"{$dbPort}\"\n");
+        chmod($cnfFile, 0600);
 
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(120);
-        $process->run();
+        try {
+            $command = sprintf(
+                'mysqldump --defaults-extra-file=%s %s > %s',
+                escapeshellarg($cnfFile),
+                escapeshellarg($dbName),
+                escapeshellarg($filePath)
+            );
 
-        if (! $process->isSuccessful()) {
-            return back()->with('error', 'Backup database gagal');
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(120);
+            $process->run();
+
+            if (! $process->isSuccessful()) {
+                Log::error('MySQL backup failed', [
+                    'user_id' => Auth::id(),
+                    'error' => $process->getErrorOutput(),
+                ]);
+
+                return back()->with('error', 'Backup database gagal');
+            }
+        } finally {
+            if ($cnfFile && file_exists($cnfFile)) {
+                @unlink($cnfFile);
+            }
         }
 
         return response()->download($filePath);
@@ -207,10 +220,20 @@ class PengaturanController extends Controller
         $file = $request->file('backup_file');
         $extension = strtolower($file->getClientOriginalExtension());
         $defaultDriver = config('database.default');
+        $filePath = $file->getRealPath();
 
         if ($defaultDriver === 'sqlite') {
             if (! in_array($extension, ['sqlite', 'db', 'sql'], true)) {
                 return back()->with('error', 'File harus berformat .sqlite atau .db');
+            }
+
+            // Validasi header konten SQLite
+            $header = @file_get_contents($filePath, false, null, 0, 16);
+            if ($header !== false && strlen($header) >= 15 && ! str_starts_with($header, 'SQLite format 3')) {
+                $contentSample = @file_get_contents($filePath, false, null, 0, 256);
+                if (! preg_match('/^(?:--|\/\*|PRAGMA|BEGIN|CREATE|INSERT)/i', trim((string) $contentSample))) {
+                    return back()->with('error', 'Format file backup SQLite tidak valid.');
+                }
             }
 
             $sqlitePath = config('database.connections.sqlite.database');
@@ -220,10 +243,14 @@ class PengaturanController extends Controller
                     touch($sqlitePath);
                 }
 
-                if (! copy($file->getRealPath(), $sqlitePath)) {
+                if (! copy($filePath, $sqlitePath)) {
+                    Log::error('SQLite restore copy failed', ['user_id' => Auth::id()]);
+
                     return back()->with('error', 'Restore database SQLite gagal');
                 }
             }
+
+            Log::info('Database SQLite restored successfully', ['user_id' => Auth::id()]);
 
             return back()->with('success', 'Database SQLite berhasil di-restore');
         }
@@ -232,30 +259,49 @@ class PengaturanController extends Controller
             return back()->with('error', 'File harus berformat .sql');
         }
 
+        // Validasi konten file SQL
+        $contentSample = @file_get_contents($filePath, false, null, 0, 512);
+        if (! preg_match('/^(?:--|\/\*|CREATE|INSERT|SET|USE|DROP|ALTER|LOCK|UNLOCK)/i', trim((string) $contentSample))) {
+            return back()->with('error', 'Format file backup SQL tidak valid.');
+        }
+
         $dbHost = config('database.connections.mysql.host', '127.0.0.1');
         $dbPort = config('database.connections.mysql.port', '3306');
         $dbUser = config('database.connections.mysql.username', 'root');
         $dbPass = config('database.connections.mysql.password', '');
         $dbName = config('database.connections.mysql.database', 'laravel');
 
-        $filePath = $file->getRealPath();
-        $command = sprintf(
-            'mysql -h%s -P%s -u%s %s %s < "%s"',
-            $dbHost,
-            $dbPort,
-            $dbUser,
-            $dbPass !== '' ? '-p'.escapeshellarg($dbPass) : '',
-            $dbName,
-            $filePath
-        );
+        $cnfFile = tempnam(sys_get_temp_dir(), 'mysql_cnf_');
+        file_put_contents($cnfFile, "[client]\nuser = \"{$dbUser}\"\npassword = \"{$dbPass}\"\nhost = \"{$dbHost}\"\nport = \"{$dbPort}\"\n");
+        chmod($cnfFile, 0600);
 
-        $process = Process::fromShellCommandline($command);
-        $process->setTimeout(300);
-        $process->run();
+        try {
+            $command = sprintf(
+                'mysql --defaults-extra-file=%s %s < %s',
+                escapeshellarg($cnfFile),
+                escapeshellarg($dbName),
+                escapeshellarg($filePath)
+            );
 
-        if (! $process->isSuccessful()) {
-            return back()->with('error', 'Restore database gagal: '.$process->getErrorOutput());
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout(300);
+            $process->run();
+
+            if (! $process->isSuccessful()) {
+                Log::error('MySQL restore failed', [
+                    'user_id' => Auth::id(),
+                    'error' => $process->getErrorOutput(),
+                ]);
+
+                return back()->with('error', 'Restore database gagal. Silakan periksa file backup Anda.');
+            }
+        } finally {
+            if ($cnfFile && file_exists($cnfFile)) {
+                @unlink($cnfFile);
+            }
         }
+
+        Log::info('Database MySQL restored successfully', ['user_id' => Auth::id()]);
 
         return back()->with('success', 'Database berhasil di-restore');
     }
