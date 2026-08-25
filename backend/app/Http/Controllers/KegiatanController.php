@@ -71,6 +71,8 @@ class KegiatanController extends Controller
             }
 
             $validated['gambar'] = $newImage;
+        } else {
+            unset($validated['gambar']);
         }
 
         $kegiatan->update($validated);

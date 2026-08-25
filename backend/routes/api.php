@@ -41,9 +41,9 @@ Route::middleware('throttle:api')->group(function () {
         return response()->json($kegiatan);
     });
 
-    // GET ALL PAC
+    // GET ALL ACTIVE PAC
     Route::get('/pac', function () {
-        return response()->json(PAC::latest()->get());
+        return response()->json(PAC::where('status', 'aktif')->latest()->get());
     });
 
     // GET SUMMARY STATS

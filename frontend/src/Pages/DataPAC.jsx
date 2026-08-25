@@ -121,11 +121,11 @@ function DataPAC() {
 
   const filteredPacs = pacs.filter((pac) => {
     const matchesSearch =
-      pac.nama_pac.toLowerCase().includes(search.toLowerCase()) ||
-      pac.kecamatan.toLowerCase().includes(search.toLowerCase());
+      (pac.nama_pac || '').toLowerCase().includes(search.toLowerCase()) ||
+      (pac.kecamatan || '').toLowerCase().includes(search.toLowerCase());
 
     const matchesStatus =
-      statusFilter === "Semua" || pac.status.toLowerCase() === statusFilter.toLowerCase();
+      statusFilter === "Semua" || (pac.status || '').toLowerCase() === statusFilter.toLowerCase();
 
     return matchesSearch && matchesStatus;
   });

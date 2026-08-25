@@ -329,4 +329,103 @@ class GitHubIssuesFixTest extends TestCase
         $response->assertSee('Kajian Rutin Fatayat');
         $response->assertDontSee('Workshop IT Pemudi');
     }
+
+    public function test_kegiatan_update_retains_old_image_when_no_new_file_uploaded(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $kegiatan = Kegiatan::create([
+            'judul' => 'Kegiatan Lama',
+            'tanggal' => '2026-08-01',
+            'waktu' => '09:00',
+            'lokasi' => 'Gedung A',
+            'kategori' => 'Seminar',
+            'peserta' => 50,
+            'status' => 'upcoming',
+            'gambar' => 'kegiatan/existing-photo.jpg',
+        ]);
+
+        $response = $this->actingAs($user)->put("/kegiatan/update/{$kegiatan->id}", [
+            'judul' => 'Kegiatan Baru',
+            'tanggal' => '2026-08-01',
+            'waktu' => '09:00',
+            'lokasi' => 'Gedung A',
+            'kategori' => 'Seminar',
+            'peserta' => 50,
+            'status' => 'upcoming',
+            // No gambar uploaded
+        ]);
+
+        $response->assertRedirect('/kegiatan');
+        $kegiatan->refresh();
+        $this->assertEquals('Kegiatan Baru', $kegiatan->judul);
+        $this->assertEquals('kegiatan/existing-photo.jpg', $kegiatan->gambar);
+    }
+
+    public function test_get_pac_api_only_returns_active_pacs(): void
+    {
+        PAC::create([
+            'nama_pac' => 'PAC Aktif',
+            'kecamatan' => 'Cicurug',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Aktif',
+            'desa' => 'Desa Aktif',
+            'ketua_pac' => 'Ketua Aktif',
+            'telepon' => '081',
+        ]);
+
+        PAC::create([
+            'nama_pac' => 'PAC Pending',
+            'kecamatan' => 'Cisaat',
+            'status' => 'pending',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Pending',
+            'desa' => 'Desa Pending',
+            'ketua_pac' => 'Ketua Pending',
+            'telepon' => '082',
+        ]);
+
+        $response = $this->getJson('/api/pac');
+        $response->assertOk();
+        $response->assertJsonFragment(['nama_pac' => 'PAC Aktif']);
+        $response->assertJsonMissing(['nama_pac' => 'PAC Pending']);
+    }
+
+    public function test_pac_index_harmonizes_total_anggota_and_aggregates_growth(): void
+    {
+        $user = User::factory()->create();
+
+        $pac = PAC::create([
+            'nama_pac' => 'PAC Jampang',
+            'kecamatan' => 'Jampang',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Jampang',
+            'desa' => 'Desa Jampang',
+            'ketua_pac' => 'Ketua Jampang',
+            'telepon' => '081',
+            'jumlah_anggota' => 999, // Manual field
+        ]);
+
+        // Actual Anggota count = 1
+        Anggota::create([
+            'nama' => 'Kader Jampang',
+            'email' => 'kader.jampang@example.com',
+            'telepon' => '081234567890',
+            'tanggal_lahir' => '1995-05-12',
+            'pac' => 'PAC Jampang',
+            'profesi' => 'Guru',
+            'pendidikan' => 'S1',
+            'status' => 'aktif',
+            'status_pernikahan' => 'kawin',
+            'tanggal_bergabung' => now()->format('Y-m-d'),
+        ]);
+
+        $response = $this->actingAs($user)->get('/data-pac');
+        $response->assertOk();
+        // totalAnggota should match Anggota::count() = 1, not PAC::sum('jumlah_anggota') = 999
+        $response->assertViewHas('totalAnggota', 1);
+    }
 }
