@@ -23,7 +23,34 @@ Setiap kontributor diharapkan mematuhi panduan perilaku yang tercantum dalam [CO
 
 ---
 
-## 🌿 Alur Kerja Git (Git Workflow)
+## 🚨 ATURAN MUTLAK: DILARANG PUSH LANGSUNG KE `main`
+
+> [!CAUTION]
+> ### 🛑 ATURAN UTAMA KONTRIBUSI (STRICT BRANCH POLICY)
+> 1. **DILARANG KERAS ngoding atau mengubah kode langsung pada branch `main`.**
+> 2. **DILARANG KERAS melakukan `git push` langsung ke branch `main`.**
+> 3. Semua pengembangan fitur, perbaikan bug, atau dokumentasi **WAJIB dibuat pada branch baru** (`<tipe>/<nama-singkat>`).
+> 4. Perubahan hanya dapat digabungkan ke `main` melalui **Pull Request (PR)** yang telah melewati pengujian automated CI dan disetujui (*code review*).
+
+---
+
+## 🛡️ Mengaktifkan Git Hooks Proteksi Lokal
+
+Repositori ini telah dilengkapi dengan script **Git Hooks otomatis** (`.githooks/`) yang secara otomatis memblokir perintah commit/push jika Anda sedang berada di branch `main`.
+
+Jalankan perintah berikut sekali di komputer lokal Anda untuk mengaktifkan proteksi ini:
+
+```bash
+# Aktifkan hooks proteksi lokal
+git config core.hooksPath .githooks
+chmod +x .githooks/*
+```
+
+Jika proteksi aktif, Git akan langsung menolak dan memberikan peringatan jika Anda secara tidak sengaja mencoba commit/push di branch `main`.
+
+---
+
+## 🌿 Alur Kerja Git Standar (Git Workflow)
 
 Proyek ini menggunakan model alur kerja berbasis branch (*Feature Branch Workflow*):
 
@@ -43,20 +70,31 @@ gitGraph
    merge fix/rate-limiting id: "Merge PR #31"
 ```
 
-1. **Fork atau Clone Repositori**:
-   ```bash
-   git clone https://github.com/ikhsanhazamy/KP-IF-SAKTI.git
-   cd KP-IF-SAKTI
-   ```
-2. **Sinkronkan dengan `main` terbaru**:
+### Langkah Kerja Kontributor:
+
+1. **Sinkronkan branch `main` lokal dengan remote repository**:
    ```bash
    git checkout main
    git pull origin main
    ```
-3. **Buat Branch Baru** untuk pekerjaan Anda:
+2. **Buat Branch Baru** sebelum mulai menulis atau mengedit kode:
    ```bash
    git checkout -b <tipe>/<nama-singkat-pekerjaan>
-   # Contoh: git checkout -b feat/export-kegiatan-pdf
+   # Contoh fitur baru:   git checkout -b feat/export-kegiatan-pdf
+   # Contoh perbaikan bug: git checkout -b fix/image-upload-null
+   ```
+3. **Tulis kode dan lakukan commit pada branch baru tersebut**:
+   ```bash
+   git add .
+   git commit -m "fix(kegiatan): keep existing image when updating activity"
+   ```
+4. **Push branch baru ke GitHub**:
+   ```bash
+   git push origin <nama-branch-anda>
+   ```
+5. **Buka Pull Request (PR) ke `main`** melalui GitHub Web UI atau GitHub CLI:
+   ```bash
+   gh pr create --base main --title "fix(kegiatan): ..." --body "Fixes #37"
    ```
 
 ---

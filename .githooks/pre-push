@@ -1,0 +1,33 @@
+#!/bin/sh
+# Git Pre-Push Hook — Mencegah push langsung ke branch main/master
+
+remote="$1"
+url="$2"
+
+zero="0000000000000000000000000000000000000000"
+
+while read local_ref local_oid remote_ref remote_oid
+do
+  if [ "$remote_ref" = "refs/heads/main" ] || [ "$remote_ref" = "refs/heads/master" ]; then
+    echo ""
+    echo "======================================================================"
+    echo " 🛑 [GIT PROTECTION ERROR] DIRECT PUSH KE '$remote_ref' DITOLAK!"
+    echo "======================================================================"
+    echo " ❌ Dilarang melakukan push langsung ke branch utama (main/master)."
+    echo " 🔄 Semua perubahan kode WAJIB melalui Pull Request (PR) di GitHub."
+    echo ""
+    echo " 💡 Langkah yang benar:"
+    echo "    1. Push branch fitur/bugfix Anda:"
+    echo "       git push origin <nama-branch-anda>"
+    echo ""
+    echo "    2. Buka Pull Request ke main di GitHub:"
+    echo "       https://github.com/ikhsanhazamy/KP-IF-SAKTI/pulls"
+    echo ""
+    echo "    3. Tunggu review dan verifikasi Automated CI sebelum merge."
+    echo "======================================================================"
+    echo ""
+    exit 1
+  fi
+done
+
+exit 0

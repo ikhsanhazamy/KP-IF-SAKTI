@@ -1,0 +1,29 @@
+#!/bin/sh
+# Git Pre-Commit Hook — Mencegah commit langsung pada branch main/master
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if [ "$branch" = "main" ] || [ "$branch" = "master" ]; then
+  echo ""
+  echo "======================================================================"
+  echo " 🛑 [GIT PROTECTION ERROR] COMMIT LANGSUNG KE '$branch' DILARANG!"
+  echo "======================================================================"
+  echo " ❌ Anda tidak diperbolehkan menulis kode atau commit langsung di $branch."
+  echo ""
+  echo " 💡 Ikuti langkah berikut untuk membuat branch fitur/bugfix baru:"
+  echo "    1. Buat branch baru dari status saat ini:"
+  echo "       git checkout -b <tipe>/<nama-singkat-pekerjaan>"
+  echo "       (Contoh: git checkout -b feat/kegiatan-export-pdf)"
+  echo "       (Contoh: git checkout -b fix/pac-image-loss)"
+  echo ""
+  echo "    2. Lakukan commit di branch baru tersebut:"
+  echo "       git commit -m \"tipe(scope): deskripsi perubahan\""
+  echo ""
+  echo "    3. Push branch dan buat Pull Request (PR) di GitHub:"
+  echo "       git push origin <nama-branch>"
+  echo "======================================================================"
+  echo ""
+  exit 1
+fi
+
+exit 0
