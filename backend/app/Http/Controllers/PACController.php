@@ -41,37 +41,33 @@ class PACController extends Controller
             ->count('kecamatan');
         $chartPACs = (clone $query)->orderByDesc('jumlah_anggota')->get();
 
-        $currentMonth = now();
-        $previousMonth = now()->subMonthNoOverflow();
-        $anggota = Anggota::query()
-            ->select('pac', 'tanggal_bergabung')
-            ->get();
+        $currentMonthStart = now()->startOfMonth();
+        $currentMonthEnd = now()->endOfMonth();
+        $previousMonthStart = now()->subMonthNoOverflow()->startOfMonth();
+        $previousMonthEnd = now()->subMonthNoOverflow()->endOfMonth();
+
+        $anggotaBulanIniMap = Anggota::query()
+            ->selectRaw('LOWER(TRIM(pac)) as pac_name, COUNT(*) as total')
+            ->whereBetween('tanggal_bergabung', [$currentMonthStart, $currentMonthEnd])
+            ->groupBy('pac_name')
+            ->pluck('total', 'pac_name');
+
+        $anggotaBulanLaluMap = Anggota::query()
+            ->selectRaw('LOWER(TRIM(pac)) as pac_name, COUNT(*) as total')
+            ->whereBetween('tanggal_bergabung', [$previousMonthStart, $previousMonthEnd])
+            ->groupBy('pac_name')
+            ->pluck('total', 'pac_name');
 
         $pacs->setCollection(
             $pacs->getCollection()->map(function (PAC $pac) use (
-                $anggota,
-                $currentMonth,
-                $previousMonth
+                $anggotaBulanIniMap,
+                $anggotaBulanLaluMap
             ) {
-                $pacAnggota = $anggota->filter(function (Anggota $item) use ($pac) {
-                    $anggotaPAC = $this->normalizePACName($item->pac);
-                    $namaPAC = $this->normalizePACName($pac->nama_pac);
-                    $kecamatan = $this->normalizePACName($pac->kecamatan);
+                $namaKey = strtolower(trim($pac->nama_pac));
+                $kecKey = strtolower(trim($pac->kecamatan));
 
-                    return $anggotaPAC === $namaPAC
-                        || $anggotaPAC === $kecamatan
-                        || Str::contains($anggotaPAC, $kecamatan);
-                });
-
-                $anggotaBulanIni = $pacAnggota->filter(
-                    fn (Anggota $item) => Carbon::parse($item->tanggal_bergabung)
-                        ->isSameMonth($currentMonth)
-                )->count();
-
-                $anggotaBulanLalu = $pacAnggota->filter(
-                    fn (Anggota $item) => Carbon::parse($item->tanggal_bergabung)
-                        ->isSameMonth($previousMonth)
-                )->count();
+                $anggotaBulanIni = $anggotaBulanIniMap->get($namaKey) ?? $anggotaBulanIniMap->get($kecKey) ?? 0;
+                $anggotaBulanLalu = $anggotaBulanLaluMap->get($namaKey) ?? $anggotaBulanLaluMap->get($kecKey) ?? 0;
 
                 $pac->growth = $this->percentageGrowth(
                     $anggotaBulanIni,
