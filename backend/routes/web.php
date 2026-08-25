@@ -24,6 +24,17 @@ Route::view('/login', 'login')
 Route::post('/login', [AuthController::class, 'login'])
     ->middleware('throttle:login');
 
+Route::get('/two-factor-challenge', [AuthController::class, 'showTwoFactorChallenge'])
+    ->name('two-factor.challenge');
+
+Route::post('/two-factor-challenge', [AuthController::class, 'verifyTwoFactor'])
+    ->name('two-factor.verify')
+    ->middleware('throttle:login');
+
+Route::post('/two-factor-challenge/resend', [AuthController::class, 'resendTwoFactorCode'])
+    ->name('two-factor.resend')
+    ->middleware('throttle:login');
+
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
@@ -37,7 +48,7 @@ Route::get('/csrf-token', fn () => response()->json([
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', '2fa'])->group(function () {
 
     Route::get('/header/search', [HeaderController::class, 'search'])
         ->name('header.search');
