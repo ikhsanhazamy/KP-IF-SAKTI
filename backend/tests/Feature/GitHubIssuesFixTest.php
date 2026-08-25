@@ -362,4 +362,34 @@ class GitHubIssuesFixTest extends TestCase
         $this->assertEquals('Kegiatan Baru', $kegiatan->judul);
         $this->assertEquals('kegiatan/existing-photo.jpg', $kegiatan->gambar);
     }
+
+    public function test_get_pac_api_only_returns_active_pacs(): void
+    {
+        PAC::create([
+            'nama_pac' => 'PAC Aktif',
+            'kecamatan' => 'Cicurug',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Aktif',
+            'desa' => 'Desa Aktif',
+            'ketua_pac' => 'Ketua Aktif',
+            'telepon' => '081',
+        ]);
+
+        PAC::create([
+            'nama_pac' => 'PAC Pending',
+            'kecamatan' => 'Cisaat',
+            'status' => 'pending',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Pending',
+            'desa' => 'Desa Pending',
+            'ketua_pac' => 'Ketua Pending',
+            'telepon' => '082',
+        ]);
+
+        $response = $this->getJson('/api/pac');
+        $response->assertOk();
+        $response->assertJsonFragment(['nama_pac' => 'PAC Aktif']);
+        $response->assertJsonMissing(['nama_pac' => 'PAC Pending']);
+    }
 }
