@@ -34,7 +34,7 @@ class PACController extends Controller
         $pacs = (clone $query)->orderBy('id')->paginate(9)->withQueryString();
         $totalPAC = PAC::count();
         $pacAktif = PAC::where('status', 'aktif')->count();
-        $totalAnggota = PAC::sum('jumlah_anggota');
+        $totalAnggota = Anggota::count();
         $totalKecamatan = PAC::whereNotNull('kecamatan')
             ->where('kecamatan', '!=', '')
             ->distinct('kecamatan')

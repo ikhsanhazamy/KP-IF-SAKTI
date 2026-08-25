@@ -392,4 +392,39 @@ class GitHubIssuesFixTest extends TestCase
         $response->assertJsonFragment(['nama_pac' => 'PAC Aktif']);
         $response->assertJsonMissing(['nama_pac' => 'PAC Pending']);
     }
+
+    public function test_pac_index_harmonizes_total_anggota_count(): void
+    {
+        $user = User::factory()->create();
+
+        PAC::create([
+            'nama_pac' => 'PAC Jampang',
+            'kecamatan' => 'Jampang',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Jampang',
+            'desa' => 'Desa Jampang',
+            'ketua_pac' => 'Ketua Jampang',
+            'telepon' => '081',
+            'jumlah_anggota' => 999, // Manual column
+        ]);
+
+        // Actual Anggota count = 1
+        Anggota::create([
+            'nama' => 'Kader Jampang',
+            'email' => 'kader.jampang@example.com',
+            'telepon' => '081234567890',
+            'tanggal_lahir' => '1995-05-12',
+            'pac' => 'PAC Jampang',
+            'profesi' => 'Guru',
+            'pendidikan' => 'S1',
+            'status' => 'aktif',
+            'status_pernikahan' => 'kawin',
+            'tanggal_bergabung' => now()->format('Y-m-d'),
+        ]);
+
+        $response = $this->actingAs($user)->get('/data-pac');
+        $response->assertOk();
+        $response->assertViewHas('totalAnggota', 1);
+    }
 }
