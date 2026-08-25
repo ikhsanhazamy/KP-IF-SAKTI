@@ -329,4 +329,37 @@ class GitHubIssuesFixTest extends TestCase
         $response->assertSee('Kajian Rutin Fatayat');
         $response->assertDontSee('Workshop IT Pemudi');
     }
+
+    public function test_kegiatan_update_retains_old_image_when_no_new_file_uploaded(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $kegiatan = Kegiatan::create([
+            'judul' => 'Kegiatan Lama',
+            'tanggal' => '2026-08-01',
+            'waktu' => '09:00',
+            'lokasi' => 'Gedung A',
+            'kategori' => 'Seminar',
+            'peserta' => 50,
+            'status' => 'upcoming',
+            'gambar' => 'kegiatan/existing-photo.jpg',
+        ]);
+
+        $response = $this->actingAs($user)->put("/kegiatan/update/{$kegiatan->id}", [
+            'judul' => 'Kegiatan Baru',
+            'tanggal' => '2026-08-01',
+            'waktu' => '09:00',
+            'lokasi' => 'Gedung A',
+            'kategori' => 'Seminar',
+            'peserta' => 50,
+            'status' => 'upcoming',
+            // No gambar uploaded
+        ]);
+
+        $response->assertRedirect('/kegiatan');
+        $kegiatan->refresh();
+        $this->assertEquals('Kegiatan Baru', $kegiatan->judul);
+        $this->assertEquals('kegiatan/existing-photo.jpg', $kegiatan->gambar);
+    }
 }
