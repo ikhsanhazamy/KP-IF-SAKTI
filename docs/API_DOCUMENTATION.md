@@ -7,11 +7,13 @@ Dokumentasi lengkap mengenai antarmuka pemrograman aplikasi (REST API) yang dise
 ## 📌 Ringkasan Umum (Overview)
 
 - **Base URL Lokal (Docker)**: `http://localhost:5173/api` (via Vite proxy) atau `http://localhost:8000/api` (direct backend)
+- **Base URL Produksi**: `https://fatayat-sukabumi.org/api`
 - **Format Data**: JSON (`application/json`)
 - **Autentikasi**: Endpoint publik tidak memerlukan bearer token. Rute admin diakses melalui session-based auth pada dashboard web.
 - **Middleware Rate Limiting**:
-  - `throttle:api`: Maksimal **60 request / menit** per IP.
-  - `throttle:pac-pengajuan`: Maksimal **10 request / menit** per IP untuk submission form.
+  - `throttle:api`: Maksimal **60 request / menit** per IP untuk endpoint read publik.
+  - `throttle:pac-pengajuan`: Maksimal **10 request / menit** per IP untuk submission formulir pengajuan PAC.
+  - `throttle:login`: Maksimal **5 percobaan / menit** per IP untuk perlindungan brute-force login.
 
 ---
 
@@ -19,20 +21,63 @@ Dokumentasi lengkap mengenai antarmuka pemrograman aplikasi (REST API) yang dise
 
 | Status Code | Makna | Keterangan |
 |---|---|---|
-| `200 OK` | Sukses | Permintaan berhasil diproses dan mengembalikan data. |
-| `201 Created` | Dibuat | Data baru berhasil disimpan ke database. |
-| `400 Bad Request` | Permintaan Salah | Parameter atau body JSON tidak sesuai spesifikasi. |
+| `200 OK` | Sukses | Permintaan berhasil diproses dan mengembalikan data yang diminta. |
+| `201 Created` | Dibuat | Resource baru berhasil dibuat dan disimpan ke dalam basis data. |
+| `400 Bad Request` | Permintaan Salah | Parameter query atau body JSON tidak valid/rusak. |
 | `404 Not Found` | Tidak Ditemukan | Resource ID yang diminta tidak ditemukan di database. |
-| `422 Unprocessable Content` | Validasi Gagal | Data input form gagal memenuhi aturan validasi. |
+| `422 Unprocessable Content` | Validasi Gagal | Data input form gagal memenuhi aturan validasi Laravel. |
 | `429 Too Many Requests` | Rate Limit Terlampaui | Melebihi batas kuota pemanggilan API dalam 1 menit. |
-| `500 Internal Server Error` | Kesalahan Server | Terjadi error internal pada backend. |
+| `500 Internal Server Error` | Kesalahan Server | Terjadi error internal tak terduga pada backend. |
 
 ---
 
-## 📡 Daftar Endpoint API
+## 🛡️ Response Headers & Rate Limiting
 
-### 1. Ambil Daftar Kegiatan
-Mengambil daftar artikel/kegiatan organisasi dengan opsi pencarian kata kunci dan filter kategori.
+Setiap respons API menyertakan header standar untuk memantau kuota rate limiting:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 59
+Retry-After: 60 (hanya saat 429 Too Many Requests)
+```
+
+---
+
+## 📡 Daftar Endpoint API Lengkap
+
+### 1. Health Check Sistem
+Memeriksa apakah server backend, PHP-FPM, dan database siap melayani permintaan.
+
+- **URL**: `/up`
+- **Method**: `GET`
+- **Autentikasi**: Publik (No Auth)
+- **Response**: `200 OK`
+
+```bash
+curl -X GET "http://localhost:8000/up"
+```
+
+---
+
+### 2. Ambil Token CSRF Asinkron
+Mengambil token CSRF baru yang valid untuk permintaan AJAX/Fetch dari frontend saat halaman terbuka lama guna mencegah token *mismatch*.
+
+- **URL**: `/csrf-token`
+- **Method**: `GET`
+- **Rate Limit**: 60 req/min
+- **Response (`200 OK`)**:
+```json
+{
+  "csrf_token": "aBcD1234eFgH5678iJkL9012mNoP3456qRsT7890uVwX="
+}
+```
+
+---
+
+### 3. Ambil Daftar Kegiatan Organisasi
+Mengambil seluruh daftar agenda/kegiatan Fatayat NU dengan opsi pencarian kata kunci dan filter kategori.
 
 - **URL**: `/api/kegiatan`
 - **Method**: `GET`
@@ -42,7 +87,7 @@ Mengambil daftar artikel/kegiatan organisasi dengan opsi pencarian kata kunci da
 | Parameter | Tipe Data | Wajib? | Default | Deskripsi |
 |---|---|---|---|---|
 | `search` | `string` | Tidak | - | Kata kunci pencarian pada judul atau deskripsi kegiatan. |
-| `category`| `string` | Tidak | `Semua` | Filter kategori kegiatan (misal: `Kaderisasi`, `Sosial`, `Keagamaan`, `Kesehatan`, dll.). Case-insensitive. |
+| `category`| `string` | Tidak | `Semua` | Filter kategori kegiatan (`Kaderisasi`, `Seminar`, `Sosial`, `Kajian`, `Kesehatan`, dll.). Case-insensitive. |
 
 #### Contoh Request:
 ```bash
@@ -61,26 +106,32 @@ curl -X GET "http://localhost:8000/api/kegiatan?category=Kaderisasi&search=Latih
     "tanggal": "2026-07-15",
     "waktu": "08:00:00",
     "lokasi": "Gedung Serbaguna Palabuhanratu",
+    "peserta": 75,
     "deskripsi": "Kegiatan kaderisasi formal tingkat pertama bagi anggota baru Fatayat NU.",
-    "status": "selesai",
+    "status": "completed",
     "gambar": "kegiatan/lkd-selatan.webp",
-    "penyelenggara": "PC Fatayat NU Kab. Sukabumi",
+    "gambar_url": "http://localhost:8000/storage/kegiatan/lkd-selatan.webp",
     "created_at": "2026-07-15T10:00:00.000000Z",
-    "updated_at": "2026-07-15T10:00:00.000000Z"
+    "updated_at": "2026-07-15T10:00:00.000000Z",
+    "pac": {
+      "id": 2,
+      "nama_pac": "PAC Palabuhanratu",
+      "kecamatan": "Palabuhanratu"
+    }
   }
 ]
 ```
 
 ---
 
-### 2. Ambil Detail Kegiatan Spesifik
-Mengambil informasi lengkap sebuah kegiatan berdasarkan ID termasuk relasi data PAC penyelenggara.
+### 4. Ambil Detail Kegiatan Spesifik
+Mengambil data detail kegiatan tertentu berdasarkan ID beserta relasi data PAC penyelenggara.
 
 - **URL**: `/api/kegiatan/{id}`
 - **Method**: `GET`
 - **Rate Limit**: 60 req/min
 - **URL Parameters**:
-  - `id` (integer, required): ID kegiatan.
+  - `id` (integer, required): ID unik kegiatan.
 
 #### Contoh Request:
 ```bash
@@ -98,10 +149,11 @@ curl -X GET "http://localhost:8000/api/kegiatan/1" \
   "tanggal": "2026-07-15",
   "waktu": "08:00:00",
   "lokasi": "Gedung Serbaguna Palabuhanratu",
+  "peserta": 75,
   "deskripsi": "Kegiatan kaderisasi formal tingkat pertama bagi anggota baru Fatayat NU.",
-  "status": "selesai",
+  "status": "completed",
   "gambar": "kegiatan/lkd-selatan.webp",
-  "penyelenggara": "PC Fatayat NU Kab. Sukabumi",
+  "gambar_url": "http://localhost:8000/storage/kegiatan/lkd-selatan.webp",
   "created_at": "2026-07-15T10:00:00.000000Z",
   "updated_at": "2026-07-15T10:00:00.000000Z",
   "pac": {
@@ -114,8 +166,8 @@ curl -X GET "http://localhost:8000/api/kegiatan/1" \
 
 ---
 
-### 3. Ambil Daftar Seluruh PAC
-Mengambil seluruh data Pimpinan Anak Cabang (PAC) se-Kabupaten Sukabumi untuk keperluan pemetaan (MapLibre) dan direktori.
+### 5. Ambil Daftar Seluruh PAC Aktif
+Mengambil seluruh data Pimpinan Anak Cabang (PAC) berstatus aktif se-Kabupaten Sukabumi untuk keperluan pemetaan interaktif (MapLibre GL) dan direktori wilayah.
 
 - **URL**: `/api/pac`
 - **Method**: `GET`
@@ -155,8 +207,8 @@ curl -X GET "http://localhost:8000/api/pac" \
 
 ---
 
-### 4. Ambil Statistik Ringkasan Organisasi
-Mengambil ringkasan data agregat organisasi untuk ditampilkan pada halaman statistik dan hero banner beranda.
+### 6. Ambil Statistik Ringkasan Organisasi
+Mengambil metrik agregat organisasi (total PAC aktif, total kader terdaftar, total kecamatan terjangkau, dan rasio kepuasan).
 
 - **URL**: `/api/stats`
 - **Method**: `GET`
@@ -172,9 +224,9 @@ curl -X GET "http://localhost:8000/api/stats" \
 ```json
 {
   "total_pac": 47,
-  "pac_aktif": 42,
+  "pac_aktif": 47,
   "total_anggota": 1250,
-  "anggota_aktif": 1180,
+  "anggota_aktif": 1200,
   "total_kecamatan": 47,
   "tingkat_verifikasi": 92,
   "kepuasan": 92
@@ -183,8 +235,8 @@ curl -X GET "http://localhost:8000/api/stats" \
 
 ---
 
-### 5. Pengajuan Pembentukan PAC Baru
-Mengirimkan formulir permohonan pendirian PAC baru dari masyarakat/kader ke database sistem dan memicu webhook Google Apps Script.
+### 7. Pengajuan Pembentukan PAC Baru
+Mengirimkan formulir permohonan pendirian PAC baru dari masyarakat/kader ke database sistem dan secara asinkron mendispatch antrean job sinkronisasi Google Apps Script Webhook.
 
 - **URL**: `/api/pac/pengajuan`
 - **Method**: `POST`
@@ -262,6 +314,55 @@ curl -X POST "http://localhost:8000/api/pac/pengajuan" \
     "nama_pac": ["The nama pac field is required."],
     "kecamatan": ["The kecamatan field is required."],
     "telepon": ["The telepon field is required."]
+  }
+}
+```
+
+---
+
+## 💻 Contoh Integrasi Frontend (JavaScript Fetch & Axios)
+
+### Menggunakan Native Fetch API:
+```javascript
+// Fetch kegiatan dengan pencarian & kategori
+async function fetchKegiatan(search = '', category = 'Semua') {
+  const params = new URLSearchParams();
+  if (search) params.append('search', search);
+  if (category && category !== 'Semua') params.append('category', category);
+
+  const response = await fetch(`/api/kegiatan?${params.toString()}`, {
+    headers: { 'Accept': 'application/json' }
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
+}
+```
+
+### Menggunakan Axios:
+```javascript
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_TARGET || '/api',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+});
+
+export async function submitPengajuanPAC(formData) {
+  try {
+    const response = await api.post('/pac/pengajuan', formData);
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.status === 422) {
+      throw error.response.data.errors;
+    }
+    throw error;
   }
 }
 ```
