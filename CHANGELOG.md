@@ -6,7 +6,17 @@ Format dokumen ini mengacu pada [Keep a Changelog](https://keepachangelog.com/id
 
 ---
 
-## [Unreleased] - 2026-08-25
+## [Unreleased] - 2026-08-26
+
+### Perbaikan Bug (Fixed)
+- **Rute 2FA Nginx Docker**: Menambahkan rute `two-factor-challenge` ke dalam regex backend handler pada `docker/nginx/default.conf` agar verifikasi 2FA di Docker production tidak terlempar ke 404 SPA fallback.
+- **Eager Loading Relasi PAC di API Kegiatan**: Menambahkan `with('pac:id,nama_pac,kecamatan')` pada `GET /api/kegiatan` di `backend/routes/api.php` agar data PAC terkait dapat dimuat pada modal detail di frontend `DataPAC.jsx`.
+- **Koreksi Typo View Blade**: Menghapus karakter typo `z` pada awal file `backend/resources/views/partials/modalDetailAnggota.blade.php`.
+- **Remember Me Login**: Menambahkan atribut `name="remember"` pada checkbox login di `backend/resources/views/login.blade.php`.
+- **Penyelenggara Kegiatan di Admin Dashboard**: Menambahkan dropdown pemilihan `pac_id` (PAC Penyelenggara) pada modal tambah/edit kegiatan dan mengoper `$pacs` dari `KegiatanController.php`.
+- **Responsivitas Timeline**: Memperbaiki class dynamic interpolation Tailwind di `frontend/src/components/TimelineSection.jsx` agar class alternating `md:justify-start` / `md:justify-end` terekstrak dengan benar.
+- **Dukungan Foto Upload di Landing Page**: Memperbarui mapping foto kegiatan di `frontend/src/components/KegiatanSection.jsx` agar menampilkan gambar kustom yang diunggah admin.
+- **Navigasi Navbar**: Menambahkan tautan menu `Data PAC` ke dalam navbar desktop dan mobile di `frontend/src/components/Navbar.jsx`.
 
 ### Ditambahkan
 - Dokumentasi komprehensif repositori: `CONTRIBUTORS.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`, `LICENSE`, `SECURITY.md`.

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kegiatan;
+use App\Models\PAC;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +17,7 @@ class KegiatanController extends Controller
         $status = $request->status;
         $search = $request->search;
 
-        $query = Kegiatan::query();
+        $query = Kegiatan::with('pac');
 
         if ($status) {
             $query->where('status', $status);
@@ -32,8 +33,9 @@ class KegiatanController extends Controller
         }
 
         $kegiatan = $query->latest()->get();
+        $pacs = PAC::orderBy('nama_pac')->get();
 
-        return view('kegiatan', compact('kegiatan', 'search', 'status'));
+        return view('kegiatan', compact('kegiatan', 'search', 'status', 'pacs'));
     }
 
     public function store(Request $request)

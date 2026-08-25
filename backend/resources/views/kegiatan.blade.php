@@ -335,6 +335,7 @@
                 document.getElementById('kategori').value = data.kategori || '';
                 document.getElementById('peserta').value = data.peserta || '';
                 document.getElementById('status').value = data.status || 'upcoming';
+                document.getElementById('pac_id').value = data.pac_id || '';
                 document.getElementById('deskripsi').value = data.deskripsi || '';
                 setGambarPreview(data.gambar_url || '');
 
@@ -383,6 +384,7 @@
         document.getElementById('kategori').value = '';
         document.getElementById('peserta').value = '';
         document.getElementById('status').value = 'upcoming';
+        document.getElementById('pac_id').value = '';
         document.getElementById('deskripsi').value = '';
         document.getElementById('gambar').value = '';
         setGambarInfo('');

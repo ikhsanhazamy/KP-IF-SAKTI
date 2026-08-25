@@ -33,6 +33,7 @@ function Navbar() {
           {[
             { path: "/", label: "Beranda" },
             { path: "/tentang", label: "Tentang" },
+            { path: "/data-pac", label: "Data PAC" },
             { path: "/pengajuan-data-pac", label: "Pengajuan PAC" },
             { path: "/kegiatan", label: "Kegiatan" },
           ].map((item) => (
@@ -77,6 +78,7 @@ function Navbar() {
           {[
             { path: "/", label: "Beranda" },
             { path: "/tentang", label: "Tentang" },
+            { path: "/data-pac", label: "Data PAC" },
             { path: "/pengajuan-data-pac", label: "Pengajuan PAC" },
             { path: "/kegiatan", label: "Kegiatan" },
           ].map((item) => (

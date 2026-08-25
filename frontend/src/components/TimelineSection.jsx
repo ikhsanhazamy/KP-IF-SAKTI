@@ -62,8 +62,8 @@ function TimelineSection() {
           {timeline.map((item, i) => (
             <div
               key={i}
-              className={`relative flex md:${
-                item.side === "left" ? "justify-start" : "justify-end"
+              className={`relative flex ${
+                item.side === "left" ? "md:justify-start" : "md:justify-end"
               } pl-14 md:pl-0`}
             >
 
@@ -75,8 +75,8 @@ function TimelineSection() {
 
                 {/* YEAR */}
                 <div
-                  className={`mb-4 flex md:${
-                    item.side === "left" ? "justify-end" : "justify-start"
+                  className={`mb-4 flex ${
+                    item.side === "left" ? "md:justify-end" : "md:justify-start"
                   } justify-start`}
                 >
                   <div className="bg-[#1f7a4d] text-white text-sm font-medium px-6 py-2 rounded-full inline-block">

@@ -117,20 +117,39 @@
                     </div>
                 </div>
 
-                <!-- STATUS -->
-                <div>
-                    <label class="block text-[13px] font-semibold text-gray-700 mb-1.5">
-                        Status *
-                    </label>
-                    <select
-                        id="status"
-                        name="status"
-                        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150 bg-white"
-                    >
-                        <option value="upcoming">Upcoming</option>
-                        <option value="ongoing">Ongoing</option>
-                        <option value="completed">Completed</option>
-                    </select>
+                <!-- GRID: Status & PAC Penyelenggara -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[13px] font-semibold text-gray-700 mb-1.5">
+                            Status *
+                        </label>
+                        <select
+                            id="status"
+                            name="status"
+                            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150 bg-white"
+                        >
+                            <option value="upcoming">Upcoming</option>
+                            <option value="ongoing">Ongoing</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[13px] font-semibold text-gray-700 mb-1.5">
+                            PAC Penyelenggara
+                        </label>
+                        <select
+                            id="pac_id"
+                            name="pac_id"
+                            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150 bg-white"
+                        >
+                            <option value="">-- Tanpa PAC / PC Sukabumi --</option>
+                            @if(isset($pacs))
+                                @foreach($pacs as $p)
+                                    <option value="{{ $p->id }}">{{ $p->nama_pac }} (Kec. {{ $p->kecamatan }})</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
                 </div>
 
                 <!-- GAMBAR -->
