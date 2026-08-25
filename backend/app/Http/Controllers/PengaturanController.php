@@ -243,10 +243,32 @@ class PengaturanController extends Controller
                     touch($sqlitePath);
                 }
 
-                if (! copy($filePath, $sqlitePath)) {
-                    Log::error('SQLite restore copy failed', ['user_id' => Auth::id()]);
+                // Buat snapshot cadangan sebelum restore
+                $snapshotPath = tempnam(sys_get_temp_dir(), 'pre_restore_sqlite_');
+                if (file_exists($sqlitePath)) {
+                    copy($sqlitePath, $snapshotPath);
+                }
 
-                    return back()->with('error', 'Restore database SQLite gagal');
+                try {
+                    if (! copy($filePath, $sqlitePath)) {
+                        throw new \Exception('Gagal menyalin file backup ke database.');
+                    }
+                } catch (\Throwable $e) {
+                    // Rollback ke snapshot sebelum restore
+                    if (file_exists($snapshotPath)) {
+                        copy($snapshotPath, $sqlitePath);
+                    }
+
+                    Log::error('SQLite restore copy failed, rolled back to pre-restore snapshot', [
+                        'user_id' => Auth::id(),
+                        'error' => $e->getMessage(),
+                    ]);
+
+                    return back()->with('error', 'Restore database SQLite gagal. Database telah dikembalikan ke kondisi sebelum restore.');
+                } finally {
+                    if (file_exists($snapshotPath)) {
+                        @unlink($snapshotPath);
+                    }
                 }
             }
 
@@ -275,7 +297,22 @@ class PengaturanController extends Controller
         file_put_contents($cnfFile, "[client]\nuser = \"{$dbUser}\"\npassword = \"{$dbPass}\"\nhost = \"{$dbHost}\"\nport = \"{$dbPort}\"\n");
         chmod($cnfFile, 0600);
 
+        $snapshotPath = tempnam(sys_get_temp_dir(), 'pre_restore_mysql_').'.sql';
+
         try {
+            // Buat snapshot cadangan MySQL sebelum restore
+            $dumpCommand = sprintf(
+                'mysqldump --defaults-extra-file=%s %s > %s',
+                escapeshellarg($cnfFile),
+                escapeshellarg($dbName),
+                escapeshellarg($snapshotPath)
+            );
+
+            $dumpProcess = Process::fromShellCommandline($dumpCommand);
+            $dumpProcess->setTimeout(120);
+            $dumpProcess->run();
+
+            // Eksekusi restore
             $command = sprintf(
                 'mysql --defaults-extra-file=%s %s < %s',
                 escapeshellarg($cnfFile),
@@ -288,16 +325,39 @@ class PengaturanController extends Controller
             $process->run();
 
             if (! $process->isSuccessful()) {
-                Log::error('MySQL restore failed', [
+                Log::error('MySQL restore failed, attempting rollback to snapshot', [
                     'user_id' => Auth::id(),
                     'error' => $process->getErrorOutput(),
                 ]);
 
-                return back()->with('error', 'Restore database gagal. Silakan periksa file backup Anda.');
+                // Rollback jika snapshot tersedia
+                if (file_exists($snapshotPath) && filesize($snapshotPath) > 0) {
+                    $rollbackCommand = sprintf(
+                        'mysql --defaults-extra-file=%s %s < %s',
+                        escapeshellarg($cnfFile),
+                        escapeshellarg($dbName),
+                        escapeshellarg($snapshotPath)
+                    );
+                    $rollbackProcess = Process::fromShellCommandline($rollbackCommand);
+                    $rollbackProcess->setTimeout(300);
+                    $rollbackProcess->run();
+
+                    if (! $rollbackProcess->isSuccessful()) {
+                        Log::critical('MySQL restore rollback failed!', [
+                            'user_id' => Auth::id(),
+                            'error' => $rollbackProcess->getErrorOutput(),
+                        ]);
+                    }
+                }
+
+                return back()->with('error', 'Restore database gagal. Database telah dikembalikan ke kondisi sebelum restore.');
             }
         } finally {
             if ($cnfFile && file_exists($cnfFile)) {
                 @unlink($cnfFile);
+            }
+            if ($snapshotPath && file_exists($snapshotPath)) {
+                @unlink($snapshotPath);
             }
         }
 
