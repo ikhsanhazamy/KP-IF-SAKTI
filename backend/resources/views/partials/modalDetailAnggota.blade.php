@@ -1,4 +1,4 @@
-z<div id="modalDetail" class="fixed inset-0 z-[100] hidden items-start justify-center overflow-y-auto bg-black/40 p-4 sm:p-6">
+<div id="modalDetail" class="fixed inset-0 z-[100] hidden items-start justify-center overflow-y-auto bg-black/40 p-4 sm:p-6">
     <div class="my-auto max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white p-6 sm:p-8">
         <div class="mb-8 flex items-center justify-between">
             <h2 class="text-3xl font-bold">Detail Anggota</h2>

@@ -148,6 +148,7 @@
                         <label class="flex items-center gap-2 cursor-pointer select-none">
                             <input
                                 type="checkbox"
+                                name="remember"
                                 class="rounded border-gray-300 text-[#0F5E3A] focus:ring-[#0F5E3A]/20 cursor-pointer"
                             >
                             Ingat saya

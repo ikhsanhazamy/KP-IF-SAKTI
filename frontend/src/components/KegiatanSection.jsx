@@ -80,7 +80,7 @@ function KegiatanSection() {
           title: item.judul,
           date: formatTanggal(item.tanggal),
           peserta: `${item.peserta} peserta`,
-          img: item.kategori === "Seminar" ? foto1 : item.kategori === "Sosial" ? foto2 : foto3,
+          img: item.gambar_url || (item.kategori === "Seminar" ? foto1 : item.kategori === "Sosial" ? foto2 : foto3),
           tag: item.kategori
         }));
         setData(formatted);

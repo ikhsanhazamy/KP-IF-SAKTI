@@ -427,4 +427,69 @@ class GitHubIssuesFixTest extends TestCase
         $response->assertOk();
         $response->assertViewHas('totalAnggota', 1);
     }
+
+    public function test_get_kegiatan_api_eager_loads_pac(): void
+    {
+        $pac = PAC::create([
+            'nama_pac' => 'PAC Cibadak',
+            'kecamatan' => 'Cibadak',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Cibadak',
+            'desa' => 'Desa Cibadak',
+            'ketua_pac' => 'Ketua Cibadak',
+            'telepon' => '081234',
+        ]);
+
+        $kegiatan = Kegiatan::create([
+            'pac_id' => $pac->id,
+            'judul' => 'Kajian Rutin',
+            'tanggal' => '2026-08-10',
+            'waktu' => '10:00',
+            'lokasi' => 'Masjid Cibadak',
+            'kategori' => 'Kajian',
+            'peserta' => 40,
+            'status' => 'completed',
+        ]);
+
+        $response = $this->getJson('/api/kegiatan');
+        $response->assertOk();
+        $response->assertJsonFragment([
+            'id' => $kegiatan->id,
+            'judul' => 'Kajian Rutin',
+            'pac' => [
+                'id' => $pac->id,
+                'nama_pac' => 'PAC Cibadak',
+                'kecamatan' => 'Cibadak',
+            ],
+        ]);
+    }
+
+    public function test_kegiatan_index_passes_pacs_to_view(): void
+    {
+        $user = User::factory()->create();
+
+        PAC::create([
+            'nama_pac' => 'PAC Cicurug',
+            'kecamatan' => 'Cicurug',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Cicurug',
+            'desa' => 'Desa Cicurug',
+            'ketua_pac' => 'Ketua Cicurug',
+            'telepon' => '081234',
+        ]);
+
+        $response = $this->actingAs($user)->get('/kegiatan');
+        $response->assertOk();
+        $response->assertViewHas('pacs');
+    }
+
+    public function test_login_page_renders_remember_me_checkbox_with_name_attribute(): void
+    {
+        $response = $this->get('/login');
+        $response->assertOk();
+        $response->assertSee('name="remember"', false);
+    }
 }
+

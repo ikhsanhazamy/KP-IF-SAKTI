@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('throttle:api')->group(function () {
     // GET KEGIATAN (dengan filter & search)
     Route::get('/kegiatan', function (Request $request) {
-        $query = Kegiatan::query();
+        $query = Kegiatan::with('pac:id,nama_pac,kecamatan');
 
         if ($request->filled('search')) {
             $search = $request->search;
