@@ -245,7 +245,7 @@ function KegiatanDetail() {
           {/* Image banner */}
           <div className="relative rounded-[24px] sm:rounded-[32px] overflow-hidden h-[240px] sm:h-[340px] lg:h-[420px]">
             <img
-              src={getImage(data.kategori)}
+              src={data.gambar_url || getImage(data.kategori)}
               alt={data.judul}
               className="w-full h-full object-cover"
             />

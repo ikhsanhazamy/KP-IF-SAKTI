@@ -108,7 +108,7 @@ function Kegiatan() {
           date: formatTanggal(item.tanggal),
           peserta: `${item.peserta} peserta`,
           category: item.kategori,
-          image: item.kategori === "Seminar" ? foto1 : item.kategori === "Sosial" ? foto2 : foto3
+          image: item.gambar_url || (item.kategori === "Seminar" ? foto1 : item.kategori === "Sosial" ? foto2 : foto3)
         }));
         setKegiatanList(formattedData);
         setLoading(false);
