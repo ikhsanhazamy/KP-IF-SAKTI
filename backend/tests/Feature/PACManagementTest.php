@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Anggota;
 use App\Models\PAC;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -162,5 +163,39 @@ class PACManagementTest extends TestCase
         $response->assertOk();
         $response->assertViewHas('totalPAC', 3);
         $response->assertViewHas('totalKecamatan', 2);
+    }
+
+    public function test_pac_member_growth_uses_database_aggregation(): void
+    {
+        $user = User::factory()->create();
+
+        $pac = PAC::create([
+            'nama_pac' => 'PAC Cibadak',
+            'kecamatan' => 'Cibadak',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Cibadak',
+            'desa' => 'Desa Cibadak',
+            'ketua_pac' => 'Ketua Cibadak',
+            'telepon' => '081234567890',
+        ]);
+
+        Anggota::create([
+            'nama' => 'Anggota Bulan Ini',
+            'email' => 'bulanini@example.com',
+            'telepon' => '081234567890',
+            'tanggal_lahir' => '1995-05-12',
+            'pac' => 'PAC Cibadak',
+            'profesi' => 'Guru',
+            'pendidikan' => 'S1',
+            'status' => 'aktif',
+            'status_pernikahan' => 'kawin',
+            'tanggal_bergabung' => now()->format('Y-m-d'),
+        ]);
+
+        $response = $this->actingAs($user)->get(route('pac.index'));
+        $response->assertOk();
+        $pacs = $response->viewData('pacs');
+        $this->assertEquals(100.0, $pacs->first()->growth);
     }
 }
