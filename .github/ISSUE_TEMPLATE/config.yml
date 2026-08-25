@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 Diskusi & Tanya Jawab
+    url: https://github.com/ikhsanhazamy/KP-IF-SAKTI/discussions
+    about: Ajukan pertanyaan umum seputar pengembangan atau setup lokal proyek ini
