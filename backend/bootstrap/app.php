@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureTwoFactorIsVerified;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,7 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            '2fa' => EnsureTwoFactorIsVerified::class,
+        ]);
     })
     ->booted(function () {
         RateLimiter::for('login', function (Request $request) {
