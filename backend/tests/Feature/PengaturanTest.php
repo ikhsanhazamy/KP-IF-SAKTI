@@ -163,4 +163,24 @@ class PengaturanTest extends TestCase
             @unlink($tempDb);
         }
     }
+
+    public function test_restore_invalid_file_format_returns_error_session(): void
+    {
+        $user = User::factory()->create();
+
+        $invalidTemp = tempnam(sys_get_temp_dir(), 'test_invalid_');
+        file_put_contents($invalidTemp, 'Corrupted binary data content');
+        $uploadedFile = new UploadedFile($invalidTemp, 'invalid.txt', 'text/plain', null, true);
+
+        $response = $this->actingAs($user)->post(route('restore.database'), [
+            'backup_file' => $uploadedFile,
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+
+        if (file_exists($invalidTemp)) {
+            @unlink($invalidTemp);
+        }
+    }
 }
