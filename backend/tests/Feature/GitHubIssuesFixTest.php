@@ -492,4 +492,3 @@ class GitHubIssuesFixTest extends TestCase
         $response->assertSee('name="remember"', false);
     }
 }
-
