@@ -40,9 +40,12 @@ function KegiatanDetail() {
   };
 
   const formatWaktu = (waktu) => {
-    if (!waktu) return '-';
-    const [h, m] = waktu.split(':');
-    return `${h}:${m} WIB`;
+    if (!waktu || typeof waktu !== 'string') return '-';
+    const parts = waktu.split(':');
+    if (parts.length >= 2) {
+      return `${parts[0]}:${parts[1]} WIB`;
+    }
+    return `${waktu} WIB`;
   };
 
   const getStatusStyle = (status) => {
