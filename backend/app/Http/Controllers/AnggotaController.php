@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Anggota;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -85,48 +86,50 @@ class AnggotaController extends Controller
         $imported = 0;
         $skipped = 0;
 
-        foreach ($this->csvRows($request->file('csv_file')) as $row) {
-            $email = $this->csvValue($row, ['email']);
-            $nama = $this->csvValue($row, ['nama', 'nama_lengkap']);
+        DB::transaction(function () use ($request, &$imported, &$skipped) {
+            foreach ($this->csvRows($request->file('csv_file')) as $row) {
+                $email = $this->csvValue($row, ['email']);
+                $nama = $this->csvValue($row, ['nama', 'nama_lengkap']);
 
-            if (! $email || ! $nama) {
-                $skipped++;
-
-                continue;
-            }
-
-            try {
-                $tanggalLahir = $this->parseDate($this->csvValue($row, ['tanggal_lahir', 'tgl_lahir', 'dob']));
-                $tanggalBergabung = $this->parseDate($this->csvValue($row, ['tanggal_bergabung', 'tgl_bergabung', 'bergabung']));
-
-                if (! $tanggalLahir || ! $tanggalBergabung) {
+                if (! $email || ! $nama) {
                     $skipped++;
 
                     continue;
                 }
 
-                Anggota::updateOrCreate(
-                    ['email' => $email],
-                    [
-                        'nama' => $nama,
-                        'telepon' => $this->csvValue($row, ['telepon', 'no_telepon', 'phone'], '-'),
-                        'tanggal_lahir' => $tanggalLahir,
-                        'pac' => $this->csvValue($row, ['pac'], '-'),
-                        'profesi' => $this->csvValue($row, ['profesi'], '-'),
-                        'pendidikan' => $this->normalizePendidikan($this->csvValue($row, ['pendidikan'], 'SMA')),
-                        'status' => $this->normalizeStatus($this->csvValue($row, ['status'], 'aktif')),
-                        'status_pernikahan' => $this->normalizeStatusPernikahan(
-                            $this->csvValue($row, ['status_pernikahan', 'pernikahan'], 'belum_kawin')
-                        ),
-                        'tanggal_bergabung' => $tanggalBergabung,
-                    ]
-                );
+                try {
+                    $tanggalLahir = $this->parseDate($this->csvValue($row, ['tanggal_lahir', 'tgl_lahir', 'dob']));
+                    $tanggalBergabung = $this->parseDate($this->csvValue($row, ['tanggal_bergabung', 'tgl_bergabung', 'bergabung']));
 
-                $imported++;
-            } catch (\Throwable) {
-                $skipped++;
+                    if (! $tanggalLahir || ! $tanggalBergabung) {
+                        $skipped++;
+
+                        continue;
+                    }
+
+                    Anggota::updateOrCreate(
+                        ['email' => $email],
+                        [
+                            'nama' => $nama,
+                            'telepon' => $this->csvValue($row, ['telepon', 'no_telepon', 'phone'], '-'),
+                            'tanggal_lahir' => $tanggalLahir,
+                            'pac' => $this->csvValue($row, ['pac'], '-'),
+                            'profesi' => $this->csvValue($row, ['profesi'], '-'),
+                            'pendidikan' => $this->normalizePendidikan($this->csvValue($row, ['pendidikan'], 'SMA')),
+                            'status' => $this->normalizeStatus($this->csvValue($row, ['status'], 'aktif')),
+                            'status_pernikahan' => $this->normalizeStatusPernikahan(
+                                $this->csvValue($row, ['status_pernikahan', 'pernikahan'], 'belum_kawin')
+                            ),
+                            'tanggal_bergabung' => $tanggalBergabung,
+                        ]
+                    );
+
+                    $imported++;
+                } catch (\Throwable) {
+                    $skipped++;
+                }
             }
-        }
+        });
 
         return redirect()
             ->back()
