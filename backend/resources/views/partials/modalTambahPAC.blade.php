@@ -71,6 +71,7 @@
                                     <option value="aktif">Aktif</option>
                                     <option value="tidak_aktif">Tidak Aktif</option>
                                     <option value="akan_expire">Akan Expire</option>
+                                    <option value="pending">Pending</option>
                                 </select>
                             </div>
 

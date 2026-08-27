@@ -198,4 +198,43 @@ class PACManagementTest extends TestCase
         $pacs = $response->viewData('pacs');
         $this->assertEquals(100.0, $pacs->first()->growth);
     }
+
+    public function test_pac_dengan_status_pending_dapat_diupdate_dan_ditampilkan(): void
+    {
+        $user = User::factory()->create();
+
+        $pac = PAC::create([
+            'nama_pac' => 'PAC Cisolok',
+            'kecamatan' => 'Cisolok',
+            'status' => 'pending',
+            'tanggal_berdiri' => '2026-01-01',
+            'alamat' => 'Jl. Raya Cisolok',
+            'desa' => 'Cisolok',
+            'ketua_pac' => 'Ketua Cisolok',
+            'telepon' => '081234567899',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('pac.index'));
+        $response->assertOk()
+            ->assertSee('PAC Cisolok')
+            ->assertSee('Pending / Verifikasi');
+
+        $updateResponse = $this->actingAs($user)->put(route('pac.update', $pac->id), [
+            'nama_pac' => 'PAC Cisolok',
+            'kecamatan' => 'Cisolok',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2026-01-01',
+            'alamat' => 'Jl. Raya Cisolok No. 1',
+            'desa' => 'Cisolok',
+            'ketua_pac' => 'Ketua Cisolok Baru',
+            'telepon' => '081234567899',
+        ]);
+
+        $updateResponse->assertRedirect(route('pac.index'));
+        $this->assertDatabaseHas('pacs', [
+            'id' => $pac->id,
+            'status' => 'aktif',
+            'ketua_pac' => 'Ketua Cisolok Baru',
+        ]);
+    }
 }

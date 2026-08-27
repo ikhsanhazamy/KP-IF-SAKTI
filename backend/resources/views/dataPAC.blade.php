@@ -108,6 +108,7 @@
                 $statusMeta = match ($pac->status) {
                     'aktif' => ['label' => 'Aktif', 'class' => 'bg-[#EEF7F1] text-[#4FA36C]'],
                     'akan_expire' => ['label' => 'Akan Expire', 'class' => 'bg-amber-50 text-amber-600'],
+                    'pending' => ['label' => 'Pending / Verifikasi', 'class' => 'bg-yellow-100 text-yellow-800'],
                     default => ['label' => 'Tidak Aktif', 'class' => 'bg-[#F2F4F3] text-[#747887]'],
                 };
                 $growthPositive = $pac->growth > 0;
