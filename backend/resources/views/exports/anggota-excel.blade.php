@@ -22,14 +22,14 @@
         <tbody>
             @foreach($anggotas as $anggota)
                 <tr>
-                    <td>{{ $anggota->nama }}</td>
-                    <td>{{ $anggota->email }}</td>
-                    <td>{{ $anggota->telepon }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($anggota->nama) }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($anggota->email) }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($anggota->telepon) }}</td>
                     <td>{{ $anggota->tanggal_lahir?->format('Y-m-d') }}</td>
                     <td>{{ $anggota->umur }}</td>
-                    <td>{{ $anggota->pac }}</td>
-                    <td>{{ $anggota->profesi }}</td>
-                    <td>{{ $anggota->pendidikan }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($anggota->pac) }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($anggota->profesi) }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($anggota->pendidikan) }}</td>
                     <td>{{ ucfirst(str_replace('_', ' ', $anggota->status)) }}</td>
                     <td>
                         @switch($anggota->status_pernikahan)

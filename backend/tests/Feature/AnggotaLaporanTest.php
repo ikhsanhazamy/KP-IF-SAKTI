@@ -146,4 +146,37 @@ class AnggotaLaporanTest extends TestCase
             'status_pernikahan' => 'cerai_hidup',
         ]);
     }
+
+    public function test_export_csv_dan_excel_mencegah_formula_injection(): void
+    {
+        $user = User::factory()->create();
+
+        Anggota::create([
+            'nama' => '=1+1',
+            'email' => 'injection@example.com',
+            'telepon' => '+628123456789',
+            'tanggal_lahir' => '1995-01-01',
+            'pac' => '@PAC Formula',
+            'profesi' => '-Wiraswasta',
+            'pendidikan' => 'S1',
+            'status' => 'aktif',
+            'status_pernikahan' => 'kawin',
+            'tanggal_bergabung' => '2026-01-01',
+        ]);
+
+        $csv = $this->actingAs($user)->get('/laporan/export/csv');
+        $csv->assertOk();
+        $content = $csv->streamedContent();
+
+        // Formula characters =, +, -, @ must be prefixed with single quote '
+        $this->assertStringContainsString("'=1+1", $content);
+        $this->assertStringContainsString("'+628123456789", $content);
+        $this->assertStringContainsString("'@PAC Formula", $content);
+        $this->assertStringContainsString("'-Wiraswasta", $content);
+
+        $excel = $this->actingAs($user)->get('/laporan/export/excel');
+        $excel->assertOk()
+            ->assertSee("&#039;=1+1", false)
+            ->assertSee("&#039;+628123456789", false);
+    }
 }
