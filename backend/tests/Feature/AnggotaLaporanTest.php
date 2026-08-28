@@ -176,7 +176,7 @@ class AnggotaLaporanTest extends TestCase
 
         $excel = $this->actingAs($user)->get('/laporan/export/excel');
         $excel->assertOk()
-            ->assertSee("&#039;=1+1", false)
-            ->assertSee("&#039;+628123456789", false);
+            ->assertSee('&#039;=1+1', false)
+            ->assertSee('&#039;+628123456789', false);
     }
 }

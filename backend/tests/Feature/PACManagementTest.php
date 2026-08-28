@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Anggota;
+use App\Models\Kegiatan;
 use App\Models\PAC;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -235,6 +236,53 @@ class PACManagementTest extends TestCase
             'id' => $pac->id,
             'status' => 'aktif',
             'ketua_pac' => 'Ketua Cisolok Baru',
+        ]);
+    }
+
+    public function test_pac_kegiatans_relationship_and_api_total_kegiatan_count(): void
+    {
+        $pac = PAC::create([
+            'nama_pac' => 'PAC Cibadak',
+            'kecamatan' => 'Cibadak',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Cibadak',
+            'desa' => 'Desa Cibadak',
+            'ketua_pac' => 'Ketua Cibadak',
+            'telepon' => '081234567890',
+        ]);
+
+        Kegiatan::create([
+            'pac_id' => $pac->id,
+            'judul' => 'Kegiatan PAC 1',
+            'tanggal' => '2026-06-01',
+            'waktu' => '09:00',
+            'lokasi' => 'Aula',
+            'kategori' => 'Seminar',
+            'peserta' => 50,
+            'status' => 'completed',
+        ]);
+
+        Kegiatan::create([
+            'pac_id' => $pac->id,
+            'judul' => 'Kegiatan PAC 2',
+            'tanggal' => '2026-06-02',
+            'waktu' => '10:00',
+            'lokasi' => 'Gedung',
+            'kategori' => 'Pelatihan',
+            'peserta' => 70,
+            'status' => 'completed',
+        ]);
+
+        $this->assertCount(2, $pac->kegiatans);
+        $this->assertInstanceOf(Kegiatan::class, $pac->kegiatans->first());
+
+        $response = $this->getJson('/api/pac');
+        $response->assertOk();
+        $response->assertJsonFragment([
+            'id' => $pac->id,
+            'nama_pac' => 'PAC Cibadak',
+            'total_kegiatan' => 2,
         ]);
     }
 }
