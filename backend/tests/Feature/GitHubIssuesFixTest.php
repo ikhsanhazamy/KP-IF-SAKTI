@@ -501,4 +501,44 @@ class GitHubIssuesFixTest extends TestCase
         $response->assertSee('href="https://fatayatnu-sukabumi.org"', false);
         $response->assertSee('Kembali ke Beranda');
     }
+
+    /**
+     * Test Issue #85: KegiatanController show method eager loads PAC relation.
+     */
+    public function test_kegiatan_show_eager_loads_pac_relation(): void
+    {
+        $user = User::factory()->create();
+
+        $pac = PAC::create([
+            'nama_pac' => 'PAC Cibadak',
+            'kecamatan' => 'Cibadak',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Cibadak',
+            'desa' => 'Desa Cibadak',
+            'ketua_pac' => 'Ketua Cibadak',
+            'telepon' => '081234',
+        ]);
+
+        $kegiatan = Kegiatan::create([
+            'pac_id' => $pac->id,
+            'judul' => 'Kajian Rutin',
+            'tanggal' => '2026-08-10',
+            'waktu' => '10:00',
+            'lokasi' => 'Masjid Cibadak',
+            'kategori' => 'Kajian',
+            'peserta' => 40,
+            'status' => 'completed',
+        ]);
+
+        $response = $this->actingAs($user)->get("/kegiatan/{$kegiatan->id}");
+        $response->assertOk();
+        $response->assertJson([
+            'id' => $kegiatan->id,
+            'pac' => [
+                'id' => $pac->id,
+                'nama_pac' => 'PAC Cibadak',
+            ],
+        ]);
+    }
 }
