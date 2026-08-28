@@ -24,8 +24,8 @@
                     name="language"
                     class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition bg-white"
                 >
-                    <option value="id">Bahasa Indonesia</option>
-                    <option value="en">English</option>
+                    <option value="id" @selected(($pengaturan->language ?? 'id') === 'id')>Bahasa Indonesia</option>
+                    <option value="en" @selected(($pengaturan->language ?? 'id') === 'en')>English</option>
                 </select>
             </div>
 
@@ -38,9 +38,9 @@
                     name="timezone"
                     class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition bg-white"
                 >
-                    <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
-                    <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
-                    <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
+                    <option value="Asia/Jakarta" @selected(($pengaturan->timezone ?? 'Asia/Jakarta') === 'Asia/Jakarta')>Asia/Jakarta (WIB)</option>
+                    <option value="Asia/Makassar" @selected(($pengaturan->timezone ?? 'Asia/Jakarta') === 'Asia/Makassar')>Asia/Makassar (WITA)</option>
+                    <option value="Asia/Jayapura" @selected(($pengaturan->timezone ?? 'Asia/Jakarta') === 'Asia/Jayapura')>Asia/Jayapura (WIT)</option>
                 </select>
             </div>
 
@@ -53,9 +53,9 @@
                     name="date_format"
                     class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition bg-white"
                 >
-                    <option value="d-m-Y">DD-MM-YYYY</option>
-                    <option value="Y-m-d">YYYY-MM-DD</option>
-                    <option value="d/m/Y">DD/MM/YYYY</option>
+                    <option value="d-m-Y" @selected(($pengaturan->date_format ?? 'd-m-Y') === 'd-m-Y')>DD-MM-YYYY</option>
+                    <option value="Y-m-d" @selected(($pengaturan->date_format ?? 'd-m-Y') === 'Y-m-d')>YYYY-MM-DD</option>
+                    <option value="d/m/Y" @selected(($pengaturan->date_format ?? 'd-m-Y') === 'd/m/Y')>DD/MM/YYYY</option>
                 </select>
             </div>
 
