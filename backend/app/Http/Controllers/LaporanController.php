@@ -163,15 +163,43 @@ class LaporanController extends Controller
             ->map(fn (Carbon $month) => $month->locale('id')->translatedFormat('M'))
             ->values();
 
+        $monthFormatSql = $isSqlite
+            ? "strftime('%Y-%m', tanggal_bergabung)"
+            : "DATE_FORMAT(tanggal_bergabung, '%Y-%m')";
+
+        $kegiatanMonthFormatSql = $isSqlite
+            ? "strftime('%Y-%m', tanggal)"
+            : "DATE_FORMAT(tanggal, '%Y-%m')";
+
+        $windowStart = now()->startOfMonth()->subMonths(5);
+        $windowEnd = now()->endOfMonth();
+
+        $baseMemberCount = Anggota::where('tanggal_bergabung', '<', $windowStart->toDateString())->count();
+
+        $membersPerMonth = Anggota::query()
+            ->whereBetween('tanggal_bergabung', [$windowStart->toDateString(), $windowEnd->toDateString()])
+            ->selectRaw("{$monthFormatSql} as ym, COUNT(*) as total")
+            ->groupBy('ym')
+            ->pluck('total', 'ym');
+
+        $runningMemberTotal = $baseMemberCount;
         $memberGrowth = $months
-            ->map(fn (Carbon $month) => Anggota::whereDate('tanggal_bergabung', '<=', $month->copy()->endOfMonth())->count())
+            ->map(function (Carbon $month) use ($membersPerMonth, &$runningMemberTotal) {
+                $ym = $month->format('Y-m');
+                $runningMemberTotal += (int) ($membersPerMonth[$ym] ?? 0);
+
+                return $runningMemberTotal;
+            })
             ->values();
 
+        $activitiesPerMonth = Kegiatan::query()
+            ->whereBetween('tanggal', [$windowStart->toDateString(), $windowEnd->toDateString()])
+            ->selectRaw("{$kegiatanMonthFormatSql} as ym, COUNT(*) as total")
+            ->groupBy('ym')
+            ->pluck('total', 'ym');
+
         $activityGrowth = $months
-            ->map(fn (Carbon $month) => Kegiatan::whereBetween('tanggal', [
-                $month->copy()->startOfMonth()->toDateString(),
-                $month->copy()->endOfMonth()->toDateString(),
-            ])->count())
+            ->map(fn (Carbon $month) => (int) ($activitiesPerMonth[$month->format('Y-m')] ?? 0))
             ->values();
 
         $professionDistribution = Anggota::selectRaw('profesi, COUNT(*) as total')

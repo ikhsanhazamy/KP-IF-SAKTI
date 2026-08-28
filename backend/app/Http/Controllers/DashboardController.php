@@ -7,6 +7,7 @@ use App\Models\Kegiatan;
 use App\Models\PAC;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -88,17 +89,32 @@ class DashboardController extends Controller
             'sk' => $this->percentageGrowth($skBulanIni, $skBulanLalu),
         ];
 
+        $driver = DB::connection()->getDriverName();
+        $isSqlite = $driver === 'sqlite';
+        $monthFormatSql = $isSqlite
+            ? "strftime('%Y-%m', tanggal_bergabung)"
+            : "DATE_FORMAT(tanggal_bergabung, '%Y-%m')";
+
+        $windowStart = $now->copy()->subMonthsNoOverflow(5)->startOfMonth();
+
+        $baseCount = Anggota::where('tanggal_bergabung', '<', $windowStart->toDateString())->count();
+
+        $joinedPerMonth = Anggota::query()
+            ->whereBetween('tanggal_bergabung', [$windowStart->toDateString(), $currentMonthEnd->toDateString()])
+            ->selectRaw("{$monthFormatSql} as ym, COUNT(*) as total")
+            ->groupBy('ym')
+            ->pluck('total', 'ym');
+
+        $runningTotal = $baseCount;
         $anggotaGrowthChart = collect(range(5, 0))
-            ->map(function (int $monthsAgo) use ($now) {
+            ->map(function (int $monthsAgo) use ($now, $joinedPerMonth, &$runningTotal) {
                 $month = $now->copy()->subMonthsNoOverflow($monthsAgo);
+                $ym = $month->format('Y-m');
+                $runningTotal += (int) ($joinedPerMonth[$ym] ?? 0);
 
                 return [
                     'label' => $month->locale('id')->translatedFormat('M'),
-                    'total' => Anggota::whereDate(
-                        'tanggal_bergabung',
-                        '<=',
-                        $month->copy()->endOfMonth()
-                    )->count(),
+                    'total' => $runningTotal,
                 ];
             });
 
