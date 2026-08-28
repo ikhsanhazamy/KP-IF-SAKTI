@@ -108,27 +108,30 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        $anggotaBulanIniMap = Anggota::query()
+            ->selectRaw('LOWER(TRIM(pac)) as pac_name, COUNT(*) as total')
+            ->whereBetween('tanggal_bergabung', [$currentMonthStart, $currentMonthEnd])
+            ->groupBy('pac_name')
+            ->pluck('total', 'pac_name');
+
+        $anggotaBulanLaluMap = Anggota::query()
+            ->selectRaw('LOWER(TRIM(pac)) as pac_name, COUNT(*) as total')
+            ->whereBetween('tanggal_bergabung', [$previousMonthStart, $previousMonthEnd])
+            ->groupBy('pac_name')
+            ->pluck('total', 'pac_name');
+
         $topPAC = PAC::orderByDesc('jumlah_anggota')
             ->take(5)
             ->get()
             ->map(function (PAC $pac) use (
-                $currentMonthStart,
-                $currentMonthEnd,
-                $previousMonthStart,
-                $previousMonthEnd
+                $anggotaBulanIniMap,
+                $anggotaBulanLaluMap
             ) {
-                $anggotaBulanIni = $this->countInPeriod(
-                    Anggota::whereRaw('LOWER(pac) = ?', [strtolower($pac->nama_pac)]),
-                    'tanggal_bergabung',
-                    $currentMonthStart,
-                    $currentMonthEnd
-                );
-                $anggotaBulanLalu = $this->countInPeriod(
-                    Anggota::whereRaw('LOWER(pac) = ?', [strtolower($pac->nama_pac)]),
-                    'tanggal_bergabung',
-                    $previousMonthStart,
-                    $previousMonthEnd
-                );
+                $namaKey = strtolower(trim($pac->nama_pac));
+                $kecKey = strtolower(trim($pac->kecamatan));
+
+                $anggotaBulanIni = $anggotaBulanIniMap->get($namaKey) ?? $anggotaBulanIniMap->get($kecKey) ?? 0;
+                $anggotaBulanLalu = $anggotaBulanLaluMap->get($namaKey) ?? $anggotaBulanLaluMap->get($kecKey) ?? 0;
 
                 $pac->growth = $this->percentageGrowth(
                     $anggotaBulanIni,

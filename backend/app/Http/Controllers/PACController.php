@@ -7,6 +7,7 @@ use App\Models\PAC;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -119,51 +120,53 @@ class PACController extends Controller
         $imported = 0;
         $skipped = 0;
 
-        foreach ($this->csvRows($request->file('csv_file')) as $row) {
-            $namaPac = $this->csvValue($row, ['nama_pac', 'pac', 'nama']);
-            $kecamatan = $this->csvValue($row, ['kecamatan']);
+        DB::transaction(function () use ($request, &$imported, &$skipped) {
+            foreach ($this->csvRows($request->file('csv_file')) as $row) {
+                $namaPac = $this->csvValue($row, ['nama_pac', 'pac', 'nama']);
+                $kecamatan = $this->csvValue($row, ['kecamatan']);
 
-            if (! $namaPac || ! $kecamatan) {
-                $skipped++;
-
-                continue;
-            }
-
-            try {
-                $tanggalBerdiri = $this->parseDate($this->csvValue($row, ['tanggal_berdiri', 'tgl_berdiri']));
-
-                if (! $tanggalBerdiri) {
+                if (! $namaPac || ! $kecamatan) {
                     $skipped++;
 
                     continue;
                 }
 
-                PAC::updateOrCreate(
-                    [
-                        'nama_pac' => $namaPac,
-                        'kecamatan' => $kecamatan,
-                    ],
-                    [
-                        'status' => $this->normalizeStatus($this->csvValue($row, ['status'], 'aktif')),
-                        'tanggal_berdiri' => $tanggalBerdiri,
-                        'alamat' => $this->csvValue($row, ['alamat'], '-'),
-                        'desa' => $this->csvValue($row, ['desa', 'kelurahan'], '-'),
-                        'kode_pos' => $this->csvValue($row, ['kode_pos']),
-                        'ketua_pac' => $this->csvValue($row, ['ketua_pac', 'ketua'], '-'),
-                        'telepon' => $this->csvValue($row, ['telepon', 'no_telepon'], '-'),
-                        'email' => $this->csvValue($row, ['email']),
-                        'jumlah_anggota' => (int) ($this->csvValue($row, ['jumlah_anggota', 'anggota'], '0')),
-                        'alumni_lkd' => (int) ($this->csvValue($row, ['alumni_lkd', 'alumni_lkd_count', 'alumni'], '0')),
-                        'nomor_sk' => $this->csvValue($row, ['nomor_sk', 'no_sk']),
-                        'deskripsi' => $this->csvValue($row, ['deskripsi', 'keterangan']),
-                    ]
-                );
+                try {
+                    $tanggalBerdiri = $this->parseDate($this->csvValue($row, ['tanggal_berdiri', 'tgl_berdiri']));
 
-                $imported++;
-            } catch (\Throwable) {
-                $skipped++;
+                    if (! $tanggalBerdiri) {
+                        $skipped++;
+
+                        continue;
+                    }
+
+                    PAC::updateOrCreate(
+                        [
+                            'nama_pac' => $namaPac,
+                            'kecamatan' => $kecamatan,
+                        ],
+                        [
+                            'status' => $this->normalizeStatus($this->csvValue($row, ['status'], 'aktif')),
+                            'tanggal_berdiri' => $tanggalBerdiri,
+                            'alamat' => $this->csvValue($row, ['alamat'], '-'),
+                            'desa' => $this->csvValue($row, ['desa', 'kelurahan'], '-'),
+                            'kode_pos' => $this->csvValue($row, ['kode_pos']),
+                            'ketua_pac' => $this->csvValue($row, ['ketua_pac', 'ketua'], '-'),
+                            'telepon' => $this->csvValue($row, ['telepon', 'no_telepon'], '-'),
+                            'email' => $this->csvValue($row, ['email']),
+                            'jumlah_anggota' => (int) ($this->csvValue($row, ['jumlah_anggota', 'anggota'], '0')),
+                            'alumni_lkd' => (int) ($this->csvValue($row, ['alumni_lkd', 'alumni_lkd_count', 'alumni'], '0')),
+                            'nomor_sk' => $this->csvValue($row, ['nomor_sk', 'no_sk']),
+                            'deskripsi' => $this->csvValue($row, ['deskripsi', 'keterangan']),
+                        ]
+                    );
+
+                    $imported++;
+                } catch (\Throwable) {
+                    $skipped++;
+                }
             }
-        }
+        });
 
         return redirect()
             ->route('pac.index')
@@ -255,7 +258,7 @@ class PACController extends Controller
         return [
             'nama_pac' => ['required', 'string', 'max:255'],
             'kecamatan' => ['required', 'string', 'max:255'],
-            'status' => ['required', Rule::in(['aktif', 'tidak_aktif', 'akan_expire'])],
+            'status' => ['required', Rule::in(['aktif', 'tidak_aktif', 'akan_expire', 'pending'])],
             'tanggal_berdiri' => ['required', 'date'],
             'alamat' => ['required', 'string'],
             'desa' => ['required', 'string', 'max:255'],
@@ -347,7 +350,7 @@ class PACController extends Controller
             ->trim('_')
             ->toString();
 
-        return in_array($slug, ['aktif', 'tidak_aktif', 'akan_expire'], true)
+        return in_array($slug, ['aktif', 'tidak_aktif', 'akan_expire', 'pending'], true)
             ? $slug
             : 'aktif';
     }
