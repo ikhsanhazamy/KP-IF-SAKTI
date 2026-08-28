@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/map";
 import { Button } from "@/components/ui/button";
 import { Navigation, Phone, Calendar, Mail } from "lucide-react";
+import { formatWhatsAppUrl } from "@/lib/utils";
 
 // Koordinat kecamatan di Sukabumi
 const kecamatanCoords = {
@@ -148,15 +149,25 @@ export function PopupExample() {
                   </div>
                 </div>
 
+                {place.email && (
+                  <div>
+                    <p className="text-[11px] text-gray-400 font-medium">Email</p>
+                    <p className="text-xs text-gray-700 font-medium mt-0.5 truncate flex items-center gap-1.5">
+                      <Mail className="size-3 text-gray-400 shrink-0" />
+                      {place.email}
+                    </p>
+                  </div>
+                )}
+
                 <div className="border-t border-gray-100 pt-3 flex flex-col gap-2">
                   <p className="text-xs text-gray-400 leading-normal flex items-start gap-1">
                     <span>📍</span>
                     <span>{place.alamat}</span>
                   </p>
                   
-                  {place.telepon && place.telepon.trim() !== '' && (
+                  {place.telepon && formatWhatsAppUrl(place.telepon) && (
                     <a
-                      href={`https://wa.me/${place.telepon.replace(/[^0-9]/g, "")}`}
+                      href={formatWhatsAppUrl(place.telepon)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-2 w-full h-[38px] bg-green-50 text-[#1f7a4d] border border-green-200 hover:bg-[#1f7a4d] hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition duration-200"

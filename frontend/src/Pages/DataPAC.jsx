@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { formatWhatsAppUrl } from "../lib/utils";
 
 function DataPAC() {
   const [pacs, setPacs] = useState([]);
@@ -272,9 +273,9 @@ function DataPAC() {
                       >
                         Detail Profil
                       </button>
-                      {pac.telepon ? (
+                      {pac.telepon && formatWhatsAppUrl(pac.telepon) ? (
                         <a
-                          href={`https://wa.me/${pac.telepon.replace(/[^0-9]/g, "")}`}
+                          href={formatWhatsAppUrl(pac.telepon)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex-1 block text-center py-3 border border-gray-200 rounded-2xl text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-300"
@@ -415,9 +416,9 @@ function DataPAC() {
 
               {/* Action Buttons */}
               <div className="mt-8 pt-6 border-t border-gray-100 flex gap-4">
-                {selectedPac.telepon ? (
+                {selectedPac.telepon && formatWhatsAppUrl(selectedPac.telepon) ? (
                   <a
-                    href={`https://wa.me/${selectedPac.telepon.replace(/[^0-9]/g, "")}`}
+                    href={formatWhatsAppUrl(selectedPac.telepon)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 text-center py-3 bg-[#1f7a4d] text-white rounded-2xl text-sm font-semibold hover:bg-[#17633d] transition duration-300"
