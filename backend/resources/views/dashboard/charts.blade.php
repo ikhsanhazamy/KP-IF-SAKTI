@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const textColor = '#8A8F9D';
     const gridColor = '#E9EEEB';
-    const anggotaCanvas = document.getElementById('pendidikanChart');
+    const anggotaCanvas = document.getElementById('anggotaGrowthChart');
     const anggotaContext = anggotaCanvas.getContext('2d');
     const anggotaGradient = anggotaContext.createLinearGradient(0, 0, 0, 260);
 

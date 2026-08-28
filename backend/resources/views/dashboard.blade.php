@@ -23,7 +23,7 @@
 
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
 
-        @include('dashboard.pendidikan-chart')
+        @include('dashboard.anggota-growth-chart')
 
         @include('dashboard.profesi-chart')
 
