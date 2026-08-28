@@ -71,7 +71,6 @@ class PacPengajuanAsyncJobTest extends TestCase
             'telepon' => '08987654321',
             'email' => 'pac.surade@example.com',
             'jumlah_anggota' => 0,
-            'total_kegiatan' => 0,
             'deskripsi' => 'PAC Surade',
         ]);
 

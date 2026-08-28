@@ -54,7 +54,7 @@ class KegiatanController extends Controller
 
     public function show(int $id)
     {
-        $kegiatan = Kegiatan::findOrFail($id);
+        $kegiatan = Kegiatan::with('pac')->findOrFail($id);
 
         return response()->json($kegiatan);
     }

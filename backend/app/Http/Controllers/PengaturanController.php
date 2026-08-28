@@ -6,6 +6,7 @@ use App\Models\Pengaturan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -250,14 +251,17 @@ class PengaturanController extends Controller
                 }
 
                 try {
+                    DB::disconnect('sqlite');
                     if (! copy($filePath, $sqlitePath)) {
                         throw new \Exception('Gagal menyalin file backup ke database.');
                     }
+                    DB::reconnect('sqlite');
                 } catch (\Throwable $e) {
                     // Rollback ke snapshot sebelum restore
                     if (file_exists($snapshotPath)) {
                         copy($snapshotPath, $sqlitePath);
                     }
+                    DB::reconnect('sqlite');
 
                     Log::error('SQLite restore copy failed, rolled back to pre-restore snapshot', [
                         'user_id' => Auth::id(),

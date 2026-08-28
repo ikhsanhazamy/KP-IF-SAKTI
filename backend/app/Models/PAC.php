@@ -29,4 +29,12 @@ class PAC extends Model
         'nomor_sk',
 
     ];
+
+    /**
+     * Relasi ke Kegiatan
+     */
+    public function kegiatans()
+    {
+        return $this->hasMany(Kegiatan::class, 'pac_id');
+    }
 }

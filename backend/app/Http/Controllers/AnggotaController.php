@@ -38,22 +38,26 @@ class AnggotaController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $totalAnggota = Anggota::count();
-        $anggotaAktif = Anggota::where('status', 'aktif')->count();
-        $anggotaTidakAktif = Anggota::where('status', 'tidak_aktif')->count();
-        $anggotaBaru = Anggota::whereMonth('tanggal_bergabung', Carbon::now()->month)
-            ->whereYear('tanggal_bergabung', Carbon::now()->year)
-            ->count();
+        $stats = Anggota::query()
+            ->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'aktif' THEN 1 ELSE 0 END) as aktif,
+                SUM(CASE WHEN status = 'tidak_aktif' THEN 1 ELSE 0 END) as tidak_aktif,
+                SUM(CASE WHEN email IS NOT NULL AND telepon IS NOT NULL AND tanggal_lahir IS NOT NULL AND pendidikan IS NOT NULL AND profesi IS NOT NULL THEN 1 ELSE 0 END) as terverifikasi
+            ")
+            ->first();
 
-        $anggotaTerverifikasi = Anggota::whereNotNull('email')
-            ->whereNotNull('telepon')
-            ->whereNotNull('tanggal_lahir')
-            ->whereNotNull('pendidikan')
-            ->whereNotNull('profesi')
-            ->count();
+        $totalAnggota = (int) ($stats->total ?? 0);
+        $anggotaAktif = (int) ($stats->aktif ?? 0);
+        $anggotaTidakAktif = (int) ($stats->tidak_aktif ?? 0);
+        $anggotaTerverifikasi = (int) ($stats->terverifikasi ?? 0);
+        $anggotaBaru = Anggota::whereBetween('tanggal_bergabung', [
+            Carbon::now()->startOfMonth(),
+            Carbon::now()->endOfMonth(),
+        ])->count();
 
         $tingkatVerifikasi = $totalAnggota > 0
-            ? round(($anggotaTerverifikasi / $totalAnggota) * 100)
+            ? (int) round(($anggotaTerverifikasi / $totalAnggota) * 100)
             : 0;
 
         return view('anggota.index', compact(

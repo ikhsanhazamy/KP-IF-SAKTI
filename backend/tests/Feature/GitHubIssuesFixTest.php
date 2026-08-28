@@ -491,4 +491,137 @@ class GitHubIssuesFixTest extends TestCase
         $response->assertOk();
         $response->assertSee('name="remember"', false);
     }
+
+    /**
+     * Test Issue #87: Dashboard renders anggota-growth-chart view with anggotaGrowthChart canvas ID.
+     */
+    public function test_dashboard_renders_anggota_growth_chart_canvas_and_view(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard');
+        $response->assertOk();
+        $response->assertSee('id="anggotaGrowthChart"', false);
+        $response->assertDontSee('id="pendidikanChart"', false);
+    }
+
+    /**
+     * Test Issue #85: KegiatanController show method eager loads PAC relation.
+     */
+    public function test_kegiatan_show_eager_loads_pac_relation(): void
+    {
+        $user = User::factory()->create();
+
+        $pac = PAC::create([
+            'nama_pac' => 'PAC Cibadak',
+            'kecamatan' => 'Cibadak',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'alamat' => 'Alamat Cibadak',
+            'desa' => 'Desa Cibadak',
+            'ketua_pac' => 'Ketua Cibadak',
+            'telepon' => '081234',
+        ]);
+
+        $kegiatan = Kegiatan::create([
+            'pac_id' => $pac->id,
+            'judul' => 'Kajian Rutin',
+            'tanggal' => '2026-08-10',
+            'waktu' => '10:00',
+            'lokasi' => 'Masjid Cibadak',
+            'kategori' => 'Kajian',
+            'peserta' => 40,
+            'status' => 'completed',
+        ]);
+
+        $response = $this->actingAs($user)->get("/kegiatan/{$kegiatan->id}");
+        $response->assertOk();
+        $response->assertJson([
+            'id' => $kegiatan->id,
+            'pac' => [
+                'id' => $pac->id,
+                'nama_pac' => 'PAC Cibadak',
+            ],
+        ]);
+    }
+
+    /**
+     * Test Issue #83: PAC controller rejects future tanggal_berdiri.
+     */
+    public function test_pac_store_rejects_future_tanggal_berdiri(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('pac.store'), [
+            'nama_pac' => 'PAC Masa Depan',
+            'kecamatan' => 'Cisaat',
+            'status' => 'aktif',
+            'tanggal_berdiri' => now()->addDays(5)->format('Y-m-d'),
+            'alamat' => 'Alamat',
+            'desa' => 'Desa',
+            'ketua_pac' => 'Ketua',
+            'telepon' => '081234567890',
+        ]);
+
+        $response->assertSessionHasErrors('tanggal_berdiri');
+    }
+
+    /**
+     * Test Issue #83: PAC API pengajuan rejects future tanggal_berdiri.
+     */
+    public function test_pac_api_pengajuan_rejects_future_tanggal_berdiri(): void
+    {
+        $response = $this->postJson('/api/pac/pengajuan', [
+            'nama_pac' => 'PAC Masa Depan',
+            'kecamatan' => 'Cisaat',
+            'tanggal_berdiri' => now()->addDays(10)->format('Y-m-d'),
+            'ketua_pac' => 'Ketua',
+            'telepon' => '081234567890',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('tanggal_berdiri');
+    }
+
+    /**
+     * Test Issue #82: Anggota index statistics calculation with single quotes in SQL.
+     */
+    public function test_anggota_stats_query_uses_single_quotes_and_aggregates(): void
+    {
+        $user = User::factory()->create();
+
+        Anggota::create([
+            'nama' => 'Anggota Aktif',
+            'email' => 'aktif@example.com',
+            'telepon' => '081234567890',
+            'tanggal_lahir' => '1995-05-12',
+            'pac' => 'PAC Cibadak',
+            'profesi' => 'Guru',
+            'pendidikan' => 'S1',
+            'status' => 'aktif',
+            'status_pernikahan' => 'kawin',
+            'tanggal_bergabung' => now()->format('Y-m-d'),
+        ]);
+
+        Anggota::create([
+            'nama' => 'Anggota Pasif',
+            'email' => 'pasif@example.com',
+            'telepon' => null,
+            'tanggal_lahir' => null,
+            'pac' => 'PAC Cicurug',
+            'profesi' => 'Wiraswasta',
+            'pendidikan' => 'SMA',
+            'status' => 'tidak_aktif',
+            'status_pernikahan' => 'belum_kawin',
+            'tanggal_bergabung' => now()->subMonth()->format('Y-m-d'),
+        ]);
+
+        $response = $this->actingAs($user)->get('/anggota');
+        $response->assertOk();
+        $response->assertViewHas('totalAnggota', 2);
+        $response->assertViewHas('anggotaAktif', 1);
+        $response->assertViewHas('anggotaTidakAktif', 1);
+        $response->assertViewHas('anggotaBaru', 1);
+        $response->assertViewHas('tingkatVerifikasi', 50);
+    }
 }
