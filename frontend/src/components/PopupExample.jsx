@@ -154,7 +154,7 @@ export function PopupExample() {
                     <span>{place.alamat}</span>
                   </p>
                   
-                  {place.telepon && (
+                  {place.telepon && place.telepon.trim() !== '' && (
                     <a
                       href={`https://wa.me/${place.telepon.replace(/[^0-9]/g, "")}`}
                       target="_blank"
