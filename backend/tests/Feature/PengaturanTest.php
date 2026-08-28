@@ -29,6 +29,29 @@ class PengaturanTest extends TestCase
         $this->actingAs($user)
             ->get('/pengaturan/notifikasi')
             ->assertOk();
+
+        $this->actingAs($user)
+            ->get('/pengaturan/sistem')
+            ->assertOk()
+            ->assertViewHas('pengaturan');
+    }
+
+    public function test_user_can_save_and_view_sistem_settings(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('pengaturan.update'), [
+            'language' => 'en',
+            'timezone' => 'Asia/Makassar',
+            'date_format' => 'Y-m-d',
+        ])->assertRedirect();
+
+        $this->actingAs($user)
+            ->get('/pengaturan/sistem')
+            ->assertOk()
+            ->assertSee('value="en" selected', false)
+            ->assertSee('value="Asia/Makassar" selected', false)
+            ->assertSee('value="Y-m-d" selected', false);
     }
 
     public function test_user_can_update_profile_information(): void

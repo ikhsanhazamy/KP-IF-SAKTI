@@ -104,6 +104,7 @@ class PengaturanController extends Controller
     {
         return view('pengaturan.index', [
             'activeTab' => 'sistem',
+            'pengaturan' => $this->settings(),
         ]);
     }
 
