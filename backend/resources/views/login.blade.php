@@ -177,7 +177,7 @@
 
                 <!-- BACK -->
                 <div class="border-t border-gray-100 mt-6 pt-5 text-center">
-                    <a href="/" class="text-gray-400 hover:text-[#0F5E3A] text-[12px] font-medium transition flex items-center justify-center gap-1">
+                    <a href="{{ config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:5173')) }}" class="text-gray-400 hover:text-[#0F5E3A] text-[12px] font-medium transition flex items-center justify-center gap-1">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>

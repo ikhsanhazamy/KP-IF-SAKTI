@@ -491,4 +491,14 @@ class GitHubIssuesFixTest extends TestCase
         $response->assertOk();
         $response->assertSee('name="remember"', false);
     }
+
+    public function test_login_page_renders_back_to_frontend_home_link(): void
+    {
+        config(['app.frontend_url' => 'https://fatayatnu-sukabumi.org']);
+
+        $response = $this->get('/login');
+        $response->assertOk();
+        $response->assertSee('href="https://fatayatnu-sukabumi.org"', false);
+        $response->assertSee('Kembali ke Beranda');
+    }
 }
