@@ -86,7 +86,7 @@ Route::middleware('throttle:api')->group(function () {
         $request->validate([
             'nama_pac' => 'required|string|max:255',
             'kecamatan' => 'required|string|max:255',
-            'tanggal_berdiri' => 'required|date',
+            'tanggal_berdiri' => 'required|date|before_or_equal:today|after_or_equal:1900-01-01',
             'alamat' => 'nullable|string',
             'desa' => 'nullable|string|max:255',
             'kode_pos' => 'nullable|string|max:10',
