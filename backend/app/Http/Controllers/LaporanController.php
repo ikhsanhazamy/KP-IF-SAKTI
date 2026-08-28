@@ -8,6 +8,7 @@ use App\Models\PAC;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LaporanController extends Controller
@@ -144,7 +145,7 @@ class LaporanController extends Controller
         $totalKegiatan = Kegiatan::count();
 
         $nowDate = now()->toDateString();
-        $isSqlite = config('database.default') === 'sqlite';
+        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
 
         $ageRaw = $isSqlite
             ? "AVG(CAST(strftime('%Y', '{$nowDate}') - strftime('%Y', tanggal_lahir) - (strftime('%m-%d', '{$nowDate}') < strftime('%m-%d', tanggal_lahir)) AS INTEGER))"
