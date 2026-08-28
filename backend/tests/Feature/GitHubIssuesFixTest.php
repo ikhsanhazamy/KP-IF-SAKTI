@@ -503,6 +503,87 @@ class GitHubIssuesFixTest extends TestCase
     }
 
     /**
+    /**
+     * Test Issue #82: Anggota index statistics calculation with single quotes in SQL.
+     */
+    public function test_anggota_stats_query_uses_single_quotes_and_aggregates(): void
+    {
+        $user = User::factory()->create();
+
+        Anggota::create([
+            'nama' => 'Anggota Aktif',
+            'email' => 'aktif@example.com',
+            'telepon' => '081234567890',
+            'tanggal_lahir' => '1995-05-12',
+            'pac' => 'PAC Cibadak',
+            'profesi' => 'Guru',
+            'pendidikan' => 'S1',
+            'status' => 'aktif',
+            'status_pernikahan' => 'kawin',
+            'tanggal_bergabung' => now()->format('Y-m-d'),
+        ]);
+
+        Anggota::create([
+            'nama' => 'Anggota Pasif',
+            'email' => 'pasif@example.com',
+            'telepon' => null,
+            'tanggal_lahir' => null,
+            'pac' => 'PAC Cicurug',
+            'profesi' => 'Wiraswasta',
+            'pendidikan' => 'SMA',
+            'status' => 'tidak_aktif',
+            'status_pernikahan' => 'belum_kawin',
+            'tanggal_bergabung' => now()->subMonth()->format('Y-m-d'),
+        ]);
+
+        $response = $this->actingAs($user)->get('/anggota');
+        $response->assertOk();
+        $response->assertViewHas('totalAnggota', 2);
+        $response->assertViewHas('anggotaAktif', 1);
+        $response->assertViewHas('anggotaTidakAktif', 1);
+        $response->assertViewHas('anggotaBaru', 1);
+        $response->assertViewHas('tingkatVerifikasi', 50);
+    }
+
+    /**
+     * Test Issue #83: PAC controller rejects future tanggal_berdiri.
+     */
+    public function test_pac_store_rejects_future_tanggal_berdiri(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('pac.store'), [
+            'nama_pac' => 'PAC Masa Depan',
+            'kecamatan' => 'Cisaat',
+            'status' => 'aktif',
+            'tanggal_berdiri' => now()->addDays(5)->format('Y-m-d'),
+            'alamat' => 'Alamat',
+            'desa' => 'Desa',
+            'ketua_pac' => 'Ketua',
+            'telepon' => '081234567890',
+        ]);
+
+        $response->assertSessionHasErrors('tanggal_berdiri');
+    }
+
+    /**
+     * Test Issue #83: PAC API pengajuan rejects future tanggal_berdiri.
+     */
+    public function test_pac_api_pengajuan_rejects_future_tanggal_berdiri(): void
+    {
+        $response = $this->postJson('/api/pac/pengajuan', [
+            'nama_pac' => 'PAC Masa Depan',
+            'kecamatan' => 'Cisaat',
+            'tanggal_berdiri' => now()->addDays(10)->format('Y-m-d'),
+            'ketua_pac' => 'Ketua',
+            'telepon' => '081234567890',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('tanggal_berdiri');
+    }
+
+    /**
      * Test Issue #85: KegiatanController show method eager loads PAC relation.
      */
     public function test_kegiatan_show_eager_loads_pac_relation(): void
