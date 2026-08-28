@@ -19,10 +19,10 @@ Route::middleware('throttle:api')->group(function () {
         $query = Kegiatan::with('pac:id,nama_pac,kecamatan');
 
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('judul', 'like', "%{$search}%")
-                    ->orWhere('deskripsi', 'like', "%{$search}%");
+            $escaped = addcslashes($request->search, '%_\\');
+            $query->where(function ($q) use ($escaped) {
+                $q->where('judul', 'like', "%{$escaped}%")
+                    ->orWhere('deskripsi', 'like', "%{$escaped}%");
             });
         }
 

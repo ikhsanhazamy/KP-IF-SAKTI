@@ -25,10 +25,11 @@ class PACController extends Controller
         $query = PAC::query();
 
         if ($search !== '') {
-            $query->where(function ($builder) use ($search) {
-                $builder->where('nama_pac', 'like', "%{$search}%")
-                    ->orWhere('kecamatan', 'like', "%{$search}%")
-                    ->orWhere('ketua_pac', 'like', "%{$search}%");
+            $escaped = addcslashes($search, '%_\\');
+            $query->where(function ($builder) use ($escaped) {
+                $builder->where('nama_pac', 'like', "%{$escaped}%")
+                    ->orWhere('kecamatan', 'like', "%{$escaped}%")
+                    ->orWhere('ketua_pac', 'like', "%{$escaped}%");
             });
         }
 

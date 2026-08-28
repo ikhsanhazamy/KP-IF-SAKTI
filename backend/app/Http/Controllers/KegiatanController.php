@@ -24,11 +24,12 @@ class KegiatanController extends Controller
         }
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('judul', 'like', "%{$search}%")
-                    ->orWhere('lokasi', 'like', "%{$search}%")
-                    ->orWhere('kategori', 'like', "%{$search}%")
-                    ->orWhere('deskripsi', 'like', "%{$search}%");
+            $escaped = addcslashes($search, '%_\\');
+            $query->where(function ($q) use ($escaped) {
+                $q->where('judul', 'like', "%{$escaped}%")
+                    ->orWhere('lokasi', 'like', "%{$escaped}%")
+                    ->orWhere('kategori', 'like', "%{$escaped}%")
+                    ->orWhere('deskripsi', 'like', "%{$escaped}%");
             });
         }
 

@@ -19,11 +19,13 @@ class HeaderController extends Controller
             return response()->json(['results' => []]);
         }
 
+        $escaped = addcslashes($query, '%_\\');
+
         $anggota = Anggota::query()
-            ->where(function ($builder) use ($query) {
-                $builder->where('nama', 'like', "%{$query}%")
-                    ->orWhere('email', 'like', "%{$query}%")
-                    ->orWhere('pac', 'like', "%{$query}%");
+            ->where(function ($builder) use ($escaped) {
+                $builder->where('nama', 'like', "%{$escaped}%")
+                    ->orWhere('email', 'like', "%{$escaped}%")
+                    ->orWhere('pac', 'like', "%{$escaped}%");
             })
             ->limit(5)
             ->get()
@@ -35,10 +37,10 @@ class HeaderController extends Controller
             ]);
 
         $pacs = PAC::query()
-            ->where(function ($builder) use ($query) {
-                $builder->where('nama_pac', 'like', "%{$query}%")
-                    ->orWhere('kecamatan', 'like', "%{$query}%")
-                    ->orWhere('ketua_pac', 'like', "%{$query}%");
+            ->where(function ($builder) use ($escaped) {
+                $builder->where('nama_pac', 'like', "%{$escaped}%")
+                    ->orWhere('kecamatan', 'like', "%{$escaped}%")
+                    ->orWhere('ketua_pac', 'like', "%{$escaped}%");
             })
             ->limit(5)
             ->get()
@@ -50,10 +52,10 @@ class HeaderController extends Controller
             ]);
 
         $kegiatans = Kegiatan::query()
-            ->where(function ($builder) use ($query) {
-                $builder->where('judul', 'like', "%{$query}%")
-                    ->orWhere('lokasi', 'like', "%{$query}%")
-                    ->orWhere('kategori', 'like', "%{$query}%");
+            ->where(function ($builder) use ($escaped) {
+                $builder->where('judul', 'like', "%{$escaped}%")
+                    ->orWhere('lokasi', 'like', "%{$escaped}%")
+                    ->orWhere('kategori', 'like', "%{$escaped}%");
             })
             ->limit(5)
             ->get()
