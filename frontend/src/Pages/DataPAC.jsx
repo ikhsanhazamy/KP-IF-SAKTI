@@ -178,7 +178,7 @@ function DataPAC() {
 
           {/* Filter buttons — wraps on mobile */}
           <div className="flex flex-wrap gap-2">
-            {["Semua", "Aktif", "Tidak_Aktif", "Pending"].map((status) => (
+            {["Semua", "Aktif", "Tidak_Aktif", "Akan_Expire", "Pending"].map((status) => (
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
@@ -188,7 +188,7 @@ function DataPAC() {
                     : "bg-white border-[#E5E7EB] text-[#6B7280] hover:border-[#1f7a4d] hover:text-[#1f7a4d]"
                 }`}
               >
-                {status === "Tidak_Aktif" ? "Tidak Aktif" : status}
+                {status === "Tidak_Aktif" ? "Tidak Aktif" : status === "Akan_Expire" ? "Akan Expire" : status}
               </button>
             ))}
           </div>
@@ -224,10 +224,12 @@ function DataPAC() {
                             ? "bg-green-50 text-green-700"
                             : pac.status === "pending"
                             ? "bg-amber-50 text-amber-600 border border-amber-200"
+                            : pac.status === "akan_expire"
+                            ? "bg-orange-50 text-orange-600 border border-orange-200"
                             : "bg-gray-100 text-gray-500"
                         }`}
                       >
-                        {pac.status === "aktif" ? "Aktif" : pac.status === "pending" ? "Pending" : "Tidak Aktif"}
+                        {pac.status === "aktif" ? "Aktif" : pac.status === "pending" ? "Pending" : pac.status === "akan_expire" ? "Akan Expire" : "Tidak Aktif"}
                       </span>
                     </div>
 
@@ -322,9 +324,11 @@ function DataPAC() {
                     ? "bg-green-50 text-green-700"
                     : selectedPac.status === "pending"
                     ? "bg-amber-50 text-amber-600 border border-amber-200"
+                    : selectedPac.status === "akan_expire"
+                    ? "bg-orange-50 text-orange-600 border border-orange-200"
                     : "bg-gray-100 text-gray-500"
                 }`}>
-                  {selectedPac.status === "aktif" ? "Aktif" : selectedPac.status === "pending" ? "Pending" : "Tidak Aktif"}
+                  {selectedPac.status === "aktif" ? "Aktif" : selectedPac.status === "pending" ? "Pending" : selectedPac.status === "akan_expire" ? "Akan Expire" : "Tidak Aktif"}
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">{selectedPac.nama_pac}</h2>
                 <p className="text-gray-500 text-sm mt-1">📍 Kecamatan {selectedPac.kecamatan}</p>

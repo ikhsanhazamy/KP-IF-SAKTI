@@ -40,21 +40,22 @@ class AnggotaController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $stats = Anggota::selectRaw('
+        $stats = Anggota::selectRaw("
             COUNT(*) as total,
-            SUM(CASE WHEN status = "aktif" THEN 1 ELSE 0 END) as aktif,
-            SUM(CASE WHEN status = "tidak_aktif" THEN 1 ELSE 0 END) as tidak_aktif,
+            SUM(CASE WHEN status = 'aktif' THEN 1 ELSE 0 END) as aktif,
+            SUM(CASE WHEN status = 'tidak_aktif' THEN 1 ELSE 0 END) as tidak_aktif,
             SUM(CASE WHEN email IS NOT NULL AND telepon IS NOT NULL AND tanggal_lahir IS NOT NULL AND pendidikan IS NOT NULL AND profesi IS NOT NULL THEN 1 ELSE 0 END) as terverifikasi
-        ')->first();
+        ")->first();
 
         $totalAnggota = (int) ($stats->total ?? 0);
         $anggotaAktif = (int) ($stats->aktif ?? 0);
         $anggotaTidakAktif = (int) ($stats->tidak_aktif ?? 0);
         $anggotaTerverifikasi = (int) ($stats->terverifikasi ?? 0);
 
-        $anggotaBaru = Anggota::whereMonth('tanggal_bergabung', Carbon::now()->month)
-            ->whereYear('tanggal_bergabung', Carbon::now()->year)
-            ->count();
+        $anggotaBaru = Anggota::whereBetween('tanggal_bergabung', [
+            Carbon::now()->startOfMonth(),
+            Carbon::now()->endOfMonth(),
+        ])->count();
 
         $tingkatVerifikasi = $totalAnggota > 0
             ? (int) round(($anggotaTerverifikasi / $totalAnggota) * 100)
