@@ -83,14 +83,14 @@ class LaporanController extends Controller
             Anggota::orderBy('nama')->chunk(200, function ($anggotas) use ($handle) {
                 foreach ($anggotas as $anggota) {
                     fputcsv($handle, [
-                        $anggota->nama,
-                        $anggota->email,
-                        $anggota->telepon,
+                        self::sanitizeForExport($anggota->nama),
+                        self::sanitizeForExport($anggota->email),
+                        self::sanitizeForExport($anggota->telepon),
                         $anggota->tanggal_lahir?->format('Y-m-d'),
                         $anggota->umur,
-                        $anggota->pac,
-                        $anggota->profesi,
-                        $anggota->pendidikan,
+                        self::sanitizeForExport($anggota->pac),
+                        self::sanitizeForExport($anggota->profesi),
+                        self::sanitizeForExport($anggota->pendidikan),
                         ucfirst(str_replace('_', ' ', $anggota->status)),
                         $this->formatStatusPernikahan($anggota->status_pernikahan),
                         $anggota->tanggal_bergabung?->format('Y-m-d'),
@@ -102,6 +102,20 @@ class LaporanController extends Controller
         }, 'data-anggota.csv', [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    public static function sanitizeForExport(?string $value): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        $firstChar = substr($value, 0, 1);
+        if (in_array($firstChar, ['=', '+', '-', '@', "\t", "\r"], true)) {
+            return "'".$value;
+        }
+
+        return $value;
     }
 
     private function memberPdf()
@@ -129,10 +143,18 @@ class LaporanController extends Controller
         $totalPAC = PAC::count();
         $totalKegiatan = Kegiatan::count();
 
-        $usia = Anggota::whereNotNull('tanggal_lahir')
-            ->get()
-            ->pluck('umur')
-            ->filter();
+        $nowDate = now()->toDateString();
+        $isSqlite = config('database.default') === 'sqlite';
+
+        $ageRaw = $isSqlite
+            ? "AVG(CAST(strftime('%Y', '{$nowDate}') - strftime('%Y', tanggal_lahir) - (strftime('%m-%d', '{$nowDate}') < strftime('%m-%d', tanggal_lahir)) AS INTEGER))"
+            : "AVG(TIMESTAMPDIFF(YEAR, tanggal_lahir, '{$nowDate}'))";
+
+        $avgAgeResult = Anggota::whereNotNull('tanggal_lahir')
+            ->selectRaw("{$ageRaw} as avg_age")
+            ->value('avg_age');
+
+        $averageAge = $avgAgeResult !== null ? (int) round((float) $avgAgeResult) : 0;
 
         $months = collect(range(5, 0))
             ->map(fn (int $offset) => now()->startOfMonth()->subMonths($offset));
@@ -171,7 +193,7 @@ class LaporanController extends Controller
             'totalPAC' => $totalPAC,
             'totalKegiatan' => $totalKegiatan,
             'anggotaAktif' => $anggotaAktif,
-            'averageAge' => $usia->isNotEmpty() ? (int) round($usia->avg()) : 0,
+            'averageAge' => $averageAge,
             'averageActivitiesPerPac' => $totalPAC > 0
                 ? round($totalKegiatan / $totalPAC, 1)
                 : 0,

@@ -32,6 +32,7 @@ class AuthController extends Controller
             $request->session()->put('two_factor_code', $code);
             $request->session()->put('two_factor_expires_at', now()->addMinutes(10)->timestamp);
             $request->session()->put('two_factor_remember', (bool) $request->boolean('remember'));
+            $request->session()->put('two_factor_attempts', 0);
 
             Log::info('Two factor authentication challenge initiated', ['user_id' => $user->id]);
 
@@ -68,23 +69,36 @@ class AuthController extends Controller
 
         $expiresAt = (int) $request->session()->get('two_factor_expires_at', 0);
         if (now()->timestamp > $expiresAt) {
-            $request->session()->forget(['two_factor_user_id', 'two_factor_code', 'two_factor_expires_at', 'two_factor_remember']);
+            $request->session()->forget(['two_factor_user_id', 'two_factor_code', 'two_factor_expires_at', 'two_factor_remember', 'two_factor_attempts']);
 
             return redirect('/login')->withErrors([
                 'email' => 'Kode OTP 2FA telah kadaluwarsa. Silakan login kembali.',
             ]);
         }
 
+        $attempts = (int) $request->session()->get('two_factor_attempts', 0) + 1;
+        $request->session()->put('two_factor_attempts', $attempts);
+
+        if ($attempts > 5) {
+            $request->session()->forget(['two_factor_user_id', 'two_factor_code', 'two_factor_expires_at', 'two_factor_remember', 'two_factor_attempts']);
+
+            return redirect('/login')->withErrors([
+                'email' => 'Terlalu banyak percobaan kode OTP yang salah. Silakan login kembali.',
+            ]);
+        }
+
         if ($request->input('code') !== (string) $request->session()->get('two_factor_code')) {
+            $remaining = max(0, 5 - $attempts);
+
             return back()->withErrors([
-                'code' => 'Kode verifikasi 2FA tidak valid.',
+                'code' => "Kode verifikasi 2FA tidak valid. Sisa percobaan: {$remaining} kali.",
             ]);
         }
 
         $userId = $request->session()->get('two_factor_user_id');
         $remember = (bool) $request->session()->get('two_factor_remember', false);
 
-        $request->session()->forget(['two_factor_user_id', 'two_factor_code', 'two_factor_expires_at', 'two_factor_remember']);
+        $request->session()->forget(['two_factor_user_id', 'two_factor_code', 'two_factor_expires_at', 'two_factor_remember', 'two_factor_attempts']);
 
         Auth::loginUsingId($userId, $remember);
         $request->session()->regenerate();
@@ -104,6 +118,7 @@ class AuthController extends Controller
         $code = sprintf('%06d', random_int(100000, 999999));
         $request->session()->put('two_factor_code', $code);
         $request->session()->put('two_factor_expires_at', now()->addMinutes(10)->timestamp);
+        $request->session()->put('two_factor_attempts', 0);
 
         Log::info('Two factor authentication code regenerated', [
             'user_id' => $request->session()->get('two_factor_user_id'),

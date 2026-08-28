@@ -139,4 +139,28 @@ class TwoFactorAuthenticationTest extends TestCase
         $response->assertSessionHasErrors('email');
         $this->assertGuest();
     }
+
+    public function test_excessive_failed_attempts_locks_out_two_factor_session(): void
+    {
+        $user = User::factory()->create([
+            'two_factor_enabled' => true,
+        ]);
+
+        $sessionData = [
+            'two_factor_user_id' => $user->id,
+            'two_factor_code' => '123456',
+            'two_factor_expires_at' => now()->addMinutes(10)->timestamp,
+            'two_factor_attempts' => 5, // 5 prior failed attempts
+        ];
+
+        // 6th attempt should invalidate the session and redirect to login
+        $response = $this->withSession($sessionData)
+            ->post(route('two-factor.verify'), [
+                'code' => '000000',
+            ]);
+
+        $response->assertRedirect('/login');
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest();
+    }
 }

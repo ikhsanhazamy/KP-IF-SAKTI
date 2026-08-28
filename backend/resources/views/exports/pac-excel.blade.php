@@ -25,27 +25,28 @@
         <tbody>
             @foreach($pacs as $pac)
                 <tr>
-                    <td>{{ $pac->nama_pac }}</td>
-                    <td>{{ $pac->kecamatan }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->nama_pac) }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->kecamatan) }}</td>
                     <td>
                         @switch($pac->status)
                             @case('aktif') Aktif @break
                             @case('akan_expire') Akan Expire @break
                             @case('tidak_aktif') Tidak Aktif @break
+                            @case('pending') Pending @break
                             @default -
                         @endswitch
                     </td>
                     <td>{{ $pac->tanggal_berdiri }}</td>
-                    <td>{{ $pac->alamat }}</td>
-                    <td>{{ $pac->desa }}</td>
-                    <td>{{ $pac->kode_pos }}</td>
-                    <td>{{ $pac->ketua_pac }}</td>
-                    <td>{{ $pac->telepon }}</td>
-                    <td>{{ $pac->email }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->alamat) }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->desa) }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->kode_pos) }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->ketua_pac) }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->telepon) }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->email) }}</td>
                     <td>{{ $pac->jumlah_anggota }}</td>
                     <td>{{ $pac->alumni_lkd }}</td>
-                    <td>{{ $pac->nomor_sk }}</td>
-                    <td>{{ $pac->deskripsi }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->nomor_sk) }}</td>
+                    <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->deskripsi) }}</td>
                 </tr>
             @endforeach
         </tbody>
