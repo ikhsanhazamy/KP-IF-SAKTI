@@ -503,6 +503,49 @@ class GitHubIssuesFixTest extends TestCase
     }
 
     /**
+<    /**
+     * Test Issue #82: Anggota index statistics calculation with single quotes in SQL.
+     */
+    public function test_anggota_stats_query_uses_single_quotes_and_aggregates(): void
+    {
+        $user = User::factory()->create();
+
+        Anggota::create([
+            'nama' => 'Anggota Aktif',
+            'email' => 'aktif@example.com',
+            'telepon' => '081234567890',
+            'tanggal_lahir' => '1995-05-12',
+            'pac' => 'PAC Cibadak',
+            'profesi' => 'Guru',
+            'pendidikan' => 'S1',
+            'status' => 'aktif',
+            'status_pernikahan' => 'kawin',
+            'tanggal_bergabung' => now()->format('Y-m-d'),
+        ]);
+
+        Anggota::create([
+            'nama' => 'Anggota Pasif',
+            'email' => 'pasif@example.com',
+            'telepon' => null,
+            'tanggal_lahir' => null,
+            'pac' => 'PAC Cicurug',
+            'profesi' => 'Wiraswasta',
+            'pendidikan' => 'SMA',
+            'status' => 'tidak_aktif',
+            'status_pernikahan' => 'belum_kawin',
+            'tanggal_bergabung' => now()->subMonth()->format('Y-m-d'),
+        ]);
+
+        $response = $this->actingAs($user)->get('/anggota');
+        $response->assertOk();
+        $response->assertViewHas('totalAnggota', 2);
+        $response->assertViewHas('anggotaAktif', 1);
+        $response->assertViewHas('anggotaTidakAktif', 1);
+        $response->assertViewHas('anggotaBaru', 1);
+        $response->assertViewHas('tingkatVerifikasi', 50);
+    }
+
+    /**
      * Test Issue #83: PAC controller rejects future tanggal_berdiri.
      */
     public function test_pac_store_rejects_future_tanggal_berdiri(): void
