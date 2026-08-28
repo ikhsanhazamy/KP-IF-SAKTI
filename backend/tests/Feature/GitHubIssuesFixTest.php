@@ -622,4 +622,17 @@ class GitHubIssuesFixTest extends TestCase
             ],
         ]);
     }
+
+    /**
+     * Test Issue #87: Dashboard renders anggota-growth-chart view with anggotaGrowthChart canvas ID.
+     */
+    public function test_dashboard_renders_anggota_growth_chart_canvas_and_view(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard');
+        $response->assertOk();
+        $response->assertSee('id="anggotaGrowthChart"', false);
+        $response->assertDontSee('id="pendidikanChart"', false);
+    }
 }
