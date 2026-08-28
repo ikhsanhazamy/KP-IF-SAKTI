@@ -27,10 +27,11 @@ class AnggotaController extends Controller
         }
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('pac', 'like', "%{$search}%");
+            $escaped = addcslashes($search, '%_\\');
+            $query->where(function ($q) use ($escaped) {
+                $q->where('nama', 'like', "%{$escaped}%")
+                    ->orWhere('email', 'like', "%{$escaped}%")
+                    ->orWhere('pac', 'like', "%{$escaped}%");
             });
         }
 

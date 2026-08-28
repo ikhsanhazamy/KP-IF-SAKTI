@@ -102,4 +102,44 @@ class HeaderInteractionTest extends TestCase
         $this->getJson('/header/search?q=test')->assertUnauthorized();
         $this->getJson('/header/notifications')->assertUnauthorized();
     }
+
+    public function test_search_sanitizes_wildcard_characters(): void
+    {
+        $user = User::factory()->create();
+
+        Anggota::create([
+            'nama' => 'Budi Santoso',
+            'email' => 'budi@example.com',
+            'telepon' => '081234567890',
+            'tanggal_lahir' => '1990-01-01',
+            'pac' => 'PAC Cisaat',
+            'profesi' => 'PNS',
+            'pendidikan' => 'S1',
+            'status' => 'aktif',
+            'tanggal_bergabung' => '2025-01-01',
+        ]);
+
+        Anggota::create([
+            'nama' => 'Rina Marlina',
+            'email' => 'rina@example.com',
+            'telepon' => '081234567891',
+            'tanggal_lahir' => '1990-01-01',
+            'pac' => 'PAC Cibadak',
+            'profesi' => 'Wiraswasta',
+            'pendidikan' => 'S1',
+            'status' => 'aktif',
+            'tanggal_bergabung' => '2025-01-01',
+        ]);
+
+        // Regular search should find Budi
+        $response = $this->actingAs($user)->getJson('/header/search?q=Budi');
+        $response->assertOk();
+        $this->assertCount(1, $response->json('results'));
+        $this->assertEquals('Budi Santoso', $response->json('results.0.title'));
+
+        // Wildcard search like "___" should not arbitrarily match all 4-letter names
+        $responseWildcard = $this->actingAs($user)->getJson('/header/search?q=___');
+        $responseWildcard->assertOk();
+        $this->assertCount(0, $responseWildcard->json('results'));
+    }
 }
