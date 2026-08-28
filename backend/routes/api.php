@@ -42,7 +42,12 @@ Route::middleware('throttle:api')->group(function () {
 
     // GET ALL ACTIVE PAC
     Route::get('/pac', function () {
-        return response()->json(PAC::where('status', 'aktif')->latest()->get());
+        return response()->json(
+            PAC::where('status', 'aktif')
+                ->withCount('kegiatans as total_kegiatan')
+                ->latest()
+                ->get()
+        );
     });
 
     // GET SUMMARY STATS
