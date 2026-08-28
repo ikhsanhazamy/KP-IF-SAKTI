@@ -272,14 +272,23 @@ function DataPAC() {
                       >
                         Detail Profil
                       </button>
-                      <a
-                        href={`https://wa.me/${pac.telepon?.replace(/[^0-9]/g, "")}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 block text-center py-3 border border-gray-200 rounded-2xl text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-300"
-                      >
-                        Hubungi PAC
-                      </a>
+                      {pac.telepon ? (
+                        <a
+                          href={`https://wa.me/${pac.telepon.replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 block text-center py-3 border border-gray-200 rounded-2xl text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-300"
+                        >
+                          Hubungi PAC
+                        </a>
+                      ) : (
+                        <button
+                          disabled
+                          className="flex-1 block text-center py-3 border border-gray-100 rounded-2xl text-xs sm:text-sm font-medium text-gray-400 bg-gray-50 cursor-not-allowed"
+                        >
+                          Kontak Kosong
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -406,14 +415,23 @@ function DataPAC() {
 
               {/* Action Buttons */}
               <div className="mt-8 pt-6 border-t border-gray-100 flex gap-4">
-                <a
-                  href={`https://wa.me/${selectedPac.telepon?.replace(/[^0-9]/g, "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 text-center py-3 bg-[#1f7a4d] text-white rounded-2xl text-sm font-semibold hover:bg-[#17633d] transition duration-300"
-                >
-                  Hubungi WhatsApp PAC
-                </a>
+                {selectedPac.telepon ? (
+                  <a
+                    href={`https://wa.me/${selectedPac.telepon.replace(/[^0-9]/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 text-center py-3 bg-[#1f7a4d] text-white rounded-2xl text-sm font-semibold hover:bg-[#17633d] transition duration-300"
+                  >
+                    Hubungi WhatsApp PAC
+                  </a>
+                ) : (
+                  <button
+                    disabled
+                    className="flex-1 text-center py-3 bg-gray-100 text-gray-400 rounded-2xl text-sm font-semibold cursor-not-allowed"
+                  >
+                    Kontak WhatsApp Belum Tersedia
+                  </button>
+                )}
                 <button
                   onClick={() => setSelectedPac(null)}
                   className="px-6 py-3 border border-gray-200 text-gray-600 rounded-2xl text-sm font-semibold hover:bg-gray-100 transition duration-300 cursor-pointer"
