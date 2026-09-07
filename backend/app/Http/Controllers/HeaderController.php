@@ -45,10 +45,10 @@ class HeaderController extends Controller
             ->limit(5)
             ->get()
             ->map(fn (PAC $item) => [
-                'type' => 'PAC',
+                'type' => $item->status === 'pending' ? 'Pengajuan PAC' : 'PAC',
                 'title' => $item->nama_pac,
-                'subtitle' => 'Kecamatan '.$item->kecamatan,
-                'url' => '/data-pac#pac-'.$item->id,
+                'subtitle' => ($item->status === 'pending' ? '[Menunggu Persetujuan] ' : '').'Kecamatan '.$item->kecamatan,
+                'url' => $item->status === 'pending' ? '/pengajuan-pac?search='.urlencode($item->nama_pac) : '/data-pac#pac-'.$item->id,
             ]);
 
         $kegiatans = Kegiatan::query()
@@ -105,8 +105,24 @@ class HeaderController extends Controller
         }
 
         if ($settings->pac_notification) {
+            $pendingPacs = PAC::where('status', 'pending')
+                ->latest()
+                ->limit(3)
+                ->get()
+                ->map(fn (PAC $item) => $this->notification(
+                    'pengajuan',
+                    $item->id,
+                    'Pengajuan PAC Baru',
+                    $item->nama_pac.' menunggu persetujuan admin',
+                    '/pengajuan-pac?search='.urlencode($item->nama_pac),
+                    $item->created_at
+                ));
+
+            $notifications = $notifications->concat($pendingPacs);
+
             $notifications = $notifications->concat(
-                PAC::latest()
+                PAC::where('status', '!=', 'pending')
+                    ->latest()
                     ->limit(4)
                     ->get()
                     ->map(fn (PAC $item) => $this->notification(

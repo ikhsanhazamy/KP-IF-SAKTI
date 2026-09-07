@@ -183,6 +183,12 @@ class DashboardController extends Controller
             ->take(5)
             ->values();
 
+        $pengajuanPACPending = PAC::where('status', 'pending')
+            ->orderByDesc('id')
+            ->take(5)
+            ->get();
+        $pendingPacCount = PAC::where('status', 'pending')->count();
+
         $lastUpdated = collect([
             Anggota::max('updated_at'),
             PAC::max('updated_at'),
@@ -206,6 +212,8 @@ class DashboardController extends Controller
             'profesiChart',
             'aktivitasTerbaru',
             'topPAC',
+            'pengajuanPACPending',
+            'pendingPacCount',
             'lastUpdated'
         ));
     }

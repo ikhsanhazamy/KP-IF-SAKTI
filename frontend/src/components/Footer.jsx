@@ -77,6 +77,11 @@ function Footer() {
                   Sejarah
                 </Link>
               </li>
+              <li>
+                <Link to="/struktur-organisasi" className="hover:text-green-300 transition cursor-pointer">
+                  Struktur Organisasi
+                </Link>
+              </li>
             </ul>
           </div>
 

@@ -1,0 +1,133 @@
+# =============================================================================
+# DOCKER COMPOSE PRODUKSI (VPS DEPLOYMENT)
+# =============================================================================
+# Konfigurasi ini dioptimalkan khusus untuk server VPS produksi:
+# - Seluruh layanan menggunakan restart: always
+# - Basis data MySQL tidak membuka port ke internet publik (hanya jaringan internal Docker)
+# - Container app hanya mengikat port 8000 pada loopback 127.0.0.1 untuk reverse proxy host
+# - Penyimpanan file media (storage) dipetakan ke direktori host agar persisten
+# - Batasan ukuran log aktif untuk mencegah disk server penuh
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # BASIS DATA MYSQL 8.0 PRODUKSI
+  # ---------------------------------------------------------------------------
+  db:
+    image: mysql:8.0
+    container_name: kp_production_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE:-kp_production_db}
+      MYSQL_USER: ${DB_USERNAME:-kp_prod_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$${DB_USERNAME:-kp_prod_user} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # BUILD ASET BACKEND (VITE & TAILWIND LARAVEL)
+  # ---------------------------------------------------------------------------
+  backend-assets:
+    image: node:22-alpine
+    container_name: kp_backend_assets_builder
+    working_dir: /workspace
+    volumes:
+      - ./backend:/workspace
+      - /workspace/node_modules
+    command: sh -c "npm install && npm run build"
+    restart: "no"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ---------------------------------------------------------------------------
+  # BUILD ASET FRONTEND (VITE + REACT)
+  # ---------------------------------------------------------------------------
+  frontend-build:
+    image: node:22-alpine
+    container_name: kp_frontend_assets_builder
+    working_dir: /workspace
+    volumes:
+      - ./frontend:/workspace
+      - frontend_dist:/workspace/dist
+      - /workspace/node_modules
+    command: sh -c "npm install && npm run build"
+    restart: "no"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ---------------------------------------------------------------------------
+  # APLIKASI UTAMA (NGINX + PHP 8.2-FPM + SUPERVISOR)
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+    container_name: kp_production_app
+    restart: always
+    working_dir: /var/www/html
+    volumes:
+      - ./backend/storage:/var/www/html/storage
+      - frontend_dist:/var/www/frontend:ro
+      - ./docker/nginx/default.conf:/etc/nginx/sites-available/default:ro
+    ports:
+      # Hanya bind ke localhost (127.0.0.1) agar tidak dapat dibypass dari internet publik
+      - "127.0.0.1:8000:80"
+    environment:
+      - APP_NAME=${APP_NAME:-KP-IF-SAKTI}
+      - APP_ENV=${APP_ENV:-production}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_URL=${APP_URL:-https://fatayat-sukabumi.org}
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE:-kp_production_db}
+      - DB_USERNAME=${DB_USERNAME:-kp_prod_user}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SESSION_DRIVER=${SESSION_DRIVER:-database}
+      - CACHE_STORE=${CACHE_STORE:-database}
+      - QUEUE_CONNECTION=${QUEUE_CONNECTION:-database}
+      - LOG_CHANNEL=${LOG_CHANNEL:-daily}
+      - LOG_LEVEL=${LOG_LEVEL:-warning}
+      - GOOGLE_APPS_SCRIPT_WEBHOOK_URL=${GOOGLE_APPS_SCRIPT_WEBHOOK_URL:-}
+      - GOOGLE_APPS_SCRIPT_WEBHOOK_TOKEN=${GOOGLE_APPS_SCRIPT_WEBHOOK_TOKEN:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      backend-assets:
+        condition: service_completed_successfully
+      frontend-build:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1/up || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "15m"
+        max-file: "5"
+
+# -----------------------------------------------------------------------------
+# VOLUMES PERSISTEN
+# -----------------------------------------------------------------------------
+volumes:
+  db_data:
+  frontend_dist:

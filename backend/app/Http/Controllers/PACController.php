@@ -259,7 +259,7 @@ class PACController extends Controller
         return [
             'nama_pac' => ['required', 'string', 'max:255'],
             'kecamatan' => ['required', 'string', 'max:255'],
-            'status' => ['required', Rule::in(['aktif', 'tidak_aktif', 'akan_expire'])],
+            'status' => ['required', Rule::in(['aktif', 'tidak_aktif', 'akan_expire', 'pending', 'ditolak'])],
             'tanggal_berdiri' => ['required', 'date', 'before_or_equal:today', 'after_or_equal:1900-01-01'],
             'alamat' => ['required', 'string'],
             'desa' => ['required', 'string', 'max:255'],

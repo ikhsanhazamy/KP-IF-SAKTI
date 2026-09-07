@@ -28,7 +28,7 @@ function ValueSection() {
   ];
 
   return (
-    <section className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-16 sm:py-20 lg:py-24">
+    <section id="nilai-organisasi" className="bg-[#f6f8f7] px-4 sm:px-8 lg:px-20 py-16 sm:py-20 lg:py-24">
 
       {/* TITLE */}
       <div className="text-center mb-10 sm:mb-14">

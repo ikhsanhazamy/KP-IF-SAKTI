@@ -1,9 +1,26 @@
+import { useEffect } from "react";
+import { useLocation, Link } from "react-router-dom";
+import { Users, ChevronRight } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import TimelineSection from "../components/TimelineSection";
 import ValueSection from "../components/ValueSection";
 
 function Tentang() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace("#", "");
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
+    }
+  }, [location.hash]);
+
   return (
     <div className="bg-[#f6f8f7] min-h-screen">
 
@@ -66,6 +83,36 @@ function Tentang() {
       <TimelineSection />
 
       <ValueSection />
+
+      {/* TAUTAN EKSKLUSIF KE HALAMAN KHUSUS STRUKTUR ORGANISASI */}
+      <section className="px-4 sm:px-8 lg:px-20 pb-16 sm:pb-20 lg:pb-24">
+        <div className="max-w-[1280px] mx-auto bg-white border border-[#E7E7E7] rounded-[28px] p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_12px_32px_rgba(0,0,0,0.04)]">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-[#0F5E3A]/10 text-[#0F5E3A] flex items-center justify-center shrink-0 shadow-inner">
+              <Users size={26} />
+            </div>
+            <div>
+              <div className="inline-block px-3 py-0.5 rounded-full bg-[#0F5E3A]/10 text-[#0F5E3A] text-xs font-bold uppercase tracking-wider mb-1">
+                Kepengurusan Cabang
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
+                Struktur Organisasi PC Fatayat NU
+              </h3>
+              <p className="text-sm text-gray-500 mt-0.5 max-w-xl">
+                Bagan susunan Penasihat & Pembina, Pengurus Harian (BPH), serta Bidang-Bidang teknis masa khidmat 2024 - 2029.
+              </p>
+            </div>
+          </div>
+
+          <Link
+            to="/struktur-organisasi"
+            className="shrink-0 px-6 py-3.5 bg-[#0F5E3A] hover:bg-[#0c4b2e] text-white rounded-xl text-sm font-bold transition shadow-[0_4px_14px_rgba(15,94,58,0.25)] flex items-center gap-2"
+          >
+            <span>Buka Halaman Struktur Organisasi</span>
+            <ChevronRight size={16} />
+          </Link>
+        </div>
+      </section>
 
       <Footer />
 

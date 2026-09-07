@@ -5,6 +5,7 @@ import ScrollToTop from "./components/ScrollToTop";
 // Code-split all page components for smaller initial bundle
 const Home = lazy(() => import("./Pages/Home"));
 const Tentang = lazy(() => import("./Pages/Tentang"));
+const StrukturOrganisasi = lazy(() => import("./Pages/StrukturOrganisasi"));
 const Kegiatan = lazy(() => import("./Pages/Kegiatan"));
 const KegiatanDetail = lazy(() => import("./Pages/KegiatanDetail"));
 const PengajuanPAC = lazy(() => import("./Pages/PengajuanPAC"));
@@ -40,6 +41,9 @@ function App() {
           <Route path="/" element={<Home />} />
 
           <Route path="/tentang" element={<Tentang />} />
+
+          <Route path="/struktur-organisasi" element={<StrukturOrganisasi />} />
+          <Route path="/tentang/struktur-organisasi" element={<StrukturOrganisasi />} />
 
           <Route path="/kegiatan" element={<Kegiatan />} />
 

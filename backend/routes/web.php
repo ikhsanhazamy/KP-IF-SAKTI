@@ -7,6 +7,7 @@ use App\Http\Controllers\HeaderController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PACController;
+use App\Http\Controllers\PengajuanPACController;
 use App\Http\Controllers\PengaturanController;
 use Illuminate\Support\Facades\Route;
 
@@ -170,6 +171,28 @@ Route::middleware(['auth', '2fa'])->group(function () {
 
         Route::get('/{id}', [PACController::class, 'show'])
             ->name('pac.show');
+
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | PENGAJUAN PAC (APPROVAL & MANAGEMENT)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('pengajuan-pac')->group(function () {
+
+        Route::get('/', [PengajuanPACController::class, 'index'])
+            ->name('pengajuan-pac.index');
+
+        Route::get('/{id}', [PengajuanPACController::class, 'show'])
+            ->name('pengajuan-pac.show');
+
+        Route::post('/{id}/approve', [PengajuanPACController::class, 'approve'])
+            ->name('pengajuan-pac.approve');
+
+        Route::post('/{id}/reject', [PengajuanPACController::class, 'reject'])
+            ->name('pengajuan-pac.reject');
 
     });
 

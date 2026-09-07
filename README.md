@@ -62,12 +62,14 @@ Akses aplikasi di browser:
 
 ## 📚 Dokumentasi Teknis
 
-Dokumentasi arsitektur dan spesifikasi teknis lengkap tersedia di folder [`docs/`](docs/):
+Dokumentasi arsitektur, deployment, dan spesifikasi teknis lengkap tersedia di folder [`docs/`](docs/) & [`scripts/`](scripts/):
 
+* 🚀 **[Panduan Deployment Server VPS](docs/DEPLOYMENT_GUIDE.md)** — Panduan rilis produksi VPS Ubuntu Linux, Nginx reverse proxy, SSL Let's Encrypt, dan backup harian.
+* ⚡ **[VPS Command Cheatsheet](docs/VPS_CHEATSHEET.md)** — Kumpulan perintah cepat monitoring, log, tinker, artisan, dan pemeliharaan VPS.
+* 🛠️ **[Skrip Otomasi Deployment](scripts/)** — Skrip otomatisasi `setup-vps.sh`, `deploy.sh`, `backup.sh`, dan `restore.sh`.
 * 🌐 **[Dokumentasi REST API](docs/API_DOCUMENTATION.md)** — Spesifikasi endpoint `/api/*`, format JSON, query parameter, dan rate limiting.
 * 🗄️ **[Skema Basis Data & ERD](docs/DATABASE_SCHEMA.md)** — Diagram relasi entitas (ERD) dan kamus data tabel.
 * 🏛️ **[Arsitektur Sistem](docs/ARCHITECTURE.md)** — Desain arsitektur hybrid dan alur sequence pengajuan form.
-* 🚀 **[Panduan Deployment Produksi](docs/DEPLOYMENT_GUIDE.md)** — Panduan rilis VPS Linux, Nginx reverse proxy, SSL Let's Encrypt, dan cron backup.
 * 💻 **[Panduan Development & Debugging](docs/DEVELOPMENT_GUIDE.md)** — Setup host lokal, testing PHPUnit, dan troubleshooting.
 
 ---

@@ -14,6 +14,7 @@
             $overviewActive = request()->is('dashboard');
             $anggotaActive = request()->is('anggota*');
             $pacActive = request()->is('data-pac*');
+            $pengajuanPacActive = request()->is('pengajuan-pac*');
             $kegiatanActive = request()->is('kegiatan*');
             $laporanActive = request()->is('laporan*');
             $pengaturanActive = request()->is('pengaturan*');
@@ -47,6 +48,24 @@
                 <path d="M9 9h5M9 13h5M9 17h2"></path>
             </svg>
             <span>Data PAC</span>
+        </a>
+
+        <a href="/pengajuan-pac" class="{{ $baseClass }} {{ $pengajuanPacActive ? $activeClass : $inactiveClass }} justify-between">
+            <div class="flex items-center gap-4">
+                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span>Pengajuan PAC</span>
+            </div>
+            @if(isset($pendingPacCount) && $pendingPacCount > 0)
+                <span class="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#D92D4B] px-1.5 text-[11px] font-bold text-white shadow-sm">
+                    {{ $pendingPacCount }}
+                </span>
+            @endif
         </a>
 
         <a href="/kegiatan" class="{{ $baseClass }} {{ $kegiatanActive ? $activeClass : $inactiveClass }}">
