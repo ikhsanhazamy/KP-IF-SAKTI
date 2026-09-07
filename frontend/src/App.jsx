@@ -7,7 +7,6 @@ const Home = lazy(() => import("./Pages/Home"));
 const Tentang = lazy(() => import("./Pages/Tentang"));
 const Kegiatan = lazy(() => import("./Pages/Kegiatan"));
 const KegiatanDetail = lazy(() => import("./Pages/KegiatanDetail"));
-const DataPAC = lazy(() => import("./Pages/DataPAC"));
 const PengajuanPAC = lazy(() => import("./Pages/PengajuanPAC"));
 const NotFound = lazy(() => import("./Pages/NotFound"));
 
@@ -20,6 +19,14 @@ function LoadingFallback() {
       </div>
     </div>
   );
+}
+
+function LoginRedirect() {
+  if (typeof window !== "undefined") {
+    const target = window.location.port === "5173" ? "http://localhost:8000/login" : "/login";
+    window.location.href = target;
+  }
+  return <LoadingFallback />;
 }
 
 function App() {
@@ -38,9 +45,9 @@ function App() {
 
           <Route path="/kegiatan/:id" element={<KegiatanDetail />} />
 
-          <Route path="/data-pac" element={<DataPAC />} />
-
           <Route path="/pengajuan-data-pac" element={<PengajuanPAC />} />
+
+          <Route path="/login" element={<LoginRedirect />} />
 
           <Route path="*" element={<NotFound />} />
 

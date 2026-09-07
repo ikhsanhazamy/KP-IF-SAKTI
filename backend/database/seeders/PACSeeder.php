@@ -125,6 +125,7 @@ class PACSeeder extends Seeder
         ];
 
         foreach ($pacs as $item) {
+            unset($item['total_kegiatan']);
             PAC::create($item);
         }
     }

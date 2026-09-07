@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import { Users, Calendar, TrendingUp, TrendingDown, MapPin } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-
 function PacSection() {
-  const navigate = useNavigate();
   const mockData = [
     {
       name: "PAC Cibadak",
@@ -168,12 +165,12 @@ function PacSection() {
               </div>
 
               {/* BUTTON */}
-              <button
-                onClick={() => navigate(`/data-pac?search=${item.name.replace("PAC ", "")}`)}
+              <a
+                href="#map"
                 className="w-full py-2.5 border border-gray-200 rounded-xl text-sm font-semibold hover:bg-[#0F5E3A] hover:text-white hover:border-[#0F5E3A] transition mt-6 cursor-pointer text-gray-700 flex items-center justify-center shadow-2xs"
               >
-                Lihat Detail PAC
-              </button>
+                Lihat di Peta
+              </a>
 
             </div>
           ))}
@@ -181,12 +178,12 @@ function PacSection() {
 
         {/* BUTTON BAWAH */}
         <div className="flex justify-center mt-12">
-          <Link
-            to="/data-pac"
+          <a
+            href="#map"
             className="bg-[#0F5E3A] text-white px-8 py-3.5 rounded-xl font-bold shadow-md hover:bg-[#0D4E30] transition duration-200 flex items-center justify-center cursor-pointer transform hover:-translate-y-0.5"
           >
-            Lihat Semua PAC
-          </Link>
+            Lihat Peta Sebaran PAC
+          </a>
         </div>
 
       </div>

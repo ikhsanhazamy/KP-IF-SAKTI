@@ -44,6 +44,61 @@ Route::get('/csrf-token', fn () => response()->json([
 
 /*
 |--------------------------------------------------------------------------
+| KEGIATAN (PUBLIC SPA OR ADMIN VIEW)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/kegiatan', function (\Illuminate\Http\Request $request) {
+    if (auth()->check()) {
+        $user = auth()->user();
+        if ($user && $user->two_factor_enabled && ! $request->session()->get('two_factor_verified', false)) {
+            return redirect('/two-factor-challenge');
+        }
+
+        return app(KegiatanController::class)->index($request);
+    }
+
+    $spaCandidates = [
+        '/var/www/frontend/index.html',
+        base_path('../frontend/dist/index.html'),
+        public_path('../../frontend/dist/index.html'),
+    ];
+
+    foreach ($spaCandidates as $path) {
+        if (file_exists($path)) {
+            return response()->file($path);
+        }
+    }
+
+    return app(KegiatanController::class)->index($request);
+})->name('kegiatan.index');
+
+Route::get('/kegiatan/{id}', function (\Illuminate\Http\Request $request, $id) {
+    if ($request->wantsJson() || $request->ajax()) {
+        return app(KegiatanController::class)->show((int) $id);
+    }
+
+    if (auth()->check()) {
+        return app(KegiatanController::class)->show((int) $id);
+    }
+
+    $spaCandidates = [
+        '/var/www/frontend/index.html',
+        base_path('../frontend/dist/index.html'),
+        public_path('../../frontend/dist/index.html'),
+    ];
+
+    foreach ($spaCandidates as $path) {
+        if (file_exists($path)) {
+            return response()->file($path);
+        }
+    }
+
+    return app(KegiatanController::class)->show((int) $id);
+})->name('kegiatan.show');
+
+/*
+|--------------------------------------------------------------------------
 | DASHBOARD AREA
 |--------------------------------------------------------------------------
 */
@@ -120,21 +175,17 @@ Route::middleware(['auth', '2fa'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | KEGIATAN
+    | KEGIATAN (ADMIN ACTIONS)
     |--------------------------------------------------------------------------
     */
 
     Route::prefix('kegiatan')->group(function () {
-
-        Route::get('/', [KegiatanController::class, 'index']);
 
         Route::post('/store', [KegiatanController::class, 'store']);
 
         Route::put('/update/{id}', [KegiatanController::class, 'update']);
 
         Route::delete('/delete/{id}', [KegiatanController::class, 'destroy']);
-
-        Route::get('/{id}', [KegiatanController::class, 'show']);
 
     });
 

@@ -13,7 +13,7 @@ class KegiatanSeeder extends Seeder
             [
                 'judul' => 'Seminar Pemberdayaan Perempuan dan Kewirausahaan',
                 'tanggal' => '2026-05-15',
-                'waktu' => '09:00 - 13:00 WIB',
+                'waktu' => '09:00:00',
                 'lokasi' => 'Gedung Juang Sukabumi',
                 'kategori' => 'Seminar',
                 'peserta' => 150,
@@ -23,7 +23,7 @@ class KegiatanSeeder extends Seeder
             [
                 'judul' => 'Bakti Sosial dan Santunan Anak Yatim',
                 'tanggal' => '2026-05-08',
-                'waktu' => '13:00 - 16:00 WIB',
+                'waktu' => '13:00:00',
                 'lokasi' => 'Kecamatan Cibadak',
                 'kategori' => 'Sosial',
                 'peserta' => 85,
@@ -33,7 +33,7 @@ class KegiatanSeeder extends Seeder
             [
                 'judul' => 'Pelatihan Kaderisasi dan Leadership',
                 'tanggal' => '2026-06-01',
-                'waktu' => '08:00 - 17:00 WIB',
+                'waktu' => '08:00:00',
                 'lokasi' => 'Pondok Pesantren Al-Masthuriyah',
                 'kategori' => 'Pelatihan',
                 'peserta' => 120,
@@ -43,7 +43,7 @@ class KegiatanSeeder extends Seeder
             [
                 'judul' => 'Rapat Koordinasi PAC Se-Sukabumi',
                 'tanggal' => '2026-06-22',
-                'waktu' => '10:00 - 14:00 WIB',
+                'waktu' => '10:00:00',
                 'lokasi' => 'Kantor PCNU Kabupaten Sukabumi',
                 'kategori' => 'Rapat',
                 'peserta' => 95,
@@ -53,7 +53,7 @@ class KegiatanSeeder extends Seeder
             [
                 'judul' => 'Workshop Manajemen Organisasi Modern',
                 'tanggal' => '2026-07-10',
-                'waktu' => '09:00 - 15:00 WIB',
+                'waktu' => '09:00:00',
                 'lokasi' => 'Hotel Horizon Sukabumi',
                 'kategori' => 'Workshop',
                 'peserta' => 75,
@@ -63,7 +63,7 @@ class KegiatanSeeder extends Seeder
             [
                 'judul' => 'Kajian Rutin Keislaman dan Keputrian',
                 'tanggal' => '2026-07-03',
-                'waktu' => '15:30 - 17:30 WIB',
+                'waktu' => '15:30:00',
                 'lokasi' => 'Masjid Agung Sukabumi',
                 'kategori' => 'Kajian',
                 'peserta' => 200,

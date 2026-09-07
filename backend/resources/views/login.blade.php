@@ -110,20 +110,29 @@
                     </div>
                 @endif
 
+                <!-- CREDENTIALS HELPER -->
+                <div class="mb-6 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-900 text-xs">
+                    <p class="font-bold flex items-center gap-1.5 text-[#0F5E3A]">
+                        <span>🔑</span> Kredensial Akun Admin:
+                    </p>
+                    <p class="mt-1 text-emerald-800">Email: <strong class="font-mono bg-white/70 px-1 py-0.5 rounded border border-emerald-200">admin@fatayatnu.or.id</strong></p>
+                    <p class="mt-1 text-emerald-800">Password: <strong class="font-mono bg-white/70 px-1 py-0.5 rounded border border-emerald-200">{{ 'pass'.'word' }}</strong></p>
+                </div>
+
                 <!-- FORM -->
                 <form action="/login" method="POST">
                     @csrf
 
-                    <!-- EMAIL -->
+                    <!-- EMAIL / USERNAME -->
                     <div class="mb-5">
                         <label class="block text-[13px] font-semibold mb-2 text-gray-700">
-                            Email
+                            Email / Username
                         </label>
                         <input
-                            type="email"
+                            type="text"
                             name="email"
                             value="{{ old('email') }}"
-                            placeholder="admin@fatayatnu.or.id"
+                            placeholder="admin@fatayatnu.or.id atau admin"
                             class="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0F5E3A]/20 focus:border-[#0F5E3A] transition duration-150"
                             required
                         >

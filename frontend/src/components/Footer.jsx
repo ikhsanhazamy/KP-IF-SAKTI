@@ -90,9 +90,9 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/data-pac" className="hover:text-green-300 transition cursor-pointer">
-                  Data & Pemetaan PAC
-                </Link>
+                <a href="/#map" className="hover:text-green-300 transition cursor-pointer">
+                  Pemetaan Wilayah PAC
+                </a>
               </li>
               <li>
                 <Link to="/kegiatan" className="hover:text-green-300 transition cursor-pointer">
@@ -119,6 +119,11 @@ function Footer() {
               <li>
                 <a href="#kontak" className="hover:text-green-300 transition cursor-pointer">
                   Kontak
+                </a>
+              </li>
+              <li>
+                <a href="/login" className="hover:text-green-300 transition cursor-pointer text-green-200 font-semibold">
+                  Portal Admin
                 </a>
               </li>
             </ul>
@@ -148,9 +153,15 @@ function Footer() {
             ))}
           </div>
 
-          <p className="text-sm text-gray-300 text-center sm:text-right font-medium">
-            © 2026 PC Fatayat NU Kabupaten Sukabumi. All rights reserved.
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+            <p className="text-sm text-gray-300 text-center sm:text-right font-medium">
+              © 2026 PC Fatayat NU Kabupaten Sukabumi. All rights reserved.
+            </p>
+            <span className="hidden sm:inline text-gray-400">•</span>
+            <a href="/login" className="text-xs text-gray-300 hover:text-white transition font-medium underline underline-offset-2">
+              Login Admin
+            </a>
+          </div>
         </div>
       </div>
     </footer>

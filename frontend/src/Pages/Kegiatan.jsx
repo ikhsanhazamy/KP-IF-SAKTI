@@ -1,6 +1,7 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link, useNavigate } from "react-router-dom";
+import { Calendar, Users } from "lucide-react";
 
 import foto1 from "../assets/images/foto1.jpg";
 import foto2 from "../assets/images/foto2.jpg";
@@ -249,14 +250,16 @@ function Kegiatan() {
                     </p>
 
                     {/* INFO */}
-                    <div className="mt-4 sm:mt-6 flex flex-col gap-2 sm:gap-3 text-[#9CA3AF] text-sm">
+                    <div className="mt-4 sm:mt-6 flex flex-col gap-2 sm:gap-3 text-gray-500 text-sm font-medium">
 
                       <div className="flex items-center gap-2">
-                        📅 {item.date}
+                        <Calendar className="w-4 h-4 text-[#1f7a4d] flex-shrink-0" />
+                        <span>{item.date}</span>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        👥 {item.peserta}
+                        <Users className="w-4 h-4 text-[#1f7a4d] flex-shrink-0" />
+                        <span>{item.peserta}</span>
                       </div>
 
                     </div>
