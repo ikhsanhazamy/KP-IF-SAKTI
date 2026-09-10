@@ -408,7 +408,7 @@
                     <span id="detailEmail" class="font-bold text-gray-800 text-sm"></span>
                 </div>
                 <div class="rounded-2xl bg-[#F8FAF9] p-3.5">
-                    <span class="text-xs text-gray-400 block">Tanggal Berdiri / Musancab</span>
+                    <span class="text-xs text-gray-400 block">Tanggal Penetapan SK / Berdiri</span>
                     <span id="detailTanggalBerdiri" class="font-bold text-gray-800 text-sm"></span>
                 </div>
             </div>

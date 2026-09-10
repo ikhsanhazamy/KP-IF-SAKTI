@@ -9,7 +9,8 @@
                 <th>Nama PAC</th>
                 <th>Kecamatan</th>
                 <th>Status</th>
-                <th>Tanggal Berdiri</th>
+                <th>Tanggal Penetapan SK</th>
+                <th>Tanggal Kedaluwarsa SK</th>
                 <th>Alamat</th>
                 <th>Desa</th>
                 <th>Kode Pos</th>
@@ -37,6 +38,7 @@
                         @endswitch
                     </td>
                     <td>{{ $pac->tanggal_berdiri }}</td>
+                    <td>{{ $pac->tanggal_kedaluwarsa ?: '-' }}</td>
                     <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->alamat) }}</td>
                     <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->desa) }}</td>
                     <td>{{ \App\Http\Controllers\LaporanController::sanitizeForExport($pac->kode_pos) }}</td>

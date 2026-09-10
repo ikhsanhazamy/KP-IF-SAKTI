@@ -43,6 +43,7 @@
                                     type="text"
                                     name="nama_pac"
                                     placeholder="Contoh: PAC Cibadak"
+                                    required
                                     class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
                                 >
                             </div>
@@ -55,27 +56,13 @@
                                 <input
                                     type="text"
                                     name="kecamatan"
+                                    required
+                                    placeholder="Contoh: Cibadak"
                                     class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
                                 >
                             </div>
 
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
-                                    <span>Status</span>
-                                    <span class="text-[#D4183D]">*</span>
-                                </div>
-                                <select
-                                    name="status"
-                                    id="tambahStatus"
-                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
-                                >
-                                    <option value="aktif">Aktif</option>
-                                    <option value="tidak_aktif">Tidak Aktif</option>
-                                    <option value="akan_expire">Akan Expire</option>
-                                    <option value="pending">Pending</option>
-                                </select>
-                            </div>
-
+                            <!-- Baris 2 Kiri: Tanggal Penetapan SK -->
                             <div class="space-y-2">
                                 <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
                                     <span>Tanggal Penetapan SK</span>
@@ -88,20 +75,61 @@
                                     required
                                     class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
                                 >
+                                <p class="text-xs text-[#717182]">Tanggal dikeluarkannya SK kepengurusan PAC.</p>
                             </div>
 
+                            <!-- Baris 2 Kanan: Status PAC -->
                             <div class="space-y-2">
                                 <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
-                                    <span>Tanggal Kedaluwarsa</span>
+                                    <span>Status PAC</span>
+                                    <span class="text-[#D4183D]">*</span>
+                                </div>
+                                <select
+                                    name="status"
+                                    id="tambahStatus"
+                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm font-medium text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
+                                >
+                                    <option value="aktif">Aktif</option>
+                                    <option value="akan_expire">Akan Expire (Masa SK &le; 30 Hari)</option>
+                                    <option value="tidak_aktif">Tidak Aktif (SK Kedaluwarsa)</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                                <p class="text-xs text-[#717182]">Status otomatis tersinkronisasi dari tanggal kedaluwarsa.</p>
+                            </div>
+
+                            <!-- Baris 3 Kiri: Tanggal Kedaluwarsa SK (Tepat di Bawah Tanggal Penetapan SK) -->
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
+                                    <span>Tanggal Kedaluwarsa SK</span>
                                 </div>
                                 <input
                                     type="date"
                                     name="tanggal_kedaluwarsa"
                                     id="tambahTanggalKedaluwarsa"
+                                    oninput="syncStatusFromExpiry('tambahTanggalKedaluwarsa', 'tambahStatus', 'tambahStatusHelper')"
                                     onchange="syncStatusFromExpiry('tambahTanggalKedaluwarsa', 'tambahStatus', 'tambahStatusHelper')"
                                     class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
                                 >
                                 <p id="tambahStatusHelper" class="text-xs text-[#717182] mt-1">Status otomatis menyesuaikan tanggal kedaluwarsa SK.</p>
+                            </div>
+
+                            <!-- Baris 3 Kanan: Aturan Status SK Otomatis (Tepat di Bawah Status PAC) -->
+                            <div class="space-y-2">
+                                <div class="text-sm font-medium text-[#1D1D1D]">Ketentuan Status SK Otomatis</div>
+                                <div class="rounded-[12px] border border-gray-200 bg-gray-50 p-3 text-xs text-[#555] space-y-1.5">
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-green-500 shrink-0"></span>
+                                        <span><strong>Aktif:</strong> Masa SK masih berlaku (&gt; 30 hari)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
+                                        <span><strong>Akan Expire:</strong> Sisa masa berlaku &le; 30 hari</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></span>
+                                        <span><strong>Tidak Aktif:</strong> Tanggal SK sudah kedaluwarsa</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

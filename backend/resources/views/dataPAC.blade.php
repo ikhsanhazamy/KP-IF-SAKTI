@@ -348,6 +348,7 @@ function openTambahPACModal() {
     const modal = document.getElementById('modalTambahPAC');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+    syncStatusFromExpiry('tambahTanggalKedaluwarsa', 'tambahStatus', 'tambahStatusHelper');
 }
 
 function closeTambahPACModal() {
