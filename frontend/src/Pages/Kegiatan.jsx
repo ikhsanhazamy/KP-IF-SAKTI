@@ -228,6 +228,14 @@ function Kegiatan() {
                     <img
                       loading="lazy"
                       src={item.image}
+                      onError={(e) => {
+                        if (!e.currentTarget.dataset.retried && item.image && item.image.startsWith('/storage')) {
+                          e.currentTarget.dataset.retried = 'true';
+                          e.currentTarget.src = `http://localhost:8000${item.image}`;
+                        } else {
+                          e.currentTarget.src = item.category === "Seminar" ? foto1 : item.category === "Sosial" ? foto2 : foto3;
+                        }
+                      }}
                       alt={item.title}
                       className="w-full h-[190px] object-cover"
                     />

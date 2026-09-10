@@ -59,6 +59,21 @@ Route::get('/kegiatan', function (\Illuminate\Http\Request $request) {
         return app(KegiatanController::class)->index($request);
     }
 
+    $referer = (string) $request->header('referer', '');
+    $isAdminReferer = str_contains($referer, '/dashboard')
+        || str_contains($referer, '/anggota')
+        || str_contains($referer, '/data-pac')
+        || str_contains($referer, '/pengajuan-pac')
+        || str_contains($referer, '/laporan')
+        || str_contains($referer, '/pengaturan')
+        || str_contains($referer, '/login');
+
+    if ($isAdminReferer) {
+        return redirect()->guest('/login')->withErrors([
+            'email' => 'Sesi Anda telah berakhir. Silakan login kembali.',
+        ]);
+    }
+
     $spaCandidates = [
         '/var/www/frontend/index.html',
         base_path('../frontend/dist/index.html'),

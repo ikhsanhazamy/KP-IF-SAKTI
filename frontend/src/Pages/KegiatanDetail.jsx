@@ -249,6 +249,14 @@ function KegiatanDetail() {
           <div className="relative rounded-[24px] sm:rounded-[32px] overflow-hidden h-[240px] sm:h-[340px] lg:h-[420px]">
             <img
               src={data.gambar_url || getImage(data.kategori)}
+              onError={(e) => {
+                if (!e.currentTarget.dataset.retried && data.gambar_url && data.gambar_url.startsWith('/storage')) {
+                  e.currentTarget.dataset.retried = 'true';
+                  e.currentTarget.src = `http://localhost:8000${data.gambar_url}`;
+                } else {
+                  e.currentTarget.src = getImage(data.kategori);
+                }
+              }}
               alt={data.judul}
               className="w-full h-full object-cover"
             />
