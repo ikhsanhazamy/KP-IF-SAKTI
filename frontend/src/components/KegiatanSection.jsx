@@ -124,6 +124,14 @@ function KegiatanSection() {
               <div className="relative h-[210px] overflow-hidden bg-gray-100">
                 <img
                   src={item.img}
+                  onError={(e) => {
+                    if (!e.currentTarget.dataset.retried && item.img && item.img.startsWith('/storage')) {
+                      e.currentTarget.dataset.retried = 'true';
+                      e.currentTarget.src = `http://localhost:8000${item.img}`;
+                    } else {
+                      e.currentTarget.src = item.tag === "Seminar" ? foto1 : item.tag === "Sosial" ? foto2 : foto3;
+                    }
+                  }}
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   alt={item.title}
                 />
