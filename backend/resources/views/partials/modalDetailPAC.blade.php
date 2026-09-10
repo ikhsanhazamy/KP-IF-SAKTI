@@ -56,6 +56,20 @@
                         <p class="text-gray-500 text-sm">Nomor SK</p>
                         <h3 id="detailNomorSK" class="text-lg font-semibold mt-1"></h3>
                     </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Tanggal Penetapan SK</p>
+                        <h3 id="detailTanggalBerdiri" class="text-lg font-semibold mt-1"></h3>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Tanggal Kedaluwarsa SK</p>
+                        <h3 id="detailTanggalKedaluwarsa" class="text-lg font-semibold mt-1"></h3>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Status</p>
+                        <div class="mt-1">
+                            <span id="detailStatusBadge" class="inline-block rounded-full px-3 py-1 text-xs font-semibold"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 

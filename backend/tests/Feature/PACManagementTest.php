@@ -285,4 +285,137 @@ class PACManagementTest extends TestCase
             'total_kegiatan' => 2,
         ]);
     }
+
+    public function test_label_tanggal_penetapan_sk_dan_input_tanggal_kedaluwarsa_tersedia(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('pac.index'));
+
+        $response->assertOk();
+        $response->assertSee('Tanggal Penetapan SK');
+        $response->assertSee('Tanggal Kedaluwarsa');
+        $response->assertSee('name="tanggal_kedaluwarsa"', false);
+    }
+
+    public function test_tambah_pac_dengan_tanggal_kedaluwarsa_otomatis_menentukan_status(): void
+    {
+        $user = User::factory()->create();
+
+        // 1. Kedaluwarsa di masa lalu -> harus menjadi tidak_aktif
+        $this->actingAs($user)->post(route('pac.store'), [
+            'nama_pac' => 'PAC Kadaluarsa',
+            'kecamatan' => 'Cicurug',
+            'status' => 'aktif', // User pilih aktif di UI, tapi sistem harus mengoreksi
+            'tanggal_berdiri' => '2020-01-01',
+            'tanggal_kedaluwarsa' => now()->subDays(5)->format('Y-m-d'),
+            'alamat' => 'Alamat Kadaluarsa',
+            'desa' => 'Desa Kadaluarsa',
+            'ketua_pac' => 'Ketua Kadaluarsa',
+            'telepon' => '081234567801',
+        ]);
+
+        $this->assertDatabaseHas('pacs', [
+            'nama_pac' => 'PAC Kadaluarsa',
+            'status' => 'tidak_aktif',
+        ]);
+
+        // 2. Kedaluwarsa dalam 15 hari (<= 30 hari) -> harus menjadi akan_expire
+        $this->actingAs($user)->post(route('pac.store'), [
+            'nama_pac' => 'PAC Mau Expire',
+            'kecamatan' => 'Cibadak',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2022-01-01',
+            'tanggal_kedaluwarsa' => now()->addDays(15)->format('Y-m-d'),
+            'alamat' => 'Alamat Mau Expire',
+            'desa' => 'Desa Mau Expire',
+            'ketua_pac' => 'Ketua Mau Expire',
+            'telepon' => '081234567802',
+        ]);
+
+        $this->assertDatabaseHas('pacs', [
+            'nama_pac' => 'PAC Mau Expire',
+            'status' => 'akan_expire',
+        ]);
+
+        // 3. Kedaluwarsa masih 1 tahun lagi (> 30 hari) -> aktif
+        $this->actingAs($user)->post(route('pac.store'), [
+            'nama_pac' => 'PAC Masih Aktif',
+            'kecamatan' => 'Cisaat',
+            'status' => 'tidak_aktif', // User salah pilih, sistem set ke aktif
+            'tanggal_berdiri' => '2024-01-01',
+            'tanggal_kedaluwarsa' => now()->addYear()->format('Y-m-d'),
+            'alamat' => 'Alamat Masih Aktif',
+            'desa' => 'Desa Masih Aktif',
+            'ketua_pac' => 'Ketua Masih Aktif',
+            'telepon' => '081234567803',
+        ]);
+
+        $this->assertDatabaseHas('pacs', [
+            'nama_pac' => 'PAC Masih Aktif',
+            'status' => 'aktif',
+        ]);
+    }
+
+    public function test_update_pac_menyesuaikan_status_secara_dinamis_berdasarkan_tanggal_kedaluwarsa(): void
+    {
+        $user = User::factory()->create();
+
+        $pac = PAC::create([
+            'nama_pac' => 'PAC Dinamis',
+            'kecamatan' => 'Cisaat',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'tanggal_kedaluwarsa' => now()->addYear()->format('Y-m-d'),
+            'alamat' => 'Alamat Dinamis',
+            'desa' => 'Desa Dinamis',
+            'ketua_pac' => 'Ketua Dinamis',
+            'telepon' => '081234567899',
+        ]);
+
+        // Perpanjang tapi hanya 10 hari lagi -> status otomatis jadi akan_expire
+        $this->actingAs($user)->put(route('pac.update', $pac->id), [
+            'nama_pac' => 'PAC Dinamis',
+            'kecamatan' => 'Cisaat',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'tanggal_kedaluwarsa' => now()->addDays(10)->format('Y-m-d'),
+            'alamat' => 'Alamat Dinamis',
+            'desa' => 'Desa Dinamis',
+            'ketua_pac' => 'Ketua Dinamis',
+            'telepon' => '081234567899',
+        ]);
+
+        $this->assertDatabaseHas('pacs', [
+            'id' => $pac->id,
+            'status' => 'akan_expire',
+        ]);
+    }
+
+    public function test_halaman_index_auto_sync_status_pac_yang_sudah_kedaluwarsa(): void
+    {
+        $user = User::factory()->create();
+
+        // PAC yang tersimpan statusnya aktif tapi tanggal kedaluwarsanya sudah lewat
+        $pac = PAC::create([
+            'nama_pac' => 'PAC Expired di DB',
+            'kecamatan' => 'Cibadak',
+            'status' => 'aktif',
+            'tanggal_berdiri' => '2020-01-01',
+            'tanggal_kedaluwarsa' => now()->subDay()->format('Y-m-d'),
+            'alamat' => 'Alamat Expired',
+            'desa' => 'Desa Expired',
+            'ketua_pac' => 'Ketua Expired',
+            'telepon' => '081234567888',
+        ]);
+
+        // Kunjungi halaman index admin
+        $this->actingAs($user)->get(route('pac.index'))->assertOk();
+
+        // Status di database harus otomatis tersinkronisasi menjadi tidak_aktif
+        $this->assertDatabaseHas('pacs', [
+            'id' => $pac->id,
+            'status' => 'tidak_aktif',
+        ]);
+    }
 }

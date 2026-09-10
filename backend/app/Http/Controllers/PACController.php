@@ -21,6 +21,18 @@ class PACController extends Controller
 
     public function index(Request $request)
     {
+        // Auto-sinkronisasi status PAC berdasarkan tanggal kedaluwarsa SK
+        PAC::whereNotNull('tanggal_kedaluwarsa')
+            ->whereDate('tanggal_kedaluwarsa', '<', now()->toDateString())
+            ->where('status', '!=', 'tidak_aktif')
+            ->update(['status' => 'tidak_aktif']);
+
+        PAC::whereNotNull('tanggal_kedaluwarsa')
+            ->whereDate('tanggal_kedaluwarsa', '>=', now()->toDateString())
+            ->whereDate('tanggal_kedaluwarsa', '<=', now()->addDays(30)->toDateString())
+            ->whereNotIn('status', ['akan_expire', 'pending', 'ditolak'])
+            ->update(['status' => 'akan_expire']);
+
         $search = trim((string) $request->query('search', ''));
         $query = PAC::query();
 
@@ -102,6 +114,11 @@ class PACController extends Controller
         $validated['jumlah_anggota'] ??= 0;
         $validated['alumni_lkd'] ??= 0;
 
+        if (! empty($validated['tanggal_kedaluwarsa'])) {
+            $pacDummy = new PAC(['tanggal_kedaluwarsa' => $validated['tanggal_kedaluwarsa']]);
+            $validated['status'] = $pacDummy->computeStatusFromExpiry($validated['status'] ?? 'aktif');
+        }
+
         $pac = PAC::create($validated);
         $page = (int) ceil(PAC::count() / 9);
         $url = $page > 1
@@ -141,14 +158,22 @@ class PACController extends Controller
                         continue;
                     }
 
+                    $tanggalKedaluwarsa = $this->parseDate($this->csvValue($row, ['tanggal_kedaluwarsa', 'tgl_kedaluwarsa', 'tanggal_kadaluarsa', 'tgl_kadaluarsa', 'expired_at']));
+                    $status = $this->normalizeStatus($this->csvValue($row, ['status'], 'aktif'));
+                    if ($tanggalKedaluwarsa) {
+                        $pacDummy = new PAC(['tanggal_kedaluwarsa' => $tanggalKedaluwarsa]);
+                        $status = $pacDummy->computeStatusFromExpiry($status);
+                    }
+
                     PAC::updateOrCreate(
                         [
                             'nama_pac' => $namaPac,
                             'kecamatan' => $kecamatan,
                         ],
                         [
-                            'status' => $this->normalizeStatus($this->csvValue($row, ['status'], 'aktif')),
+                            'status' => $status,
                             'tanggal_berdiri' => $tanggalBerdiri,
+                            'tanggal_kedaluwarsa' => $tanggalKedaluwarsa,
                             'alamat' => $this->csvValue($row, ['alamat'], '-'),
                             'desa' => $this->csvValue($row, ['desa', 'kelurahan'], '-'),
                             'kode_pos' => $this->csvValue($row, ['kode_pos']),
@@ -213,6 +238,11 @@ class PACController extends Controller
         $validated['jumlah_anggota'] ??= 0;
         $validated['alumni_lkd'] ??= 0;
 
+        if (! empty($validated['tanggal_kedaluwarsa'])) {
+            $pac->tanggal_kedaluwarsa = $validated['tanggal_kedaluwarsa'];
+            $validated['status'] = $pac->computeStatusFromExpiry($validated['status'] ?? 'aktif');
+        }
+
         $pac->update($validated);
 
         return redirect()->route('pac.index')
@@ -261,6 +291,7 @@ class PACController extends Controller
             'kecamatan' => ['required', 'string', 'max:255'],
             'status' => ['required', Rule::in(['aktif', 'tidak_aktif', 'akan_expire', 'pending', 'ditolak'])],
             'tanggal_berdiri' => ['required', 'date', 'before_or_equal:today', 'after_or_equal:1900-01-01'],
+            'tanggal_kedaluwarsa' => ['nullable', 'date', 'after_or_equal:tanggal_berdiri'],
             'alamat' => ['required', 'string'],
             'desa' => ['required', 'string', 'max:255'],
             'kode_pos' => ['nullable', 'string', 'max:20'],

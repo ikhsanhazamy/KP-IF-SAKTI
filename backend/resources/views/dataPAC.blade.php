@@ -175,16 +175,43 @@
 
                 <div class="my-6 h-px bg-[#E9ECEA]"></div>
 
-                <div class="space-y-4">
-                    <div>
-                        <p class="text-xs text-[#8A8F9D]">Ketua PAC</p>
-                        <h3 class="mt-1 truncate text-sm font-semibold text-[#262926]">
-                            {{ $pac->ketua_pac ?: '-' }}
-                        </h3>
+                <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <p class="text-xs text-[#8A8F9D]">Ketua PAC</p>
+                            <h3 class="mt-1 truncate text-sm font-semibold text-[#262926]">
+                                {{ $pac->ketua_pac ?: '-' }}
+                            </h3>
+                        </div>
+                        <div>
+                            <p class="text-xs text-[#8A8F9D]">Kontak</p>
+                            <h3 class="mt-1 text-sm text-[#262926]">{{ $pac->telepon ?: '-' }}</h3>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-xs text-[#8A8F9D]">Kontak</p>
-                        <h3 class="mt-1 text-sm text-[#262926]">{{ $pac->telepon ?: '-' }}</h3>
+
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-[#E9ECEA] text-xs">
+                        <div>
+                            <p class="text-[#8A8F9D]">Penetapan SK</p>
+                            <p class="font-medium text-[#262926] mt-0.5">
+                                {{ $pac->tanggal_berdiri ? \Carbon\Carbon::parse($pac->tanggal_berdiri)->translatedFormat('d M Y') : '-' }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-[#8A8F9D]">Kedaluwarsa SK</p>
+                            @php
+                                $isExpired = $pac->tanggal_kedaluwarsa && \Carbon\Carbon::parse($pac->tanggal_kedaluwarsa)->startOfDay()->lt(now()->startOfDay());
+                                $isAkanExpire = $pac->tanggal_kedaluwarsa && ! $isExpired && \Carbon\Carbon::parse($pac->tanggal_kedaluwarsa)->startOfDay()->lte(now()->startOfDay()->addDays(30));
+                                $expiryTextColor = $isExpired ? 'text-red-600 font-semibold' : ($isAkanExpire ? 'text-amber-600 font-semibold' : 'text-[#262926] font-medium');
+                            @endphp
+                            <p class="mt-0.5 {{ $expiryTextColor }}">
+                                {{ $pac->tanggal_kedaluwarsa ? \Carbon\Carbon::parse($pac->tanggal_kedaluwarsa)->translatedFormat('d M Y') : '-' }}
+                                @if($isExpired)
+                                    <span class="text-[10px] block text-red-500 font-normal">Sudah Kedaluwarsa</span>
+                                @elseif($isAkanExpire)
+                                    <span class="text-[10px] block text-amber-500 font-normal">≤ 30 hari tersisa</span>
+                                @endif
+                            </p>
+                        </div>
                     </div>
                 </div>
 
@@ -196,6 +223,11 @@
                         data-ketua="{{ $pac->ketua_pac }}"
                         data-telepon="{{ $pac->telepon }}"
                         data-nomor-sk="{{ $pac->nomor_sk }}"
+                        data-tanggal-berdiri="{{ $pac->tanggal_berdiri ? \Carbon\Carbon::parse($pac->tanggal_berdiri)->translatedFormat('d F Y') : '-' }}"
+                        data-tanggal-kedaluwarsa="{{ $pac->tanggal_kedaluwarsa ? \Carbon\Carbon::parse($pac->tanggal_kedaluwarsa)->translatedFormat('d F Y') : '-' }}"
+                        data-status="{{ $pac->status }}"
+                        data-status-label="{{ $statusMeta['label'] }}"
+                        data-status-class="{{ $statusMeta['class'] }}"
                         data-jumlah-anggota="{{ $pac->jumlah_anggota }}"
                         data-pertumbuhan="{{ $pac->growth > 0 ? '+' : '' }}{{ $pac->growth }}%"
                         data-alumni-lkd="{{ $pac->alumni_lkd }}"
@@ -215,7 +247,8 @@
                         data-nama="{{ $pac->nama_pac }}"
                         data-kecamatan="{{ $pac->kecamatan }}"
                         data-status="{{ $pac->status }}"
-                        data-tanggal-berdiri="{{ $pac->tanggal_berdiri }}"
+                        data-tanggal-berdiri="{{ $pac->tanggal_berdiri ? \Carbon\Carbon::parse($pac->tanggal_berdiri)->format('Y-m-d') : '' }}"
+                        data-tanggal-kedaluwarsa="{{ $pac->tanggal_kedaluwarsa ? \Carbon\Carbon::parse($pac->tanggal_kedaluwarsa)->format('Y-m-d') : '' }}"
                         data-alamat="{{ $pac->alamat }}"
                         data-desa="{{ $pac->desa }}"
                         data-kode-pos="{{ $pac->kode_pos }}"
@@ -333,6 +366,15 @@ function openDetailPACModal(button) {
     document.getElementById('detailKetua').innerText = button.dataset.ketua || '-';
     document.getElementById('detailKontak').innerText = button.dataset.telepon || '-';
     document.getElementById('detailNomorSK').innerText = button.dataset.nomorSk || '-';
+    document.getElementById('detailTanggalBerdiri').innerText = button.dataset.tanggalBerdiri || '-';
+    document.getElementById('detailTanggalKedaluwarsa').innerText = button.dataset.tanggalKedaluwarsa || '-';
+    
+    const statusBadge = document.getElementById('detailStatusBadge');
+    if (statusBadge) {
+        statusBadge.className = `inline-block rounded-full px-3 py-1 text-xs font-semibold ${button.dataset.statusClass || 'bg-gray-100 text-gray-700'}`;
+        statusBadge.innerText = button.dataset.statusLabel || '-';
+    }
+
     document.getElementById('detailJumlahAnggota').innerText = button.dataset.jumlahAnggota || '0';
     document.getElementById('detailPertumbuhan').innerText = button.dataset.pertumbuhan || '0%';
     document.getElementById('detailAlumniLKD').innerText = button.dataset.alumniLkd || '0';
@@ -353,6 +395,7 @@ function openEditPACModal(button) {
     document.getElementById('editKecamatan').value = button.dataset.kecamatan || '';
     document.getElementById('editStatus').value = button.dataset.status || 'aktif';
     document.getElementById('editTanggalBerdiri').value = button.dataset.tanggalBerdiri || '';
+    document.getElementById('editTanggalKedaluwarsa').value = button.dataset.tanggalKedaluwarsa || '';
     document.getElementById('editAlamat').value = button.dataset.alamat || '';
     document.getElementById('editDesa').value = button.dataset.desa || '';
     document.getElementById('editKodePos').value = button.dataset.kodePos || '';
@@ -364,12 +407,52 @@ function openEditPACModal(button) {
     document.getElementById('editAlumniLKD').value = button.dataset.alumniLkd || 0;
     document.getElementById('editDeskripsi').value = button.dataset.deskripsi || '';
     document.getElementById('formEditPAC').action = `/data-pac/update/${button.dataset.id}`;
+
+    syncStatusFromExpiry('editTanggalKedaluwarsa', 'editStatus', 'editStatusHelper');
 }
 
 function closeEditPACModal() {
     const modal = document.getElementById('modalEditPAC');
     modal.classList.remove('flex');
     modal.classList.add('hidden');
+}
+
+function syncStatusFromExpiry(inputId, statusSelectId, helperId) {
+    const input = document.getElementById(inputId);
+    const statusSelect = document.getElementById(statusSelectId);
+    const helper = document.getElementById(helperId);
+    if (!input || !statusSelect) return;
+    if (!input.value) {
+        if (helper) helper.innerHTML = '<span class="text-[#717182]">Status otomatis menyesuaikan tanggal kedaluwarsa SK.</span>';
+        return;
+    }
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const exp = new Date(input.value);
+    exp.setHours(0, 0, 0, 0);
+
+    const diffTime = exp.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+        statusSelect.value = 'tidak_aktif';
+        if (helper) {
+            helper.innerHTML = `<span class="text-red-600 font-medium">⚠️ SK Kedaluwarsa (${Math.abs(diffDays)} hari lalu) &rarr; Status: Tidak Aktif</span>`;
+        }
+    } else if (diffDays <= 30) {
+        statusSelect.value = 'akan_expire';
+        if (helper) {
+            helper.innerHTML = `<span class="text-amber-600 font-medium">⏳ Sisa ${diffDays} hari menjelang kedaluwarsa &rarr; Status: Akan Expire</span>`;
+        }
+    } else {
+        if (statusSelect.value !== 'pending') {
+            statusSelect.value = 'aktif';
+        }
+        if (helper) {
+            helper.innerHTML = `<span class="text-green-600 font-medium">✅ SK Masih Berlaku (${diffDays} hari tersisa) &rarr; Status: Aktif</span>`;
+        }
+    }
 }
 
 </script>

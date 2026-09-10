@@ -66,6 +66,7 @@
                                 </div>
                                 <select
                                     name="status"
+                                    id="tambahStatus"
                                     class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
                                 >
                                     <option value="aktif">Aktif</option>
@@ -77,14 +78,30 @@
 
                             <div class="space-y-2">
                                 <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
-                                    <span>Tanggal Berdiri</span>
+                                    <span>Tanggal Penetapan SK</span>
                                     <span class="text-[#D4183D]">*</span>
                                 </div>
                                 <input
                                     type="date"
                                     name="tanggal_berdiri"
+                                    id="tambahTanggalBerdiri"
+                                    required
                                     class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
                                 >
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-1 text-sm font-medium text-[#1D1D1D]">
+                                    <span>Tanggal Kedaluwarsa</span>
+                                </div>
+                                <input
+                                    type="date"
+                                    name="tanggal_kedaluwarsa"
+                                    id="tambahTanggalKedaluwarsa"
+                                    onchange="syncStatusFromExpiry('tambahTanggalKedaluwarsa', 'tambahStatus', 'tambahStatusHelper')"
+                                    class="h-11 w-full rounded-[12px] border border-[#E5E7EB] bg-white px-4 text-sm text-[#1D1D1D] outline-none focus:border-[#0F5E3A]"
+                                >
+                                <p id="tambahStatusHelper" class="text-xs text-[#717182] mt-1">Status otomatis menyesuaikan tanggal kedaluwarsa SK.</p>
                             </div>
                         </div>
                     </div>
