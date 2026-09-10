@@ -75,6 +75,7 @@ Route::get('/kegiatan', function (\Illuminate\Http\Request $request) {
     }
 
     $spaCandidates = [
+        public_path('index.html'),
         '/var/www/frontend/index.html',
         base_path('../frontend/dist/index.html'),
         public_path('../../frontend/dist/index.html'),
@@ -99,6 +100,7 @@ Route::get('/kegiatan/{id}', function (\Illuminate\Http\Request $request, $id) {
     }
 
     $spaCandidates = [
+        public_path('index.html'),
         '/var/www/frontend/index.html',
         base_path('../frontend/dist/index.html'),
         public_path('../../frontend/dist/index.html'),
