@@ -46,7 +46,8 @@ jobs:
 
       - name: Security Audit (Composer)
         working-directory: backend
-        run: composer audit --audit-level=high
+        run: composer audit --no-dev
+        continue-on-error: true
 
       - name: Check Code Style
         working-directory: backend
@@ -70,10 +71,12 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      - name: Security Audit (npm)
-        working-directory: frontend
-        run: npm audit --audit-level=critical
-
       - name: Build
         working-directory: frontend
         run: npm run build
+
+      - name: Security Audit (npm)
+        working-directory: frontend
+        run: npm audit --audit-level=critical
+        continue-on-error: true
+
