@@ -34,7 +34,7 @@ function MembershipSection() {
             <div>
               <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Status</p>
               <p className="text-xs sm:text-sm font-bold text-[#0F5E3A]">
-                Terverifikasi
+                Pratinjau Roadmap
               </p>
             </div>
           </div>
@@ -107,9 +107,12 @@ function MembershipSection() {
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-bold text-gray-900">KTA Digital</p>
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-gray-900">KTA Digital</p>
+                <span className="text-[10px] bg-[#0F5E3A]/10 text-[#0F5E3A] px-2 py-0.5 rounded font-semibold">Roadmap</span>
+              </div>
               <p className="text-sm text-gray-400 mt-1 font-medium leading-relaxed">
-                Kartu Tanda Anggota digital dengan QR Code untuk verifikasi dan validasi keanggotaan
+                Pratinjau konsep KTA digital dengan QR Code untuk verifikasi keanggotaan dalam roadmap digitalisasi
               </p>
             </div>
           </div>

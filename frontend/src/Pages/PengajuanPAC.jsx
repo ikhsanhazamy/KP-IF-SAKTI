@@ -13,7 +13,8 @@ function PengajuanPAC() {
     ketua_pac: "",
     telepon: "",
     email: "",
-    deskripsi: ""
+    deskripsi: "",
+    website: "", // Honeypot field for bot spam mitigation
   });
 
   const [loading, setLoading] = useState(false);
@@ -109,6 +110,20 @@ function PengajuanPAC() {
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800 border-b border-gray-100 pb-4">
                 Informasi PAC & Organisasi
               </h2>
+
+              {/* Honeypot field - hidden from humans, traps spam bots */}
+              <div style={{ display: "none" }} aria-hidden="true">
+                <label htmlFor="website">Website</label>
+                <input
+                  id="website"
+                  type="text"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleChange}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>

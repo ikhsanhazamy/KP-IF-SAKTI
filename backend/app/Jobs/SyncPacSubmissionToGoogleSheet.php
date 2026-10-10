@@ -68,16 +68,20 @@ class SyncPacSubmissionToGoogleSheet implements ShouldQueue
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
-            } else {
-                Log::info('Sinkronisasi pengajuan PAC ke Google Sheet berhasil.', [
-                    'pac_id' => $this->pac->id,
-                ]);
+
+                $response->throw();
             }
+
+            Log::info('Sinkronisasi pengajuan PAC ke Google Sheet berhasil.', [
+                'pac_id' => $this->pac->id,
+            ]);
         } catch (Throwable $e) {
             Log::warning('Sinkronisasi pengajuan PAC ke Google Sheet error.', [
                 'pac_id' => $this->pac->id,
                 'error' => $e->getMessage(),
             ]);
+
+            throw $e;
         }
     }
 }

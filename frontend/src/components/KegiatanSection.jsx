@@ -75,7 +75,8 @@ function KegiatanSection() {
         return res.json();
       })
       .then((apiData) => {
-        const formatted = apiData.slice(0, 6).map((item) => ({
+        const rawList = Array.isArray(apiData) ? apiData : (apiData.data || []);
+        const formatted = rawList.slice(0, 6).map((item) => ({
           id: item.id,
           title: item.judul,
           date: formatTanggal(item.tanggal),

@@ -60,7 +60,7 @@ function Stats() {
               <UserCheck className="w-6 h-6 text-[#0F5E3A]" />
             </div>
             <span className="text-xs bg-[#0F5E3A]/10 text-[#0F5E3A] px-3.5 py-1 rounded-full font-bold">
-              {stats ? `${formatNumber(stats.kepuasan)}% Kepuasan` : "Memuat..."}
+              {stats ? `${formatNumber(stats.tingkat_verifikasi ?? stats.kepuasan)}% Terverifikasi` : "Memuat..."}
             </span>
           </div>
           <div>

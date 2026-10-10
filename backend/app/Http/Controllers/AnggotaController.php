@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Anggota;
+use App\Models\PAC;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +62,8 @@ class AnggotaController extends Controller
             ? (int) round(($anggotaTerverifikasi / $totalAnggota) * 100)
             : 0;
 
+        $pacs = PAC::orderBy('nama_pac')->get(['id', 'nama_pac', 'kecamatan']);
+
         return view('anggota.index', compact(
             'anggota',
             'status',
@@ -69,13 +72,25 @@ class AnggotaController extends Controller
             'anggotaAktif',
             'anggotaTidakAktif',
             'anggotaBaru',
-            'tingkatVerifikasi'
+            'tingkatVerifikasi',
+            'pacs'
         ));
     }
 
     public function store(Request $request)
     {
-        Anggota::create($request->validate($this->rules()));
+        $data = $request->validate($this->rules());
+
+        if (! empty($data['pac_id']) && empty($data['pac'])) {
+            $pacModel = PAC::find($data['pac_id']);
+            $data['pac'] = $pacModel?->nama_pac ?? $pacModel?->kecamatan;
+        } elseif (! empty($data['pac']) && empty($data['pac_id'])) {
+            $data['pac_id'] = PAC::where('nama_pac', 'like', "%{$data['pac']}%")
+                ->orWhere('kecamatan', 'like', "%{$data['pac']}%")
+                ->value('id');
+        }
+
+        Anggota::create($data);
 
         return redirect()->back()
             ->with('success', 'Data anggota berhasil ditambahkan');
@@ -111,13 +126,19 @@ class AnggotaController extends Controller
                         continue;
                     }
 
+                    $pacName = $this->csvValue($row, ['pac'], '-');
+                    $pacId = PAC::where('nama_pac', 'like', "%{$pacName}%")
+                        ->orWhere('kecamatan', 'like', "%{$pacName}%")
+                        ->value('id');
+
                     Anggota::updateOrCreate(
                         ['email' => $email],
                         [
                             'nama' => $nama,
                             'telepon' => $this->csvValue($row, ['telepon', 'no_telepon', 'phone'], '-'),
                             'tanggal_lahir' => $tanggalLahir,
-                            'pac' => $this->csvValue($row, ['pac'], '-'),
+                            'pac_id' => $pacId,
+                            'pac' => $pacName,
                             'profesi' => $this->csvValue($row, ['profesi'], '-'),
                             'pendidikan' => $this->normalizePendidikan($this->csvValue($row, ['pendidikan'], 'SMA')),
                             'status' => $this->normalizeStatus($this->csvValue($row, ['status'], 'aktif')),
@@ -151,7 +172,18 @@ class AnggotaController extends Controller
     {
         $anggota = Anggota::findOrFail($id);
 
-        $anggota->update($request->validate($this->rules($anggota->id)));
+        $data = $request->validate($this->rules($anggota->id));
+
+        if (! empty($data['pac_id']) && empty($data['pac'])) {
+            $pacModel = PAC::find($data['pac_id']);
+            $data['pac'] = $pacModel?->nama_pac ?? $pacModel?->kecamatan;
+        } elseif (! empty($data['pac']) && empty($data['pac_id'])) {
+            $data['pac_id'] = PAC::where('nama_pac', 'like', "%{$data['pac']}%")
+                ->orWhere('kecamatan', 'like', "%{$data['pac']}%")
+                ->value('id');
+        }
+
+        $anggota->update($data);
 
         return redirect()->back()
             ->with('success', 'Data anggota berhasil diupdate');
@@ -179,7 +211,8 @@ class AnggotaController extends Controller
             ],
             'telepon' => ['required', 'string', 'max:30'],
             'tanggal_lahir' => ['required', 'date', 'before_or_equal:today', 'after_or_equal:1900-01-01'],
-            'pac' => ['required', 'string', 'max:255'],
+            'pac_id' => ['nullable', 'exists:pacs,id'],
+            'pac' => ['nullable', 'string', 'max:255'],
             'profesi' => ['required', 'string', 'max:255'],
             'pendidikan' => ['required', Rule::in(['SD', 'SMP', 'SMA', 'D3', 'S1', 'S2', 'S3'])],
             'status' => ['required', Rule::in(['aktif', 'tidak_aktif'])],

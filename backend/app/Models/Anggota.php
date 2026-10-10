@@ -11,6 +11,7 @@ class Anggota extends Model
         'email',
         'telepon',
         'tanggal_lahir',
+        'pac_id',
         'pac',
         'profesi',
         'tanggal_bergabung',
@@ -26,9 +27,15 @@ class Anggota extends Model
     protected function casts(): array
     {
         return [
+            'pac_id' => 'integer',
             'tanggal_lahir' => 'date',
             'tanggal_bergabung' => 'date',
         ];
+    }
+
+    public function pac()
+    {
+        return $this->belongsTo(PAC::class, 'pac_id');
     }
 
     public function getUmurAttribute(): ?int

@@ -102,7 +102,8 @@ function Kegiatan() {
         return res.json();
       })
       .then((data) => {
-        const formattedData = data.map((item) => ({
+        const rawItems = Array.isArray(data) ? data : (data.data || []);
+        const formattedData = rawItems.map((item) => ({
           id: item.id,
           title: item.judul,
           desc: item.deskripsi,

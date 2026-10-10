@@ -46,11 +46,11 @@ jobs:
 
       - name: Security Audit (Composer)
         working-directory: backend
-        run: composer audit || true
+        run: composer audit --audit-level=high
 
       - name: Check Code Style
         working-directory: backend
-        run: vendor/bin/pint --test || true
+        run: vendor/bin/pint --test
 
   frontend:
     name: Frontend Build (Vite + React)
@@ -69,6 +69,10 @@ jobs:
       - name: Install Dependencies
         working-directory: frontend
         run: npm ci
+
+      - name: Security Audit (npm)
+        working-directory: frontend
+        run: npm audit --audit-level=critical
 
       - name: Build
         working-directory: frontend

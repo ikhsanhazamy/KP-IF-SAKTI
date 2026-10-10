@@ -23,10 +23,29 @@ class User extends Authenticatable
         'email',
         'phone',
         'jabatan',
+        'role',
         'photo',
         'two_factor_enabled',
         'password',
     ];
+
+    public function isSuperAdmin(): bool
+    {
+        return ($this->role ?? 'admin') === 'super_admin';
+    }
+
+    public function isAdmin(): bool
+    {
+        return in_array($this->role ?? 'admin', ['super_admin', 'admin'], true);
+    }
+
+    public function hasRole(string|array $roles): bool
+    {
+        $roles = is_array($roles) ? $roles : explode(',', $roles);
+        $userRole = $this->role ?? 'admin';
+
+        return in_array($userRole, $roles, true);
+    }
 
     /**
      * The attributes that should be hidden for serialization.

@@ -28,9 +28,25 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'role' => 'super_admin',
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
+    }
+
+    public function superAdmin(): static
+    {
+        return $this->state(fn () => ['role' => 'super_admin']);
+    }
+
+    public function operator(): static
+    {
+        return $this->state(fn () => ['role' => 'operator']);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn () => ['role' => 'admin']);
     }
 
     /**

@@ -41,8 +41,8 @@ function Hero() {
       label: "Kecamatan",
     },
     {
-      value: `${formatNumber(stats?.kepuasan)}%`,
-      label: "Kepuasan",
+      value: `${formatNumber(stats?.tingkat_verifikasi ?? stats?.kepuasan)}%`,
+      label: "Verifikasi Profil",
     },
   ];
 

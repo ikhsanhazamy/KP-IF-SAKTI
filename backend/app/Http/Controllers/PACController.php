@@ -33,7 +33,7 @@ class PACController extends Controller
             });
         }
 
-        $pacs = (clone $query)->orderBy('id')->paginate(9)->withQueryString();
+        $pacs = (clone $query)->withCount('anggotas')->orderBy('id')->paginate(9)->withQueryString();
         $totalPAC = PAC::count();
         $pacAktif = PAC::where('status', 'aktif')->count();
         $totalAnggota = Anggota::count();
@@ -47,6 +47,20 @@ class PACController extends Controller
         $currentMonthEnd = now()->endOfMonth();
         $previousMonthStart = now()->subMonthNoOverflow()->startOfMonth();
         $previousMonthEnd = now()->subMonthNoOverflow()->endOfMonth();
+
+        $anggotaBulanIniByPacId = Anggota::query()
+            ->whereNotNull('pac_id')
+            ->whereBetween('tanggal_bergabung', [$currentMonthStart, $currentMonthEnd])
+            ->groupBy('pac_id')
+            ->selectRaw('pac_id, COUNT(*) as total')
+            ->pluck('total', 'pac_id');
+
+        $anggotaBulanLaluByPacId = Anggota::query()
+            ->whereNotNull('pac_id')
+            ->whereBetween('tanggal_bergabung', [$previousMonthStart, $previousMonthEnd])
+            ->groupBy('pac_id')
+            ->selectRaw('pac_id, COUNT(*) as total')
+            ->pluck('total', 'pac_id');
 
         $anggotaBulanIniMap = Anggota::query()
             ->selectRaw('LOWER(TRIM(pac)) as pac_name, COUNT(*) as total')
@@ -62,14 +76,27 @@ class PACController extends Controller
 
         $pacs->setCollection(
             $pacs->getCollection()->map(function (PAC $pac) use (
+                $anggotaBulanIniByPacId,
+                $anggotaBulanLaluByPacId,
                 $anggotaBulanIniMap,
                 $anggotaBulanLaluMap
             ) {
+                if ($pac->anggotas_count > 0) {
+                    $pac->jumlah_anggota = $pac->anggotas_count;
+                }
+
                 $namaKey = strtolower(trim($pac->nama_pac));
                 $kecKey = strtolower(trim($pac->kecamatan));
 
-                $anggotaBulanIni = $anggotaBulanIniMap->get($namaKey) ?? $anggotaBulanIniMap->get($kecKey) ?? 0;
-                $anggotaBulanLalu = $anggotaBulanLaluMap->get($namaKey) ?? $anggotaBulanLaluMap->get($kecKey) ?? 0;
+                $anggotaBulanIni = $anggotaBulanIniByPacId->get($pac->id)
+                    ?? $anggotaBulanIniMap->get($namaKey)
+                    ?? $anggotaBulanIniMap->get($kecKey)
+                    ?? 0;
+
+                $anggotaBulanLalu = $anggotaBulanLaluByPacId->get($pac->id)
+                    ?? $anggotaBulanLaluMap->get($namaKey)
+                    ?? $anggotaBulanLaluMap->get($kecKey)
+                    ?? 0;
 
                 $pac->growth = $this->percentageGrowth(
                     $anggotaBulanIni,
@@ -141,17 +168,28 @@ class PACController extends Controller
                         continue;
                     }
 
+                    $rawStatus = $this->csvValue($row, ['status'], 'aktif');
+                    $status = $this->normalizeStatus($rawStatus);
+
+                    if ($status === null) {
+                        $skipped++;
+
+                        continue;
+                    }
+
                     PAC::updateOrCreate(
                         [
                             'nama_pac' => $namaPac,
                             'kecamatan' => $kecamatan,
                         ],
                         [
-                            'status' => $this->normalizeStatus($this->csvValue($row, ['status'], 'aktif')),
+                            'status' => $status,
                             'tanggal_berdiri' => $tanggalBerdiri,
                             'alamat' => $this->csvValue($row, ['alamat'], '-'),
                             'desa' => $this->csvValue($row, ['desa', 'kelurahan'], '-'),
                             'kode_pos' => $this->csvValue($row, ['kode_pos']),
+                            'latitude' => $this->csvValue($row, ['latitude', 'lat']),
+                            'longitude' => $this->csvValue($row, ['longitude', 'long', 'lng']),
                             'ketua_pac' => $this->csvValue($row, ['ketua_pac', 'ketua'], '-'),
                             'telepon' => $this->csvValue($row, ['telepon', 'no_telepon'], '-'),
                             'email' => $this->csvValue($row, ['email']),
@@ -264,6 +302,8 @@ class PACController extends Controller
             'alamat' => ['required', 'string'],
             'desa' => ['required', 'string', 'max:255'],
             'kode_pos' => ['nullable', 'string', 'max:20'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'ketua_pac' => ['required', 'string', 'max:255'],
             'telepon' => ['required', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
@@ -343,16 +383,20 @@ class PACController extends Controller
         }
     }
 
-    private function normalizeStatus(?string $value): string
+    private function normalizeStatus(?string $value): ?string
     {
-        $slug = Str::of($value ?? '')
+        if ($value === null || trim($value) === '') {
+            return 'aktif';
+        }
+
+        $slug = Str::of($value)
             ->lower()
             ->replaceMatches('/[^a-z0-9]+/', '_')
             ->trim('_')
             ->toString();
 
-        return in_array($slug, ['aktif', 'tidak_aktif', 'akan_expire', 'pending'], true)
+        return in_array($slug, ['aktif', 'tidak_aktif', 'akan_expire', 'pending', 'ditolak'], true)
             ? $slug
-            : 'aktif';
+            : null;
     }
 }

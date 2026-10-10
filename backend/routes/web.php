@@ -9,6 +9,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PACController;
 use App\Http\Controllers\PengajuanPACController;
 use App\Http\Controllers\PengaturanController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,7 +50,7 @@ Route::get('/csrf-token', fn () => response()->json([
 |--------------------------------------------------------------------------
 */
 
-Route::get('/kegiatan', function (\Illuminate\Http\Request $request) {
+Route::get('/kegiatan', function (Request $request) {
     if (auth()->check()) {
         $user = auth()->user();
         if ($user && $user->two_factor_enabled && ! $request->session()->get('two_factor_verified', false)) {
@@ -74,7 +75,7 @@ Route::get('/kegiatan', function (\Illuminate\Http\Request $request) {
     return app(KegiatanController::class)->index($request);
 })->name('kegiatan.index');
 
-Route::get('/kegiatan/{id}', function (\Illuminate\Http\Request $request, $id) {
+Route::get('/kegiatan/{id}', function (Request $request, $id) {
     if ($request->wantsJson() || $request->ajax()) {
         return app(KegiatanController::class)->show((int) $id);
     }
@@ -137,7 +138,8 @@ Route::middleware(['auth', '2fa'])->group(function () {
 
         Route::put('/update/{id}', [AnggotaController::class, 'update']);
 
-        Route::delete('/delete/{id}', [AnggotaController::class, 'destroy']);
+        Route::delete('/delete/{id}', [AnggotaController::class, 'destroy'])
+            ->middleware('role:super_admin,admin');
 
         Route::get('/{id}', [AnggotaController::class, 'show']);
 
@@ -167,6 +169,7 @@ Route::middleware(['auth', '2fa'])->group(function () {
             ->name('pac.update');
 
         Route::delete('/delete/{id}', [PACController::class, 'destroy'])
+            ->middleware('role:super_admin,admin')
             ->name('pac.destroy');
 
         Route::get('/{id}', [PACController::class, 'show'])
@@ -189,9 +192,11 @@ Route::middleware(['auth', '2fa'])->group(function () {
             ->name('pengajuan-pac.show');
 
         Route::post('/{id}/approve', [PengajuanPACController::class, 'approve'])
+            ->middleware('role:super_admin,admin')
             ->name('pengajuan-pac.approve');
 
         Route::post('/{id}/reject', [PengajuanPACController::class, 'reject'])
+            ->middleware('role:super_admin,admin')
             ->name('pengajuan-pac.reject');
 
     });
@@ -208,7 +213,8 @@ Route::middleware(['auth', '2fa'])->group(function () {
 
         Route::put('/update/{id}', [KegiatanController::class, 'update']);
 
-        Route::delete('/delete/{id}', [KegiatanController::class, 'destroy']);
+        Route::delete('/delete/{id}', [KegiatanController::class, 'destroy'])
+            ->middleware('role:super_admin,admin');
 
     });
 
@@ -265,8 +271,12 @@ Route::middleware(['auth', '2fa'])->group(function () {
 
     Route::get('/pengaturan/sistem', [PengaturanController::class, 'sistem']);
 
-    Route::post('/backup/database', [PengaturanController::class, 'backupDatabase'])->name('backup.database');
+    Route::post('/backup/database', [PengaturanController::class, 'backupDatabase'])
+        ->middleware('role:super_admin')
+        ->name('backup.database');
 
-    Route::post('/restore/database', [PengaturanController::class, 'restoreDatabase'])->name('restore.database');
+    Route::post('/restore/database', [PengaturanController::class, 'restoreDatabase'])
+        ->middleware('role:super_admin')
+        ->name('restore.database');
 
 });

@@ -33,10 +33,24 @@ class KegiatanController extends Controller
             });
         }
 
-        $kegiatan = $query->latest()->get();
+        $totalKegiatan = Kegiatan::count();
+        $totalUpcoming = Kegiatan::where('status', 'upcoming')->count();
+        $totalOngoing = Kegiatan::where('status', 'ongoing')->count();
+        $totalCompleted = Kegiatan::where('status', 'completed')->count();
+
+        $kegiatan = $query->latest()->paginate(10)->withQueryString();
         $pacs = PAC::orderBy('nama_pac')->get();
 
-        return view('kegiatan', compact('kegiatan', 'search', 'status', 'pacs'));
+        return view('kegiatan', compact(
+            'kegiatan',
+            'search',
+            'status',
+            'pacs',
+            'totalKegiatan',
+            'totalUpcoming',
+            'totalOngoing',
+            'totalCompleted'
+        ));
     }
 
     public function store(Request $request)

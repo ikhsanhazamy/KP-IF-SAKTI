@@ -53,13 +53,30 @@
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div>
                     <label class="mb-2 block font-medium">PAC *</label>
-                    <input
-                        type="text"
-                        name="pac"
-                        value="{{ old('pac') }}"
-                        class="w-full rounded-2xl border px-5 py-4"
-                        required
-                    >
+                    @if(isset($pacs) && $pacs->count() > 0)
+                        <select
+                            name="pac_id"
+                            id="pac_id_select"
+                            class="w-full rounded-2xl border px-5 py-4"
+                            onchange="const sel = this.options[this.selectedIndex]; document.getElementById('pac_text_input').value = sel.getAttribute('data-name') || sel.text"
+                        >
+                            <option value="">Pilih PAC</option>
+                            @foreach($pacs as $p)
+                                <option value="{{ $p->id }}" data-name="{{ $p->nama_pac }}" {{ old('pac_id') == $p->id ? 'selected' : '' }}>
+                                    {{ $p->nama_pac }} ({{ $p->kecamatan }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <input type="hidden" name="pac" id="pac_text_input" value="{{ old('pac') }}">
+                    @else
+                        <input
+                            type="text"
+                            name="pac"
+                            value="{{ old('pac') }}"
+                            class="w-full rounded-2xl border px-5 py-4"
+                            required
+                        >
+                    @endif
                 </div>
 
                 <div>

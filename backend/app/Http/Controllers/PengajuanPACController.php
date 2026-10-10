@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PAC;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -73,7 +74,7 @@ class PengajuanPACController extends Controller
             'nomor_sk' => $pac->nomor_sk ?? '-',
             'jumlah_anggota' => $pac->jumlah_anggota ?? 0,
             'alumni_lkd' => $pac->alumni_lkd ?? 0,
-            'tanggal_berdiri' => $pac->tanggal_berdiri ? \Carbon\Carbon::parse($pac->tanggal_berdiri)->format('d F Y') : '-',
+            'tanggal_berdiri' => $pac->tanggal_berdiri ? Carbon::parse($pac->tanggal_berdiri)->format('d F Y') : '-',
             'raw_tanggal_berdiri' => $pac->tanggal_berdiri,
             'deskripsi' => $pac->deskripsi ?? 'Tidak ada keterangan tambahan.',
             'created_at' => $pac->created_at ? $pac->created_at->format('d F Y H:i') : '-',
@@ -87,6 +88,10 @@ class PengajuanPACController extends Controller
     public function approve(Request $request, int $id): RedirectResponse
     {
         $pac = PAC::findOrFail($id);
+
+        if ($pac->status !== 'pending') {
+            return redirect()->back()->with('error', "Pengajuan {$pac->nama_pac} tidak dapat disetujui karena statusnya bukan pending ({$pac->status}).");
+        }
 
         $request->validate([
             'nomor_sk' => ['nullable', 'string', 'max:255'],
@@ -109,6 +114,10 @@ class PengajuanPACController extends Controller
     public function reject(Request $request, int $id): RedirectResponse
     {
         $pac = PAC::findOrFail($id);
+
+        if ($pac->status !== 'pending') {
+            return redirect()->back()->with('error', "Pengajuan {$pac->nama_pac} tidak dapat ditolak karena statusnya bukan pending ({$pac->status}).");
+        }
 
         $request->validate([
             'alasan_penolakan' => ['nullable', 'string', 'max:500'],

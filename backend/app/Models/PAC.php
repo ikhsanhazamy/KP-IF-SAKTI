@@ -17,6 +17,8 @@ class PAC extends Model
         'alamat',
         'desa',
         'kode_pos',
+        'latitude',
+        'longitude',
         'ketua_pac',
         'telepon',
         'email',
@@ -26,11 +28,27 @@ class PAC extends Model
         'nomor_sk',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'latitude' => 'float',
+            'longitude' => 'float',
+        ];
+    }
+
     /**
      * Relasi ke Kegiatan
      */
     public function kegiatans(): HasMany
     {
         return $this->hasMany(Kegiatan::class, 'pac_id');
+    }
+
+    /**
+     * Relasi ke Anggota
+     */
+    public function anggotas(): HasMany
+    {
+        return $this->hasMany(Anggota::class, 'pac_id');
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureTwoFactorIsVerified;
+use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->alias([
             '2fa' => EnsureTwoFactorIsVerified::class,
+            'role' => EnsureUserHasRole::class,
         ]);
     })
     ->booted(function () {

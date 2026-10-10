@@ -53,8 +53,11 @@ export function PopupExample() {
         return res.json();
       })
       .then((data) => {
-        const mapped = data.map((pac, idx) => {
-          const coords = getCoords(pac.kecamatan, idx);
+        const pacList = Array.isArray(data) ? data : (data.data || []);
+        const mapped = pacList.map((pac, idx) => {
+          const coords = (pac.latitude != null && pac.longitude != null && !isNaN(parseFloat(pac.latitude)) && !isNaN(parseFloat(pac.longitude)))
+            ? { lng: parseFloat(pac.longitude), lat: parseFloat(pac.latitude) }
+            : getCoords(pac.kecamatan, idx);
           return {
             id: pac.id,
             name: pac.nama_pac,

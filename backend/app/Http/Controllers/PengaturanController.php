@@ -146,6 +146,11 @@ class PengaturanController extends Controller
 
     public function backupDatabase()
     {
+        $user = Auth::user();
+        if ($user && ! $user->isSuperAdmin()) {
+            abort(403, 'Hanya Super Admin yang diizinkan melakukan backup basis data.');
+        }
+
         $backupDir = storage_path('app/backups');
 
         if (! file_exists($backupDir)) {
@@ -168,6 +173,14 @@ class PengaturanController extends Controller
             } else {
                 return back()->with('error', 'File database SQLite tidak ditemukan');
             }
+
+            Log::info('AUDIT: Database backup generated', [
+                'user_id' => $user?->id,
+                'user_email' => $user?->email,
+                'ip' => request()->ip(),
+                'filename' => $filename,
+                'sha256' => file_exists($filePath) ? hash_file('sha256', $filePath) : null,
+            ]);
 
             return response()->download($filePath);
         }
@@ -215,6 +228,11 @@ class PengaturanController extends Controller
 
     public function restoreDatabase(Request $request)
     {
+        $user = Auth::user();
+        if ($user && ! $user->isSuperAdmin()) {
+            abort(403, 'Hanya Super Admin yang diizinkan melakukan restore basis data.');
+        }
+
         $request->validate([
             'backup_file' => ['required', 'file', 'max:51200'],
         ]);
@@ -223,6 +241,15 @@ class PengaturanController extends Controller
         $extension = strtolower($file->getClientOriginalExtension());
         $defaultDriver = config('database.default');
         $filePath = $file->getRealPath();
+
+        Log::info('AUDIT: Database restore initiated', [
+            'user_id' => $user?->id,
+            'user_email' => $user?->email,
+            'ip' => $request->ip(),
+            'filename' => $file->getClientOriginalName(),
+            'sha256' => hash_file('sha256', $filePath),
+            'timestamp' => now()->toIso8601String(),
+        ]);
 
         if ($defaultDriver === 'sqlite') {
             if (! in_array($extension, ['sqlite', 'db', 'sql'], true)) {

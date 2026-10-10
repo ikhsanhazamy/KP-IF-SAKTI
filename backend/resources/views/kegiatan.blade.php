@@ -39,7 +39,7 @@
         <div class="bg-white border border-gray-200 rounded-3xl p-7">
 
             <h2 class="text-5xl font-bold">
-                {{ $kegiatan->count() }}
+                {{ $totalKegiatan ?? $kegiatan->count() }}
             </h2>
 
             <p class="text-[#717182] mt-2 text-xl">
@@ -51,7 +51,7 @@
         <div class="bg-white border border-gray-200 rounded-3xl p-7">
 
             <h2 class="text-5xl font-bold text-blue-600">
-                {{ $kegiatan->where('status', 'upcoming')->count() }}
+                {{ $totalUpcoming ?? $kegiatan->where('status', 'upcoming')->count() }}
             </h2>
 
             <p class="text-[#717182] mt-2 text-xl">
@@ -63,7 +63,7 @@
         <div class="bg-white border border-gray-200 rounded-3xl p-7">
 
             <h2 class="text-5xl font-bold text-green-600">
-                {{ $kegiatan->where('status', 'ongoing')->count() }}
+                {{ $totalOngoing ?? $kegiatan->where('status', 'ongoing')->count() }}
             </h2>
 
             <p class="text-[#717182] mt-2 text-xl">
@@ -75,7 +75,7 @@
         <div class="bg-white border border-gray-200 rounded-3xl p-7">
 
             <h2 class="text-5xl font-bold text-gray-500">
-                {{ $kegiatan->where('status', 'completed')->count() }}
+                {{ $totalCompleted ?? $kegiatan->where('status', 'completed')->count() }}
             </h2>
 
             <p class="text-[#717182] mt-2 text-xl">
@@ -287,6 +287,12 @@
         </table>
 
         </div>
+
+        @if($kegiatan instanceof \Illuminate\Pagination\LengthAwarePaginator && $kegiatan->hasPages())
+            <div class="p-6 border-t border-gray-100">
+                {{ $kegiatan->links() }}
+            </div>
+        @endif
 
     </div>
 
